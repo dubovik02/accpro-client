@@ -1,0 +1,11 @@
+
+@import url('./__header/interesting__header.css');
+@import url('./__container/interesting__container.css');
+@import url('./__fact-container/interesting__fact-container.css');
+@import url('./__fact-image/interesting__fact-image.css');
+@import url('./__fact-text/interesting__fact-text.css');
+
+.interesting {
+    background-color: rgb(101,121,155);
+    padding: .5em;
+}

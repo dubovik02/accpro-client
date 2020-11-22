@@ -1,0 +1,13 @@
+@import url(./_display/_none/popup__error-label_display_none.css);
+
+.popup__error-label {
+    margin-top: 0;
+    margin-bottom: -15px;
+    font-size: 12px;
+    line-height: 15px;
+    color: #FF0000;
+}
+
+.popup__error-label:last-of-type {
+    /* margin-bottom: -15px; */
+}

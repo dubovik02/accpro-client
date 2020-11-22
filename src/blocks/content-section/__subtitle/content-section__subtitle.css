@@ -1,0 +1,15 @@
+.content-section__subtitle {
+    margin: 0;
+    margin-top: .5em;
+    padding: 0;
+    padding-bottom: .5em;
+    font-size: 2em;
+    font-weight: normal;
+    color: black;
+    border-bottom: 2px solid rgb(101, 121, 155);
+}
+
+
+/* .content-section__subtitle:after {
+    content: '\2192';
+} */

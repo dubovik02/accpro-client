@@ -1,0 +1,12 @@
+@import url('./_is-visible/popup__error-info_is-visible.css');
+
+.popup__error-info {
+  text-align: center;
+  font-size: 12px;
+  line-height: 15px;
+  color: #FF0000;
+  /* margin-top: 17px;
+  margin-bottom: -32px; */
+  margin: 20px auto;
+  display: none;
+}

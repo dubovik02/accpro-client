@@ -1,0 +1,8 @@
+@import url('./_error/preloader-container__image_error.css');
+@import url('./_nofound/preloader-container__image_nofound.css');
+
+.preloader-container__image {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto;
+}

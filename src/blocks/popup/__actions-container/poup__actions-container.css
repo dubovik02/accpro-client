@@ -1,0 +1,8 @@
+@import url('../__text/popup__text.css');
+@import url('../__link/popup__link.css');
+
+.popup__actions-container {
+  display: flex;
+  margin-top: 16px;
+  justify-content: center;
+}

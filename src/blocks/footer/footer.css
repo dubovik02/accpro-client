@@ -1,0 +1,10 @@
+@import url('./__copyright/footer__copyright.css');
+@import url('./__email/footer__email.css');
+
+.footer {
+    background-color: black;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    padding: 0;
+}

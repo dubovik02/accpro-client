@@ -1,0 +1,11 @@
+@import url('./__link/content-section__link.css');
+@import url('./__title/content-section__title.css');
+@import url('./__subtitle/content-section__subtitle.css');
+@import url('./__container/content-section__container.css');
+
+.content-section {
+    display: flex;
+    justify-content: start;
+    flex-direction: column;
+    padding: 3em 3em 3em 3em;
+}

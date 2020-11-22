@@ -1,0 +1,9 @@
+.card-link__description {
+    width: 100%;
+    font-size: 1em;
+    font-weight: normal;
+    color: rgba(101, 121, 155,1);
+    margin: 0;
+    overflow: hidden;
+    flex: 1 0 auto;
+}

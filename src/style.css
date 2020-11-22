@@ -1,6 +1,51 @@
 @import url('./vendor/fonts.css');
 @import url('./vendor/normalize.css');
 
-.button {
-  border: none;
-}
+/*-------------------------------------------Главная-------------------------------------------------*/
+/*----Блоки------*/
+@import url('./blocks/body/body.css');
+@import url('./blocks/page/page.css');
+@import url('./blocks/logo/logo.css');
+@import url('./blocks/link/link.css');
+@import url('./blocks/content-section/content-section.css');
+@import url('./blocks/card-link/card-link.css');
+@import url('./blocks/circle-preloader/circle-preloader.css');
+@import url('./blocks/preloader-container/preloader-container.css');
+
+/*----Элементы управления------*/
+@import url('./controls/button/button.css');
+@import url('./controls/input/input.css');
+@import url('./controls/input-label/input-label.css');
+@import url('./controls/input-text/input-text.css');
+@import url('./controls/input-password/input-password.css');
+@import url('./controls/input-email/input-email.css');
+@import url('./controls/input-checkbox/input-checkbox.css');
+@import url('./controls/required-input/required-input.css');
+@import url('./controls/error-label/error-label.css');
+@import url('./controls/fields-grid/fields-grid.css');
+
+/*----Попапы--------------------*/
+@import url('./blocks/popup/popup.css');
+
+/*----Это интересно-----*/
+/* @import url('./blocks/interesting/interesting.css'); */
+
+/*----Заголовок------*/
+@import url('./blocks/header/header.css');
+@import url('./blocks/menu/menu.css');
+
+/*----Бриф------*/
+@import url('./blocks/brief/brief.css');
+
+/*----Новости------*/
+@import url('./blocks/news/news.css');
+
+/*----Первичка и регистры------*/
+/* @import url('./blocks/documents/documents.css'); */
+
+/*----Footer------*/
+@import url('./blocks/footer/footer.css');
+
+/*-------------------------------------------Регистрация-------------------------------------------------*/
+/* @import url('./blocks/login/login.css'); */
+
