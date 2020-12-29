@@ -1,0 +1,9 @@
+@import url('./__title/filter__title.css');
+@import url('./__container/filter__container.css');
+@import url('./__tag-link/filter__tag-link.css');
+
+.filter {
+  display: flex;
+  justify-content: flex-start;
+  margin: 0;
+}

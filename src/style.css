@@ -15,6 +15,7 @@
 /*----Элементы управления------*/
 @import url('./controls/button/button.css');
 @import url('./controls/input/input.css');
+@import url('./controls/input-date/input-date.css');
 @import url('./controls/input-label/input-label.css');
 @import url('./controls/input-text/input-text.css');
 @import url('./controls/input-password/input-password.css');
@@ -23,6 +24,7 @@
 @import url('./controls/required-input/required-input.css');
 @import url('./controls/error-label/error-label.css');
 @import url('./controls/fields-grid/fields-grid.css');
+@import url('./blocks/filter/filter.css');
 
 /*----Попапы--------------------*/
 @import url('./blocks/popup/popup.css');

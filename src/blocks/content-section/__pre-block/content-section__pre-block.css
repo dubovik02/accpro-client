@@ -1,0 +1,6 @@
+.content-section__pre-block {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  margin: 1em 0;
+}

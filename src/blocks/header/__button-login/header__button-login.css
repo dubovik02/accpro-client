@@ -3,8 +3,7 @@
     /* padding: .5em; */
     /*margin-left: 2em;*/
     margin: 0 1em 0 auto;
-    /* background-color: transparent; */
-    /* font-weight: bold; */
+    background-color: transparent;
     /*height: 2em*/;
     /* height: 100%;
     font-size: 1.3em;
@@ -13,6 +12,8 @@
     justify-content: center; */
 }
 
-.header__button-login:focus {
-
+.header__button-login:hover {
+  background-color: transparent;
+  border-radius: .5em;
+  border: 1px solid white;
 }

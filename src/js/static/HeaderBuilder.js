@@ -1,6 +1,7 @@
 import AccComponent from '../common/AccComponent';
 import logo from '../../images/logo.png';
-//import signInIco from '../../images/sign-in.png';
+import signInIco from '../../images/sign-in.png';
+import logoutIco from '../../images/logout.png';
 
 /**
  * Класс формирования заголовка
@@ -14,47 +15,24 @@ export default class HeaderBuilder extends AccComponent {
   _controlButton;
 
   /**
-   * Коллбэк логина
+   * Меню "Новости"
    */
-  //_loginFunction = null;
+  _menuItemNews;
 
   /**
-   * Коллбэк логаута
+   * Набор пунктов меню
    */
-  //_logoutFunction = null;
+  _menuItemsList = [];
+
+  /**
+   * набор экшенов для пунктов меню
+   */
+  _menuActions
 
   constructor(props) {
     super(props);
+    this._menuActions = this._props.menuActions;
   }
-
-  /**
-   * Устанавливает обработчик на кнопку логина
-   * @param {Function} loginFunction коллбэк для нажатия кнопки логина
-   */
-  // setLoginAction(loginFunction) {
-  //   this._loginFunction = loginFunction;
-  // }
-
-  // setLogoutAction(logoutFunction) {
-  //   this._logoutFunction = logoutFunction;
-  // }
-
-
-  /**
-   * Устанавливает обработчики для элементов
-   */
-  // _setListeners(isButLogin) {
-  //   if (this._controlButton instanceof Element && isButLogin) {
-  //     this._controlButton.addEventListener('click', () => {
-  //       this._loginFunction.call(this, []);
-  //     });
-  //   }
-  //   else {
-  //     this._controlButton.addEventListener('click', () => {
-  //       this._logoutFunction.call(this, []);
-  //     });
-  //   }
-  // }
 
   /**
    * Формирует DOM заголовка
@@ -69,7 +47,7 @@ export default class HeaderBuilder extends AccComponent {
                           </a>
                           <menu class="menu">
                             <ul class="menu-list">
-                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold" href="#">Новости</a></li>
+                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold menu-item-news" href="#">Новости</a></li>
                               <li class="menu-list__item"><a class="link menu-link menu-link_font_bold" href="#">Первичка и регистры</a></li>
                               <li class="menu-list__item"><a class="link menu-link menu-link_font_bold" href="#">Учет</a></li>
                               <li class="menu-list__item"><a class="link menu-link menu-link_font_bold" href="#">Отчетность</a></li>
@@ -80,8 +58,9 @@ export default class HeaderBuilder extends AccComponent {
 
       this._componentDOM.insertAdjacentHTML('afterbegin', headerHtml);
 
+      this._createMenuItems();
+      this._setMenuItemsListeners();
       this._createButton(this._props.isButLogin);
-      //this._setListeners(this._props.isButLogin);
 
       this._componentDOM.appendChild(this._controlButton);
   }
@@ -93,14 +72,61 @@ export default class HeaderBuilder extends AccComponent {
     this._controlButton = document.createElement('button');
     this._controlButton.classList.add('button');
     this._controlButton.classList.add('header__button-login');
-    this._controlButton.textContent = (isButLogin ? 'Войти' : `${localStorage.getItem('username')} выйти?`);
+    this._controlButton.setAttribute('title', (isButLogin ? 'Войти' : `Выход (${localStorage.getItem('username')})`))
 
-    //button.insertAdjacentHTML('afterbegin', `<span>${caption}</span>`);
-    //button.insertAdjacentHTML('afterbegin', `<img src="${ico}"></img>`);
+    const ico = isButLogin ? `<img src="${signInIco}"></img>` : `<img src="${logoutIco}"></img>`
+    this._controlButton.insertAdjacentHTML('afterbegin', ico);
   }
 
   getControlButton() {
     return this._controlButton;
+  }
+
+  /**
+   * Создает пункты меню
+   */
+  _createMenuItems() {
+    this._menuItemNews = this._componentDOM.querySelector('.menu-item-news');
+    this._menuItemsList.push(this._menuItemNews);
+  }
+
+  /**
+   * Устанавливает обработчики событий для ВСЕХ пунктов меню
+   */
+  _setMenuItemsListeners() {
+    if (this._menuActions instanceof Object) {
+      this._setMenuItemListener(this._menuItemNews, this._menuActions.news);
+    }
+
+  }
+
+  /**
+   * Устанавливает обработчик на пункте меню
+   * @param {Element} item элемент меню
+   * @param {Function} handler обработчик
+   */
+  _setMenuItemListener(item, handler) {
+    item.addEventListener('click', () => {
+      handler.call(this, []);
+      this.setActiveMenuItem(item);
+    })
+  }
+
+  /**
+   * Устанавливает активный пункт меню
+   */
+  setActiveMenuItem(activeItem) {
+    this._menuItemsList.forEach(element => {
+      if (activeItem !== element) {
+        element.classList.remove('menu-link_selected');
+      } else {
+        element.classList.add('menu-link_selected');
+      }
+    });
+  }
+
+  getMenuItemNews() {
+    return this._menuItemNews;
   }
 
 }

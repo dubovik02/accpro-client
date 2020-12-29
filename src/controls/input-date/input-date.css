@@ -1,0 +1,15 @@
+.input-date {
+
+  border: 0;
+  border-bottom: 2px solid rgba(101, 121, 155,.8);
+  font-size: 14px;
+  line-height: 17px;
+  box-sizing: border-box;
+  padding: 8px 6px 13px 0;
+  margin-bottom: 4px;
+  margin-right: 1em;
+
+  font-family: Inter;
+  font-style: normal;
+  font-weight: normal;
+}

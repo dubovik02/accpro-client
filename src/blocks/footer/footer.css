@@ -1,4 +1,6 @@
-@import url('./__copyright/footer__copyright.css');
+@import url('./__container/footer__container.css');
+@import url('./__text/footer__text.css');
+@import url('./__link/footer__link.css');
 @import url('./__email/footer__email.css');
 
 .footer {
@@ -6,5 +8,6 @@
     display: flex;
     justify-content: start;
     align-items: center;
-    padding: 0;
+    padding: 1em;
+    font-size: 1.2em;
 }

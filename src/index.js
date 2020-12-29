@@ -12,6 +12,7 @@ import SignUpPopUp from './js/static/popups/SignUpPopUp';
 import FormInputsValidator from './js/validators/FormInputsValidator';
 import SignInPopUp from './js/static/popups/SignInPopUp';
 import AccComponent from './js/common/AccComponent';
+import { getNewsPeriod } from './js/lib/date';
 
 /*-------------Константы----------------*/
 
@@ -39,8 +40,8 @@ let newsCardsList;
 let popupSignUp;
 /*-Вход-*/
 let popupSignIn;
-/*-------------Функции-------------------*/
 
+/*-------------Функции-------------------*/
 /**
  * Общая процедура, вызываемая при загрузки страницы
  */
@@ -48,15 +49,12 @@ function onLoadDOM() {
 
   makeHeader();
   makeBriefSection();
-  makeNewsSection();
-  //makeAccountingSection();
-  //makeInterestingFactSections();
   makeFooter();
 
 }
 
 /**
- * Формирует заголовок
+ * Функция формирования заголовка
  */
 function makeHeader() {
 
@@ -70,6 +68,9 @@ function makeHeader() {
     {
       isButLogin: isLoggedIn !== null ? false : true,
       username: localStorage.getItem('username'),
+      menuActions: {
+        news: onNews,
+      },
     }
   );
   header.createDOM();
@@ -97,7 +98,11 @@ function makeHeader() {
 function makeBriefSection() {
 
   if (localStorage.getItem('jwt')) {
-    brief.getDOM().remove();
+    if (brief instanceof AccComponent) {
+      brief.getDOM().remove();
+    }
+
+    makeNewsSection();
   }
   else {
     brief = new BriefBuilder({});
@@ -122,23 +127,22 @@ function makeBriefSection() {
  */
 function makeNewsSection() {
 
+  if (newsSection instanceof AccComponent) {
+    return;
+  }
+
   newsSection = new NewsBuilder({
     cardsList: new CardsList({}),
     showStep: Properties.newsList.showStep,
+    filterFunction: filterNewsSection,
   });
   newsSection.createDOM();
   newsSection.addPreloaderDOM('Минуточку, загружаем новости ...');
 
   contentSection.appendChild(newsSection.getDOM());
 
-  const nowDate = new Date();
-  nowDate.setHours(23,59,59,999);
-  const nowDateStr = parseDateToYMDString(nowDate);
-
-  const fromDate = new Date();
-  fromDate.setDate(fromDate.getDate() - Properties.newsList.newsPeriod);
-  fromDate.setHours(0,0,0,0);
-  const fromDateStr = parseDateToYMDString(fromDate);
+  //const {nowDateStr, fromDateStr} = getNewsPeriod();
+  const {nowDateStr, fromDateStr} = getNewsPeriod(true);
 
   api.getNews(fromDateStr, nowDateStr)
   .then((res) => {
@@ -149,27 +153,67 @@ function makeNewsSection() {
     else {
       newsCardsList = new CardsList({});
       res.forEach((item) => {
-        const card = new Card({
-          url: item.link,
-          publishedAt: item.date,
-          keyWord: item.keyword,
-          urlToImage: item.image,
-          title: item.title,
-          description: item.text,
-          source: item.source,
-        });
-
+        const cardData = dbCardTransform(item);
+        const card = new Card(cardData);
         newsCardsList.addCard(card);
-        newsSection.setCardsList(newsCardsList);
-        newsSection.createDOM();
-        contentSection.appendChild(newsSection.getDOM());
       });
+      newsSection.setCardsList(newsCardsList);
+      newsSection.createDOM();
+      contentSection.appendChild(newsSection.getDOM());
     }
   })
   .catch((err) => {
     newsSection.getPreloaderComponentDOM().remove();
     newsSection.addErrorDOM(`Ошибка: ${err.message}`);
   });
+
+  header.setActiveMenuItem(header.getMenuItemNews());
+}
+
+/**
+ * Накладывает фильтр на секцию новостей (коллбэк события фильтрации)
+ */
+function filterNewsSection(keyWordsArr, fromDateStr, toDateStr) {
+
+  //Очищаем предыдущие активности
+  if (newsSection.getEmptyComponentDOM()) {
+    newsSection.getEmptyComponentDOM().remove();
+  }
+
+  if (newsSection.getErrorComponentDOM()) {
+    newsSection.getErrorComponentDOM().remove();
+  }
+
+  //очищаем блок карточек
+  newsSection.deleteCards();
+  //делаем прелоадер
+  newsSection.addPreloaderDOM('Отбираем новости .....');
+
+  //Получаем данные карточек по условиям фильтрации и отрисовываем их
+  return api.getNewsByKeyWords(fromDateStr, toDateStr, keyWordsArr)
+  .then((res) => {
+    newsSection.getPreloaderComponentDOM().remove();
+    if (res.length === 0) {
+      newsSection.addNoEntityDOM('Новостей по тематике нет :(');
+    }
+    else {
+      newsCardsList = new CardsList({});
+      res.forEach((item) => {
+        const cardData = dbCardTransform(item);
+        const card = new Card(cardData);
+        newsCardsList.addCard(card);
+      });
+      newsSection.setCardsList(newsCardsList);
+      newsSection.createCards();
+    }
+    return res;
+  })
+  .catch((err) => {
+    newsSection.getPreloaderComponentDOM().remove();
+    newsSection.addErrorDOM(`Ошибка: ${err.message}`);
+    return Promise.reject(err);
+  })
+
 }
 
 /**
@@ -238,14 +282,28 @@ function showSignUpPopup() {
   popupSignUp.open();
 }
 
+/**
+ * Обработчик меню Новости
+ */
+function onNews() {
+  brief.clear();
+  makeNewsSection();
+}
 
 /**
- * Преобразование даты в строку гггг-мм-дд
+ * Трансформирует объект новости из БД в объект данных карточки новостей
+ * @param {Object} объект новости из БД
  */
-function parseDateToYMDString(date) {
-
-  const monthDate = (date.getDate() < 10 ? `0${date.getDate()}` : date.getDate());
-  return `${date.getFullYear()}-${date.getMonth() + 1}-${monthDate}`;
+function dbCardTransform(dbObject) {
+  return {
+    url: dbObject.link,
+    publishedAt: dbObject.date,
+    keyWord: dbObject.keyword,
+    urlToImage: dbObject.image,
+    title: dbObject.title,
+    description: dbObject.text,
+    source: dbObject.source,
+  };
 }
 
 /*----------------------------Обработчики событий--------------------------------*/

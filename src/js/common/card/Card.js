@@ -214,4 +214,7 @@ export default class Card extends AccComponent {
   //   this._setDelListener();
 
   // }
+  getKeyWord() {
+    return this._props.keyWord;
+  }
 }

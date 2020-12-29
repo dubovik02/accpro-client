@@ -8,7 +8,7 @@ export default class SectionBuilder extends AccComponent {
   /**
    * Набор карточек
    */
-  _cardsList = [];
+  _cardsList;
 
   /**
    * Количество карточек для показа
@@ -27,7 +27,22 @@ export default class SectionBuilder extends AccComponent {
   _sectionSubtitle;
 
   /**
-   * Класс элемента секции
+   * Секция-контейнер для карточек
+   */
+  _contentContainer;
+
+  /**
+   * Секция-контейнер для управляющих элементов (преконтентная секция)
+   */
+  _preBlock;
+
+    /**
+   * Секция-контейнер для управляющих элементов (постконтентная секция)
+   */
+  _postBlock;
+
+  /**
+   * Базовый класс элемента секции
    */
   _sectionClassName;
 
@@ -53,25 +68,27 @@ export default class SectionBuilder extends AccComponent {
     contentSection.classList.add(`content-section`);
 
     const sectionBody = `<h2 class="content-section__title">${this._sectionTitle}</h2>
-                        <a  class="link content-section__link">
-                            <p class="content-section__subtitle">${this._sectionSubtitle}</p>
-                        </a>`;
+                         <p class="content-section__subtitle">${this._sectionSubtitle}</p>
+                         <div class="content-section__pre-block"></div>
+                         <div class="content-section__container"></div>
+                         <div class="content-section__post-block"></div>`;
 
     contentSection.insertAdjacentHTML('afterbegin', sectionBody);
 
-    const container = document.createElement('div');
-    container.classList.add('content-section__container');
-
-    contentSection.appendChild(container);
+    this._contentContainer = contentSection.querySelector('.content-section__container');
+    this._preBlock = contentSection.querySelector('.content-section__pre-block');
+    this._postBlock = contentSection.querySelector('.content-section__post-block');
 
     if (this._cardsList.getCardsListLength() !== 0) {
-      this._cardsList.getCardsList().forEach(element => {
+      this._cardsList.getCardsArray().forEach(element => {
         element.createDOM();
-        container.appendChild(element.getDOM());
+        this._contentContainer.appendChild(element.getDOM());
       });
     }
 
     this._componentDOM.appendChild(contentSection);
+
+
 
   }
 
@@ -81,5 +98,33 @@ export default class SectionBuilder extends AccComponent {
 
   setCardsList(value) {
     this._cardsList = value;
+  }
+
+  /**
+   * Возвращает секцию-контейнер для управлящих элементов
+   */
+  getPreBlockDOM() {
+    return this._preBlock;
+  }
+
+  /**
+   * Создает DOM-карточек из текущего списка карточек и добавляет в контентый контейнер
+   */
+  createCards() {
+    if (this._cardsList.getCardsListLength() !== 0) {
+      this._cardsList.getCardsArray().forEach(element => {
+        element.createDOM();
+        this._contentContainer.appendChild(element.getDOM());
+      });
+    }
+  }
+
+  /**
+   * Удаляет карточки
+   */
+  deleteCards() {
+    while (this._contentContainer.firstChild) {
+      this._contentContainer.removeChild(this._contentContainer.firstChild);
+    }
   }
 }

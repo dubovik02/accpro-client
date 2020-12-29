@@ -1,5 +1,8 @@
 import AccComponent from '../common/AccComponent';
-import logo from '../../images/logo.png';
+import mailIco from '../../images/mail.png';
+import gitIco from '../../images/github.png';
+import monitorIco from '../../images/monitor.png';
+import Properties from '../properties/Properties'
 
 /**
  * Класс формирования подвала
@@ -19,25 +22,27 @@ export default class FooterBuilder extends AccComponent {
         this._componentDOM = document.createElement('footer');
         this._componentDOM.classList.add('footer');
 
-        //const logo = '../../images/logo.png';
+        const footerHtml = `<p class="footer__text">&copy;${new Date().getFullYear()} ${Properties.site.name}</p>
 
-        const footerHtml = `<img class="logo logo_place_footer" src="${logo}" alt="логотип"></img>
-                            <p class="footer__copyright">&copy;2020 Accounting-pro</p>
-                            <p class="footer__email">
-                              <a href="mailto:info@accounting-pro.ru" class="link menu-link menu-link_font_normal">
-                                E-mail: info@accounting-pro.ru
+                            <div class="footer__container">
+
+                              <a href="./index.html" class="link footer__link">
+                                <img class="footer__ico" src="${monitorIco}"></img>
+                                <p class="footer__text">${Properties.site.url}</p>
                               </a>
-                            </p>`;
+
+                              <a href="mailto:info@accounting-pro.ru" class="link footer__link">
+                                <img class="footer__ico" src="${mailIco}"></img>
+                                <p class="footer__text">${Properties.site.email}</p>
+                              </a>
+
+                              <a href="https://github.com" class="link footer__link" target="_blank">
+                                <img class="footer__ico" src="${gitIco}"></img>
+                                <p class="footer__text">Мы на GitHub</p>
+                              </a>
+
+                            </div>`;
 
         this._componentDOM.insertAdjacentHTML('afterbegin', footerHtml);
-        //this._componentDOM.addChild(footerHtml);
     }
 }
-
-/* <footer class="footer">
-    <img class="logo logo_place_header" src="images/brandbook/logo_4.png" alt="логотип"></img>
-    <p class="footer__copyright">&copy;2020 Accounting-pro</p>
-    <p class="footer__email">
-        <a href="mailto:info@accounting-pro.ru" class="link menu-link menu-link_font_normal">E-mail: info@accounting-pro.ru</a>
-    </p>
-</footer> */

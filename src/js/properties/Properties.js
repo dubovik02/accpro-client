@@ -2,6 +2,13 @@ import accDefaultImg from '../../images/accounting.jpg';
 
 export default  {
 
+  /*-Параметры текущего ресурса*/
+  site: {
+    name: 'Accounting-pro',
+    url: 'www.accounting-pro.ru',
+    email: 'info@accounting-pro.ru',
+  },
+
   /*-Настройка подключений-*/
   connection: {
 
@@ -23,7 +30,7 @@ export default  {
 
   /*-Настройка представления новостей-*/
   newsList: {
-    newsPeriod: 30,
+    newsPeriod: 60,
     count: 8,
     showStep: 4,
   },

@@ -117,6 +117,31 @@ export default class Api extends BaseApi {
   }
 
   /**
+   * Получение списка карточек новостей по ключевым словам
+   */
+  getNewsByKeyWords(dateFrom, dateTo, keyWordsArr) {
+
+    let reqParams = `${this._serverHttp}/articles/filter/?from=${dateFrom}&to=${dateTo}&`;
+    if (keyWordsArr) {
+        keyWordsArr.forEach(item => {
+        reqParams = reqParams + `keyWords[]=${item}&`
+      })
+    }
+
+
+    return this.parseResponse(fetch(reqParams,
+      {
+
+        method: 'GET',
+
+        headers: {
+          'Content-Type': 'application/json'
+        }
+
+      }));
+  }
+
+  /**
    * Удаляет карточку с сервера
    */
   deleteCard(cardId) {

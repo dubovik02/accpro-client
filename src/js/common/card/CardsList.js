@@ -14,7 +14,7 @@ export default class CardsList extends AccComponent {
     //this._cardListMap = new Map();
   }
 
-  getCardsList() {
+  getCardsArray() {
     return this._cardsArray;
   }
 
