@@ -20,6 +20,11 @@ export default class HeaderBuilder extends AccComponent {
   _menuItemNews;
 
   /**
+   * Меню "Песочница"
+   */
+  _menuItemSandBox;
+
+  /**
    * Набор пунктов меню
    */
   _menuItemsList = [];
@@ -48,7 +53,7 @@ export default class HeaderBuilder extends AccComponent {
                           <menu class="menu">
                             <ul class="menu-list">
                               <li class="menu-list__item"><a class="link menu-link menu-link_font_bold menu-item-news" href="#">Новости</a></li>
-                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold" href="#">Первичка и регистры</a></li>
+                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold menu-item-sandbox" href="#">Песочница</a></li>
                               <li class="menu-list__item"><a class="link menu-link menu-link_font_bold" href="#">Учет</a></li>
                               <li class="menu-list__item"><a class="link menu-link menu-link_font_bold" href="#">Отчетность</a></li>
                               <li class="menu-list__item"><a class="link menu-link menu-link_font_bold" href="#">Справочники</a></li>
@@ -88,6 +93,9 @@ export default class HeaderBuilder extends AccComponent {
   _createMenuItems() {
     this._menuItemNews = this._componentDOM.querySelector('.menu-item-news');
     this._menuItemsList.push(this._menuItemNews);
+
+    this._menuItemSandBox = this._componentDOM.querySelector('.menu-item-sandbox');
+    this._menuItemsList.push(this._menuItemSandBox);
   }
 
   /**
@@ -96,6 +104,7 @@ export default class HeaderBuilder extends AccComponent {
   _setMenuItemsListeners() {
     if (this._menuActions instanceof Object) {
       this._setMenuItemListener(this._menuItemNews, this._menuActions.news);
+      this._setMenuItemListener(this._menuItemSandBox, this._menuActions.sandBox);
     }
 
   }

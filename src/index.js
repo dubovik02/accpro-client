@@ -13,6 +13,11 @@ import FormInputsValidator from './js/validators/FormInputsValidator';
 import SignInPopUp from './js/static/popups/SignInPopUp';
 import AccComponent from './js/common/AccComponent';
 import { getNewsPeriod } from './js/lib/date';
+import SandBoxBuilder from './js/static/services/SandBoxBuilder';
+import Account from './js/common/accounting/Account';
+import AccountsSet from './js/common/accounting/AccountsSet';
+import AccountingEntriesSet from './js/common/accounting/AccountingEntriesSet';
+import AccountingEntry from './js/common/accounting/AccountingEntry';
 
 /*-------------Константы----------------*/
 
@@ -20,6 +25,7 @@ import { getNewsPeriod } from './js/lib/date';
 /*-------------Переменные----------------*/
 const page = document.querySelector('.page');
 const contentSection = document.querySelector('.content');
+const contentSectionContainer = document.querySelector('.content-container');
 
 /*-Api-*/
 //const newsApi = new NewsApi(Properties.connection.newsapi.url, Properties.connection.newsapi.token);
@@ -34,6 +40,9 @@ let brief;
 /*-News-*/
 let newsSection;
 let newsCardsList;
+
+/*-Песочница-*/
+let sandBoxServiceSection;
 
 /*-Попапы-*/
 /*-Регистрация-*/
@@ -70,6 +79,7 @@ function makeHeader() {
       username: localStorage.getItem('username'),
       menuActions: {
         news: onNews,
+        sandBox: onSandBox,
       },
     }
   );
@@ -118,7 +128,8 @@ function makeBriefSection() {
 
     const validator = new FormInputsValidator(popupSignUp.getForm(), Properties.popupErrMsg);
 
-    contentSection.appendChild(brief.getDOM());
+    //contentSection.appendChild(brief.getDOM());
+    contentSectionContainer.appendChild(brief.getDOM());
   }
 }
 
@@ -127,9 +138,9 @@ function makeBriefSection() {
  */
 function makeNewsSection() {
 
-  if (newsSection instanceof AccComponent) {
-    return;
-  }
+  // if (newsSection instanceof AccComponent) {
+  //   return;
+  // }
 
   newsSection = new NewsBuilder({
     cardsList: new CardsList({}),
@@ -139,7 +150,8 @@ function makeNewsSection() {
   newsSection.createDOM();
   newsSection.addPreloaderDOM('Минуточку, загружаем новости ...');
 
-  contentSection.appendChild(newsSection.getDOM());
+  //contentSection.appendChild(newsSection.getDOM());
+  contentSectionContainer.appendChild(newsSection.getDOM());
 
   //const {nowDateStr, fromDateStr} = getNewsPeriod();
   const {nowDateStr, fromDateStr} = getNewsPeriod(true);
@@ -159,7 +171,8 @@ function makeNewsSection() {
       });
       newsSection.setCardsList(newsCardsList);
       newsSection.createDOM();
-      contentSection.appendChild(newsSection.getDOM());
+      //contentSection.appendChild(newsSection.getDOM());
+      contentSectionContainer.appendChild(newsSection.getDOM());
     }
   })
   .catch((err) => {
@@ -214,6 +227,17 @@ function filterNewsSection(keyWordsArr, fromDateStr, toDateStr) {
     return Promise.reject(err);
   })
 
+}
+
+/**
+ * Формирует секцию сервиса Песочницы
+ */
+function makeSandBoxServiceSection() {
+  sandBoxServiceSection = new SandBoxBuilder({
+    calcFunction: calcSandBox,
+  });
+  sandBoxServiceSection.createDOM();
+  contentSectionContainer.appendChild(sandBoxServiceSection.getDOM());
 }
 
 /**
@@ -286,8 +310,99 @@ function showSignUpPopup() {
  * Обработчик меню Новости
  */
 function onNews() {
-  brief.clear();
+  //brief.clear();
+  clearContentContainer();
   makeNewsSection();
+}
+
+
+/**
+ * Обработчик меню Песочница
+ */
+function onSandBox() {
+  // while (contentSection.firstChild) {
+  //   contentSection.removeChild(contentSection.firstChild);
+  // }
+  clearContentContainer();
+  makeSandBoxServiceSection();
+}
+
+/**
+ * Функция пересчета документа в Песочнице
+ */
+function calcSandBox(income, flows, outcome/*, calcMode*/) {
+
+  //собираем входящий баланс
+  const incomeSet = new AccountsSet();
+
+  income.forEach(accObj => {
+    const acc = new Account();
+    acc.setAccNumber(accObj.accountNumber);
+    acc.setOpenBalance({
+      debet: accObj.debet,
+      credit: accObj.credit,
+    });
+    acc.setDescription(accObj.note);
+
+    incomeSet.add(acc);
+  })
+
+  //собираем обороты
+  const flowsSet = new AccountingEntriesSet();
+  flows.forEach(entryObj => {
+
+    const entry = new AccountingEntry();
+    entry.setName(entryObj.operationDesc);
+
+    const accDebet = new Account();
+    accDebet.setAccNumber(entryObj.debet)
+    entry.setAccDebet(accDebet);
+
+    const accCredit = new Account();
+    accCredit.setAccNumber(entryObj.credit);
+    entry.setAccCredit(accCredit);
+
+    entry.setDescription(entryObj.note);
+    entry.setSum(entryObj.summ);
+
+    flowsSet.add(entry);
+
+  })
+
+  //собираем исходящие остатки
+  const outcomeSet = new AccountsSet();
+
+  outcome.forEach(accObj => {
+    const acc = new Account();
+    acc.setAccNumber(accObj.accountNumber);
+    acc.setCloseBalance({
+      debet: accObj.debet,
+      credit: accObj.credit,
+    });
+    acc.setDescription(accObj.note);
+
+    outcomeSet.add(acc);
+  })
+
+  //смотрим, что надо вычислять
+  /*if (calcMode == 0) {
+
+  }
+  else if (calcMode == 1) {
+
+  }
+  else {
+
+  }*/
+}
+
+/**
+ * Удаляет содержимое контентного контейнера
+ */
+function clearContentContainer() {
+  while (contentSectionContainer.firstChild) {
+    contentSectionContainer.removeChild(contentSectionContainer.firstChild);
+  }
 }
 
 /**

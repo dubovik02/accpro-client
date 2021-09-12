@@ -10,7 +10,8 @@ import Properties from '../properties/Properties';
 export function parseDateToYMDString(date) {
 
   const monthDate = (date.getDate() < 10 ? `0${date.getDate()}` : date.getDate());
-  return `${date.getFullYear()}-${date.getMonth() + 1}-${monthDate}`;
+  const monthNumber = (date.getMonth() < 10 ? `0${date.getMonth() + 1}` : date.getMonth());
+  return `${date.getFullYear()}-${monthNumber}-${monthDate}`;
 
 }
 
@@ -20,7 +21,8 @@ export function parseDateToYMDString(date) {
 export function parseDateToDMYString(date) {
 
   const monthDate = (date.getDate() < 10 ? `0${date.getDate()}` : date.getDate());
-  return `${monthDate}-${date.getMonth() + 1}-${date.getFullYear()}`;
+  const monthNumber = (date.getMonth() < 10 ? `0${date.getMonth() + 1}` : date.getMonth());
+  return `${monthDate}-${monthNumber}-${date.getFullYear()}`;
 
 }
 

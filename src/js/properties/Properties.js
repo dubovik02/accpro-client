@@ -68,4 +68,15 @@ export default  {
     AllowLettersMessage: 'Используйте только буквы и дефис'
   },
 
+  /*-Настройки сервиса Песoчницы-*/
+  sandBox: {
+
+    /*-Grid-*/
+    grid: {
+      /*-Число строк в гриде-*/
+      rowCount: 12,
+    }
+
+  }
+
 }

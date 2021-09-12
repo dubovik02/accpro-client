@@ -47,4 +47,6 @@ export default class BriefBuilder extends AccComponent {
     return this._buttonSignUp;
   }
 
+  /**<p class="brief__text">Найдите решения здесь, делитесь с коллегами, предлагайте свои!</p>**/
+
 }

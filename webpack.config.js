@@ -1,7 +1,7 @@
+const webpack = require('webpack');
 const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const webpack = require('webpack');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -18,6 +18,25 @@ module.exports = {
   //открываем в Firefox
   devServer: {
     open: 'Firefox'
+  },
+
+  //Полифилы
+  resolve: {
+    fallback: {
+      path: require.resolve("path-browserify"),
+      stream: require.resolve("stream-browserify"),
+      util: require.resolve("util/"),
+      os: require.resolve("os-browserify/browser"),
+      assert: require.resolve("assert/"),
+      constants: require.resolve("constants-browserify"),
+      vm: require.resolve("vm-browserify"),
+      http: require.resolve("stream-http"),
+      https: require.resolve("https-browserify"),
+      crypto: require.resolve("crypto-browserify"),
+      fs: false,
+      child_process: false,
+      worker_threads: false,
+    }
   },
 
   module: {
@@ -80,7 +99,11 @@ module.exports = {
 
     new webpack.DefinePlugin({
       'NODE_ENV': JSON.stringify(process.env.NODE_ENV)
-    })
-  ]
+    }),
 
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+    }),
+
+  ]
 }

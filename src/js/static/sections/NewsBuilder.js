@@ -46,7 +46,7 @@ export default class NewsBuilder extends SectionBuilder {
    */
   _createAdditionalDOM() {
 
-    if (this._cardsList.getCardsListLength() !== 0) {
+    //if (this._cardsList.getCardsListLength() !== 0) {
       this._preBlock.insertAdjacentHTML('afterbegin', this._createFilterSectionDOM());
       this._tagsContainer = this._componentDOM.querySelector('.filter__container-tags');
       this._buildTagsContainer();
@@ -55,13 +55,14 @@ export default class NewsBuilder extends SectionBuilder {
      this._dateTo = this._componentDOM.querySelector('.input-date-to');
 
      const period = getNewsPeriod(true);
+
      this._dateFrom.value = period.fromDateStr;
      this._dateTo.value = period.nowDateStr;
 
      this._setDataFilterListener(this._dateTo);
      this._setDataFilterListener(this._dateFrom);
 
-   }
+   //}
 
   }
 

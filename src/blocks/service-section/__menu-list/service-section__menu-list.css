@@ -1,0 +1,9 @@
+.service-section__menu-list {
+
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+
+}

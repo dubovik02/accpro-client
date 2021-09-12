@@ -5,9 +5,12 @@
     -moz-osx-font-smoothing: grayscale;
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
-    -moz-text-size-adjust: 100%;    
+    -moz-text-size-adjust: 100%;
     background-color: white;
     max-width: 1600px;
     min-width: 320px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
     margin: 0 auto;
 }

@@ -1,0 +1,15 @@
+@import url('./__name/service-section__name.css');
+@import url('./__description/service-section__description.css');
+@import url('./__menu/service-section__menu.css');
+@import url('./__view/service-section__view.css');
+@import url('./__menu-list/service-section__menu-list.css');
+@import url('./__menu-item/service-section__menu-item.css');
+@import url('./__link/service-section__link.css');
+
+.service-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  padding: 3em;
+}

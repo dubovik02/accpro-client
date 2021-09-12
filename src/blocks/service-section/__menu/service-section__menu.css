@@ -1,0 +1,8 @@
+.service-section__menu {
+  display: flex;
+  flex-direction: column;
+  margin: .5em 0;
+  padding: .5em 0;
+
+  border-bottom: 2px solid rgb(101, 121, 155);
+}
