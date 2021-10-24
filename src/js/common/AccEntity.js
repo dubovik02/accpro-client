@@ -44,4 +44,21 @@ export default class AccEntity {
   setDescription(value) {
     this._description = value;
   }
+
+  toJSON() {
+    return {
+      id: this.getId(),
+      name: this.getName(),
+      description: this.getDescription(),
+    }
+  }
+
+  parseJSON(obj) {
+
+    this.setId(obj.id);
+    this.setName(obj.name);
+    this.setDescription(obj.description);
+
+  }
+
 }

@@ -13,11 +13,8 @@ import FormInputsValidator from './js/validators/FormInputsValidator';
 import SignInPopUp from './js/static/popups/SignInPopUp';
 import AccComponent from './js/common/AccComponent';
 import { getNewsPeriod } from './js/lib/date';
-import SandBoxBuilder from './js/static/services/SandBoxBuilder';
-import Account from './js/common/accounting/Account';
-import AccountsSet from './js/common/accounting/AccountsSet';
-import AccountingEntriesSet from './js/common/accounting/AccountingEntriesSet';
-import AccountingEntry from './js/common/accounting/AccountingEntry';
+import SandBoxBuilder from './js/static/services/sandbox/SandBoxBuilder';
+import SandBoxProvider from './js/static/services/sandbox/SandBoxProvider';
 
 /*-------------Константы----------------*/
 
@@ -128,7 +125,6 @@ function makeBriefSection() {
 
     const validator = new FormInputsValidator(popupSignUp.getForm(), Properties.popupErrMsg);
 
-    //contentSection.appendChild(brief.getDOM());
     contentSectionContainer.appendChild(brief.getDOM());
   }
 }
@@ -138,10 +134,6 @@ function makeBriefSection() {
  */
 function makeNewsSection() {
 
-  // if (newsSection instanceof AccComponent) {
-  //   return;
-  // }
-
   newsSection = new NewsBuilder({
     cardsList: new CardsList({}),
     showStep: Properties.newsList.showStep,
@@ -150,10 +142,8 @@ function makeNewsSection() {
   newsSection.createDOM();
   newsSection.addPreloaderDOM('Минуточку, загружаем новости ...');
 
-  //contentSection.appendChild(newsSection.getDOM());
   contentSectionContainer.appendChild(newsSection.getDOM());
 
-  //const {nowDateStr, fromDateStr} = getNewsPeriod();
   const {nowDateStr, fromDateStr} = getNewsPeriod(true);
 
   api.getNews(fromDateStr, nowDateStr)
@@ -171,7 +161,6 @@ function makeNewsSection() {
       });
       newsSection.setCardsList(newsCardsList);
       newsSection.createDOM();
-      //contentSection.appendChild(newsSection.getDOM());
       contentSectionContainer.appendChild(newsSection.getDOM());
     }
   })
@@ -310,7 +299,6 @@ function showSignUpPopup() {
  * Обработчик меню Новости
  */
 function onNews() {
-  //brief.clear();
   clearContentContainer();
   makeNewsSection();
 }
@@ -320,9 +308,6 @@ function onNews() {
  * Обработчик меню Песочница
  */
 function onSandBox() {
-  // while (contentSection.firstChild) {
-  //   contentSection.removeChild(contentSection.firstChild);
-  // }
   clearContentContainer();
   makeSandBoxServiceSection();
 }
@@ -330,70 +315,22 @@ function onSandBox() {
 /**
  * Функция пересчета документа в Песочнице
  */
-function calcSandBox(income, flows, outcome/*, calcMode*/) {
+function calcSandBox(income, flows, outcome, calcMode) {
+
+  const provider = new SandBoxProvider();
+
 
   //собираем входящий баланс
-  const incomeSet = new AccountsSet();
-
-  income.forEach(accObj => {
-    const acc = new Account();
-    acc.setAccNumber(accObj.accountNumber);
-    acc.setOpenBalance({
-      debet: accObj.debet,
-      credit: accObj.credit,
-    });
-    acc.setDescription(accObj.note);
-
-    incomeSet.add(acc);
-  })
+  const incomeSet = provider.transformStocks(income);
 
   //собираем обороты
-  const flowsSet = new AccountingEntriesSet();
-  flows.forEach(entryObj => {
-
-    const entry = new AccountingEntry();
-    entry.setName(entryObj.operationDesc);
-
-    const accDebet = new Account();
-    accDebet.setAccNumber(entryObj.debet)
-    entry.setAccDebet(accDebet);
-
-    const accCredit = new Account();
-    accCredit.setAccNumber(entryObj.credit);
-    entry.setAccCredit(accCredit);
-
-    entry.setDescription(entryObj.note);
-    entry.setSum(entryObj.summ);
-
-    flowsSet.add(entry);
-
-  })
+  const flowsSet = provider.transformFlows(flows);
 
   //собираем исходящие остатки
-  const outcomeSet = new AccountsSet();
+  const outcomeSet = provider.transformStocks(outcome);
 
-  outcome.forEach(accObj => {
-    const acc = new Account();
-    acc.setAccNumber(accObj.accountNumber);
-    acc.setCloseBalance({
-      debet: accObj.debet,
-      credit: accObj.credit,
-    });
-    acc.setDescription(accObj.note);
+  return provider.calcStocksAndFlows(incomeSet, flowsSet, outcomeSet, calcMode);
 
-    outcomeSet.add(acc);
-  })
-
-  //смотрим, что надо вычислять
-  /*if (calcMode == 0) {
-
-  }
-  else if (calcMode == 1) {
-
-  }
-  else {
-
-  }*/
 }
 
 /**

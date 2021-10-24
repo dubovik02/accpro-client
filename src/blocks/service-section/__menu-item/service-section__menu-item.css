@@ -1,4 +1,19 @@
 .service-section__menu-item {
+  display: inline-block;
   list-style: none;
   margin-left: 1em;
+  position: relative;
+}
+
+.service-section__menu-item:hover {
+
+}
+
+.service-section__menu-item:hover .service-section__submenu-list {
+  display: block;
+  /**border-top: 1px solid rgb(101, 121, 155);**/
+  /* border-right: 1px solid rgb(101, 121, 155);
+  border-left: 1px solid rgb(101, 121, 155);
+  border-bottom: 1px solid rgb(101, 121, 155); */
+
 }

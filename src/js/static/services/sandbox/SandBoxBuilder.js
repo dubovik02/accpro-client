@@ -1,6 +1,6 @@
-import ServiceBuilder from "./ServiceBuilder";
+import ServiceBuilder from "../ServiceBuilder";
 import {Grid} from 'ag-grid-community';
-import Properties from "../../properties/Properties";
+import Properties from "../../../properties/Properties";
 import { Number } from "core-js";
 
 /**
@@ -43,11 +43,24 @@ export default class SandBoxBuilder extends ServiceBuilder {
    */
   _currentDocument;
 
-  /**
-   * Пункт меню "Рассчитать"
-   */
-  _menuCalc;
+  /**---------Пункт меню "Рассчитать"----------- */
 
+  /**
+   * Подпункт "Входящие остатки"
+   */
+  _menuCalcIncome;
+
+  /**
+   * Подпункт "Обороты"
+   */
+   _menuCalcFlows;
+
+   /**
+   * Подпункт "Исходящие остатки"
+   */
+    _menuCalcOutcome;
+
+   /**-------------------------------------------- */
   /**
    * Пункт меню "Сохранить"
    */
@@ -98,7 +111,6 @@ export default class SandBoxBuilder extends ServiceBuilder {
   createDOM() {
     super.createDOM();
     this._createServiceMenu();
-    this._createModeMenu();
     this._createOpeningGrid();
     this._createFlowsGrid();
     this._createClosingGrid();
@@ -123,23 +135,21 @@ export default class SandBoxBuilder extends ServiceBuilder {
                           <a class="link service-section__link menu-item-calc" href="#">
                             Рассчитать
                           </a>
+
+                          <ul class="service-section__submenu-list">
+                            <li class="service-section__submenu-item">
+                              <a class="link service-section__sublink submenu-item-calc-income" href="#">Входящие остатки</a>
+                            </li>
+                            <li class="service-section__submenu-item">
+                              <a class="link service-section__sublink submenu-item-calc-outcome" href="#">Исходящие остатки</a>
+                            </li>
+                          </ul>
+
                         </li>
                       </ul>`;
 
     this._serviceMenu.insertAdjacentHTML(`afterbegin`, menuHtml);
     this._setUpMenuItems();
-
-  }
-
-  /**
-   * Создает вторичное меню выбора режима расчета
-   */
-  _createModeMenu() {
-
-    const menuHtml = `
-                    <div class="service-section__mode-menu">
-                    </div>
-                    `;
 
   }
 
@@ -220,19 +230,9 @@ export default class SandBoxBuilder extends ServiceBuilder {
         pinned: 'left'
       },
 
-      //{ headerName: 'Забалансовый', checkboxSelection: true, field: 'outbalance', resizable: true,},
       { headerName: 'Счет', field: 'accountNumber', resizable: true, editable: true, /*sortable: true, filter: 'agTextColumnFilter'*/},
       { headerName: 'Остаток по дебету', field: 'debet', resizable: true, editable: true, valueFormatter: this.currencyFormatter,/*sortable: true, filter: 'agNumberColumnFilter', type: 'numericColumn'*/ },
       { headerName: 'Остаток по кредиту', field: 'credit', resizable: true, editable: true, valueFormatter: this.currencyFormatter,/*sortable: true, filter: 'agNumberColumnFilter', type: 'numericColumn'*/ },
-
-
-      // {
-      //   headerName: 'Остаток',
-      //   children: [
-      //     { headerName: 'по дебету', field: 'debet', resizable: true, editable: true, sortable: true, filter: 'agNumberColumnFilter' },
-      //     { headerName: 'по кредиту', field: 'credit', resizable: true, editable: true, sortable: true, filter: 'agNumberColumnFilter' },
-      //   ]
-      // },
 
       { headerName: 'Пояснение', field: 'note', resizable: true, editable: true },
 
@@ -271,19 +271,9 @@ export default class SandBoxBuilder extends ServiceBuilder {
         pinned: 'left'
       },
 
-      //{ headerName: 'Забалансовый', checkboxSelection: true, field: 'outbalance', resizable: true,},
-
       { headerName: 'Содержание операции', field: 'operationDesc', resizable: true, editable: true, /*sortable: true, filter: 'agTextColumnFilter'*/ },
       { headerName: 'Счет по дебету', field: 'debet', resizable: true, editable: true, /*sortable: true, filter: 'agTextColumnFilter' */},
       { headerName: 'Счет по кредиту', field: 'credit', resizable: true, editable: true, /*sortable: true, filter: 'agTextColumnFilter'*/ },
-
-      // {
-      //   headerName: 'Бухгалтерская запись',
-      //   children: [
-      //     { headerName: 'по дебету', field: 'debet', resizable: true, editable: true, sortable: true, filter: 'agTextColumnFilter' },
-      //     { headerName: 'по кредиту', field: 'credit', resizable: true, editable: true, sortable: true, filter: 'agTextColumnFilter' },
-      //   ]
-      // },
 
       { headerName: 'Сумма', field: 'summ', resizable: true, editable: true, valueFormatter: this.currencyFormatter,/*sortable: true, filter: 'agNumberColumnFilter', type: 'numericColumn' */},
 
@@ -322,18 +312,26 @@ export default class SandBoxBuilder extends ServiceBuilder {
    */
   _setUpMenuItemCalc() {
 
-    this._menuCalc = this._serviceMenu.querySelector('.menu-item-calc');
-    if (this._calcFunction) {
-      this._menuCalc.addEventListener('click', () => {
 
-        const income = this.getStockGridData(this._openingGridObject);
-        const outcome = this.getStockGridData(this._closeingGridObject);
-        const flows = this.getFlowGridData(this._flowGridObject);
-        this._calcFunction.call(this, income, flows, outcome);
+    this._menuCalcIncome = this._serviceMenu.querySelector('.submenu-item-calc-income');
+    this._menuCalcOutcome = this._serviceMenu.querySelector('.submenu-item-calc-outcome');
 
-      });
+    this._menuCalcIncome.addEventListener('click', () => {
+      const income = this.getStockGridData(this._openingGridObject);
+      const outcome = this.getStockGridData(this._closeingGridObject);
+      const flows = this.getFlowGridData(this._flowGridObject);
+      let result = this._calcFunction.call(this, income, flows, outcome, 0);
+      this.setStockGridData(this._openingGridObject, result, true);
 
-    }
+    })
+
+    this._menuCalcOutcome.addEventListener('click', () => {
+      const income = this.getStockGridData(this._openingGridObject);
+      const outcome = this.getStockGridData(this._closeingGridObject);
+      const flows = this.getFlowGridData(this._flowGridObject);
+      let result = this._calcFunction.call(this, income, flows, outcome, 2);
+      this.setStockGridData(this._closeingGridObject, result, false);
+    })
 
   }
 
@@ -373,6 +371,47 @@ export default class SandBoxBuilder extends ServiceBuilder {
     })
     return totalObj;
   }
+
+  /**
+   *
+   * @param {Grid} gridObj - таблица остатков
+   * @param {Object} stockData - данные по остаткам
+   * @param {Boolean} isIncome - True - данные о входящих остатках, False - данные об исходящих
+   */
+  setStockGridData(gridObj, stockData, isIncome) {
+
+    //очищаем данные
+    this._clearGridData(gridObj)
+
+    //заполняем новые данные
+    const rowData = [];
+    const dataArr = stockData.accounts;
+
+    for (let i = 0; i < dataArr.length; i++) {
+
+      let accObj =
+      {
+        accountNumber: dataArr[i].accNumber,
+        debet: isIncome ? dataArr[i].openBalance.debet : dataArr[i].closeBalance.debet,
+        credit: isIncome ? dataArr[i].openBalance.credit : dataArr[i].closeBalance.credit,
+        note: dataArr[i].description,
+      }
+      rowData.push(accObj);
+    }
+
+    gridObj.gridOptions.api.setRowData(rowData);
+
+  }
+
+  /**
+   * Очищает данные грида
+   * @param {Grid} gridObj - объект грида
+   */
+  _clearGridData(gridObj) {
+    const rowData = [];
+    gridObj.gridOptions.api.setRowData(rowData);
+  }
+
 
 
   /**

@@ -54,7 +54,7 @@ import AccEntity from '../AccEntity';
   /**
    * Обороты по кредиту
    */
-   _creditFlow = new Map;
+   _creditFlow = new Map();
 
 
   constructor() {
@@ -114,17 +114,17 @@ import AccEntity from '../AccEntity';
     this._closeBalance = value;
   }
 
-  getDebetFlow() {
+  getDebetFlows() {
     return this._debetFlow;
   }
-  setDebetFlow(value) {
+  setDebetFlows(value) {
     this._debetFlow = value;
   }
 
-  getCreditFlow() {
+  getCreditFlows() {
     return this._creditFlow;
   }
-  setCreditFlow(value) {
+  setCreditFlows(value) {
     this._creditFlow = value;
   }
 
@@ -134,7 +134,7 @@ import AccEntity from '../AccEntity';
    * @param {Object} operation операция
    */
   addDebetFlow(id, operation) {
-    this._debetFlow.set(id, operation);
+    this._debetFlow.set(id, Number(operation));
   }
 
   /**
@@ -143,15 +143,15 @@ import AccEntity from '../AccEntity';
    * @param {Object} operation операция
    */
    addCreditFlow(id, operation) {
-    this._creditFlow.set(id, operation);
+    this._creditFlow.set(id, Number(operation));
   }
 
   /**
    * Рассчитывет сумму оборотов по дебету
    */
   calcDebetFlows() {
-    const summ = 0;
-    this._debetFlow.values.forEach(value => {
+    let summ = 0;
+    this._debetFlow.values().forEach(value => {
       summ = summ + value;
     })
     return summ;
@@ -161,8 +161,8 @@ import AccEntity from '../AccEntity';
    * Рассчитывет сумму оборотов по кредиту
    */
    calcCreditFlows() {
-    const summ = 0;
-    this._creditFlow.values.forEach(value => {
+    let summ = 0;
+    this._creditFlow.values().forEach(value => {
       summ = summ + value;
     })
     return summ;
@@ -193,11 +193,48 @@ import AccEntity from '../AccEntity';
     else if (outcome < 0) {
       this._closeBalance = {
         debet: 0,
-        credit: outcome,
+        credit: -1 * outcome,
       }
     }
     else {
       this._closeBalance = {
+        debet: 0,
+        credit: 0,
+      }
+    }
+
+  }
+
+  /**
+   * Рассчитывает входящий остаток по счету
+   * Изначально считаем, что счет активный.
+   */
+  calcOpenBalance() {
+
+    //исходящий остаток
+    const outcome = this._closeBalance.debet - this._closeBalance.credit;
+    //обороты
+    const debFlows = this.calcDebetFlows();
+    const crFlows = this.calcCreditFlows();
+    const flows = debFlows - crFlows;
+    //исходящий
+    const income = outcome - flows;
+    //проверяем знак остатка
+    //если плюс - дебетовый, минус - кредитовый
+    if (income > 0) {
+      this._openBalance = {
+        debet: income,
+        credit: 0,
+      }
+    }
+    else if (income < 0) {
+      this._openBalance = {
+        debet: 0,
+        credit: -1 * income,
+      }
+    }
+    else {
+      this._openBalance = {
         debet: 0,
         credit: 0,
       }
@@ -211,19 +248,81 @@ import AccEntity from '../AccEntity';
    */
   concat(acc) {
 
-    this._openBalance.debet += acc._openBalance.debet;
-    this._openBalance.credit += acc._openBalance.credit;
+    this._openBalance.debet = this._openBalance.debet + acc._openBalance.debet;
+    this._openBalance.credit = this._openBalance.credit + acc._openBalance.credit;
 
-    for (let entry of acc.getDebetFlow()) {
+    for (let entry of acc.getDebetFlows()) {
       this.addDebetFlow(entry[0], entry[1])
     }
 
-    for (let entry of acc.getCreditFlow()) {
+    for (let entry of acc.getCreditFlows()) {
       this.addCreditFlow(entry[0], entry[1])
     }
 
-    this._closeBalance.debet += acc._closeBalance.debet;
-    this._closeBalance.credit += acc._closeBalance.credit;
+    this.calcCloseBalance();
+
+  }
+
+  /**
+   * Преобразует объект класса в формат JSON
+   * @returns JSON-объект
+   */
+  toJSON() {
+    let result = super.toJSON();
+
+    result.accName = this.getAccName();
+    result.accNumber = this.getAccNumber();
+    result.accType = this.getAccType();
+    result.closeBalance = this.getCloseBalance();
+    result.openBalance = this.getOpenBalance();
+    result.isNonBalance = this.getIsNonBalance();
+    result.isOneEntry = this.getIsOneEntry();
+
+    let debFlowArr = [];
+    for (let entry of this.getDebetFlows()) {
+      let flow = {
+        key: entry[0],
+        value: entry[1]
+      }
+      debFlowArr.push(flow)
+    }
+    result.debetFlow = debFlowArr;
+
+    let crFlowArr = [];
+    for (let entry of this.getCreditFlows()) {
+      let flow = {
+        key: entry[0],
+        value: entry[1]
+      }
+      crFlowArr.push(flow)
+    }
+    result.creditFlow = crFlowArr;
+
+    return result;
+  }
+
+  /**
+   * Фрормирует объекТ из JSON-объекта
+   * @param {Object} obj
+   */
+  parseJSON(obj) {
+
+    super.parseJSON(obj);
+    this.setAccName(obj.accName);
+    this.setAccNumber(obj.accNumber);
+    this.setAccType(obj.accType);
+    this.setCloseBalance(obj.closeBalance);
+    this.setOpenBalance(obj.openBalance);
+    this.setIsNonBalance(obj.isNonBalance);
+    this.setIsOneEntry(obj.isOneEntry);
+
+    for (let entry of obj.debetFlow) {
+      this.getDebetFlows().push(entry.key, entry.value);
+    }
+
+    for (let entry of obj.creditFlow) {
+      this.getCreditFlows().push(entry.key, entry.value);
+    }
 
   }
 
