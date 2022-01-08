@@ -1,0 +1,9 @@
+@import url('../menu-list/__item/menu-list__item.css');
+
+.menu-list {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+}

@@ -1,0 +1,26 @@
+@import url('./__title/brief__title.css');
+@import url('./__subtitle/brief__subtitle.css');
+@import url('./__text/brief__text.css');
+@import url('./__button-registration/brief__button-registration.css');
+
+
+.brief {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background-image: url('../../images/brief-cover.jpg');
+    background-size: cover;
+    padding: 3em 3em 3em 3em;
+}
+
+.brief::before {
+    min-width: 100%;
+    min-height: 100%;
+    content: " ";
+    background: rgba(0,0,0,.8);
+    /*background: rgba(69, 69, 114, 1);*/
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: .8;
+}

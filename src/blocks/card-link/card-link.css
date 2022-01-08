@@ -1,0 +1,26 @@
+@import url('./__title/card-link__title.css');
+@import url('./__description/card-link__description.css');
+@import url('./__theme/card-link__theme.css');
+@import url('./__image/card-link__image.css');
+@import url('./__image/_reporting/card-link__image_reporting.css');
+@import url('./__image/_dictionary/card-link__image_dictionary.css');
+@import url('./__source-container/card-link__source-container.css');
+@import url('./__date/card-link__date.css');
+@import url('./__source/card-link__source.css');
+@import url('./_unvisible/card-link_undisplay.css');
+
+
+.card-link {
+    /* position: relative; */
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    border-radius: .4em;
+    text-decoration: none;
+    /*border: 1px solid rgba(101, 121, 155,.8);*/
+    box-shadow: 0 .5em .5em rgba(101, 121, 155,.8);
+}
+
+.card-link:hover {
+    transform: translateY(-.5em);
+}

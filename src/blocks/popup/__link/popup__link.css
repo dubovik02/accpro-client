@@ -1,0 +1,13 @@
+@import url('./_large/popup__link_large.css');
+@import url('./_small/popup__link_small.css');
+
+.popup__link {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: normal;
+  /* font-size: 14px;
+  line-height: 17px; */
+  text-decoration: none;
+  color: rgb(24, 73, 156);
+  display: inline-block;
+}

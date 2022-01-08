@@ -1,0 +1,9 @@
+.input {
+    background-color: white;
+    /* border-radius: .4em; */
+    border: solid 1px rgba(101, 121, 155,.8);
+}
+
+.input:disabled {
+    background-color: lightgrey;
+}

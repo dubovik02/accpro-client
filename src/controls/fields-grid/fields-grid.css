@@ -1,0 +1,9 @@
+@import url('./__item/fields-grid__item.css');
+
+.fields-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-row-gap: 1em;
+    grid-column-gap: 1em;
+    margin: 0 auto;
+} 

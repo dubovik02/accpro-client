@@ -1,0 +1,15 @@
+@import url('./_font/_bold/menu-link_font_bold.css');
+@import url('./_font/_normal/menu-link_font_normal.css');
+@import url('./_selected/menu-link_selected.css');
+
+.menu-link {
+
+    font-size: 1.5em;
+    /* font-weight: bold; */
+    /*color: rgb(101, 121, 155);*/
+    color: white;
+    text-decoration: none;
+    /* border-bottom: 3px solid white;
+    padding-bottom: .8em; */
+
+}

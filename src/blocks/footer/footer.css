@@ -1,0 +1,14 @@
+@import url('./__container/footer__container.css');
+@import url('./__text/footer__text.css');
+@import url('./__link/footer__link.css');
+@import url('./__email/footer__email.css');
+
+.footer {
+    background-color: black;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    padding: .75em;
+    font-size: 1.2em;
+    margin-top: auto;
+}

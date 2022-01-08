@@ -1,0 +1,6 @@
+.card-link__source-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  flex: 0 0 auto;
+}

@@ -1,0 +1,10 @@
+@import url('../menu-link/menu-link.css');
+
+.link {             
+    transition: opacity 1s ease;
+    cursor: pointer;
+}
+
+.link:hover {
+    opacity: .5;
+}

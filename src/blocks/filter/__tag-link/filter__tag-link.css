@@ -1,0 +1,10 @@
+@import url('./_unactive/filter__tag-link_unactive.css');
+
+.filter__tag-link {
+  background-color: rgb(101, 121, 155);
+  font-size: 1.2em;
+  color: white;
+  margin: 0 1em 0 0;
+  padding: .3em .5em .3em .5em;
+  border-radius: .3em;
+}

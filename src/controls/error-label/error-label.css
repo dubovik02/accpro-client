@@ -1,0 +1,7 @@
+.error-label {
+    font-size: 1em;
+    font-weight: normal;
+    color: red;
+    margin-top: .4em;
+    /*display: none;*/
+}

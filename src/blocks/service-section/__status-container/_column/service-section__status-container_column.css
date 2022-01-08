@@ -1,0 +1,4 @@
+.service-section__status-container.service-section__status-container_column {
+  flex-direction: column;
+  justify-content: flex-end;
+}

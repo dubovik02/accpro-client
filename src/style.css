@@ -1,0 +1,59 @@
+@import url('./vendor/fonts.css');
+@import url('./vendor/normalize.css');
+/* @import url('./vendor/ag-grid/ag-grid.css');
+@import url('./vendor/ag-grid/ag-theme-fresh.css'); */
+@import url('../node_modules/ag-grid-community/dist/styles/ag-grid.css');
+@import url('../node_modules/ag-grid-community/dist/styles/ag-theme-fresh.css');
+@import url('../node_modules/ag-grid-community/dist/styles/ag-theme-alpine.css');
+
+/*-------------------------------------------Главная-------------------------------------------------*/
+/*----Блоки------*/
+@import url('./blocks/body/body.css');
+@import url('./blocks/page/page.css');
+@import url('./blocks/logo/logo.css');
+@import url('./blocks/link/link.css');
+@import url('./blocks/content/content.css');
+@import url('./blocks/content-section/content-section.css');
+@import url('./blocks/service-section/service-section.css');
+@import url('./blocks/card-link/card-link.css');
+@import url('./blocks/circle-preloader/circle-preloader.css');
+@import url('./blocks/preloader-container/preloader-container.css');
+
+/*----Элементы управления------*/
+@import url('./controls/button/button.css');
+@import url('./controls/input/input.css');
+@import url('./controls/input-date/input-date.css');
+@import url('./controls/input-label/input-label.css');
+@import url('./controls/input-text/input-text.css');
+@import url('./controls/input-password/input-password.css');
+@import url('./controls/input-email/input-email.css');
+@import url('./controls/input-checkbox/input-checkbox.css');
+@import url('./controls/required-input/required-input.css');
+@import url('./controls/error-label/error-label.css');
+@import url('./controls/fields-grid/fields-grid.css');
+@import url('./blocks/filter/filter.css');
+@import url('./blocks/grid/grid.css');
+
+/*----Попапы--------------------*/
+@import url('./blocks/popup/popup.css');
+
+/*----Это интересно-----*/
+/* @import url('./blocks/interesting/interesting.css'); */
+
+/*----Заголовок------*/
+@import url('./blocks/header/header.css');
+@import url('./blocks/menu/menu.css');
+
+/*----Бриф------*/
+@import url('./blocks/brief-section/brief-section.css');
+@import url('./blocks/brief/brief.css');
+
+/*----Новости------*/
+@import url('./blocks/news/news.css');
+
+/*----Песочница----*/
+
+
+/*----Footer------*/
+@import url('./blocks/footer/footer.css');
+

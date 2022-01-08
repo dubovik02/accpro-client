@@ -1,0 +1,8 @@
+.interesting__fact-text {
+    padding-left: 1em;
+    font-size: 1.5em;
+    font-weight: normal;
+    font-style: italic;
+    color: white;
+    border-left: .2em white solid;
+}

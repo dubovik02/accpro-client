@@ -1,0 +1,4 @@
+.popup__error-info.popup__error-info_is-visible {
+  display: flex;
+  justify-content: center;
+}

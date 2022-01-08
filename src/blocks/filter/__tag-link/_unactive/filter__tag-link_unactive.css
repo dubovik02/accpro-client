@@ -1,0 +1,6 @@
+.filter__tag-link.filter__tag-link_unactive {
+  /* background-color: grey; */
+  background-color: white;
+  color: black;
+  border: 2px solid rgb(101, 121, 155);
+}

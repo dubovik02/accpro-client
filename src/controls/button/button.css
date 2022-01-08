@@ -1,0 +1,35 @@
+.button {
+    /* display: block;
+    cursor: pointer;
+    background-color: rgb(101, 121, 155);
+    border: none;
+    color: white; */
+
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+
+    background-color: rgb(101, 121, 155);
+    border: none;
+    border-radius: .5em;
+
+    padding: 0.5em;
+
+    height: 100%;
+    font-size: 1.3em;
+    font-weight: normal;
+    color: white;
+  }
+
+.button:hover {
+  background-color: rgb(57, 95, 160);
+}
+
+.button:focus {
+  outline-color: white;
+}
+
+.button:disabled {
+  background-color: grey;
+  color: lightgray
+}
