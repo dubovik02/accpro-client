@@ -1,4 +1,4 @@
-import AccPopup from "./AccPopup";
+import AccPopup from "../popups/AccPopup";
 
 export default class AccMessageDialog extends AccPopup {
 

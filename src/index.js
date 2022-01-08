@@ -15,6 +15,7 @@ import AccComponent from './js/common/AccComponent';
 import { getNewsPeriod } from './js/lib/date';
 import SandBoxBuilder from './js/static/services/sandbox/SandBoxBuilder';
 import SandBoxProvider from './js/static/services/sandbox/SandBoxProvider';
+import ComponentsFactory from "./js/common/factories/ComponentsFactory"
 
 /*-------------Константы----------------*/
 
@@ -40,6 +41,7 @@ let newsCardsList;
 
 /*-Песочница-*/
 let sandBoxServiceSection;
+let sandBoxProvider;
 
 /*-Попапы-*/
 /*-Регистрация-*/
@@ -186,7 +188,6 @@ function filterNewsSection(keyWordsArr, fromDateStr, toDateStr) {
     newsSection.getErrorComponentDOM().remove();
   }
 
-  //очищаем блок карточек
   newsSection.deleteCards();
   //делаем прелоадер
   newsSection.addPreloaderDOM('Отбираем новости .....');
@@ -222,11 +223,32 @@ function filterNewsSection(keyWordsArr, fromDateStr, toDateStr) {
  * Формирует секцию сервиса Песочницы
  */
 function makeSandBoxServiceSection() {
-  sandBoxServiceSection = new SandBoxBuilder({
-    calcFunction: calcSandBox,
-  });
-  sandBoxServiceSection.createDOM();
+
+  if (!sandBoxProvider) {
+    sandBoxProvider = new SandBoxProvider({
+      api: api,
+    });
+  }
+
+  if (!sandBoxServiceSection) {
+    sandBoxServiceSection = new SandBoxBuilder({
+      calcFunction: sandBoxProvider.calcSandBox,
+      saveFunction: sandBoxProvider.saveSandBox,
+      loginFunction: showSignInPopup,
+      preloader: new ComponentsFactory().createPreloader('Минуточку ...'),
+      openSBFunction: sandBoxProvider.openSandBoxDialog,
+      newSBFunction: sandBoxProvider.newSandBox,
+      fileContentFunction: sandBoxProvider.openUpdateFileContentDialog,
+    });
+
+    sandBoxProvider.setServiceBuilder(sandBoxServiceSection);
+    sandBoxServiceSection.createDOM();
+    //подгружаем пустой документ
+    sandBoxProvider.newSandBox();
+  }
+
   contentSectionContainer.appendChild(sandBoxServiceSection.getDOM());
+
 }
 
 /**
@@ -263,8 +285,9 @@ function signIn(params) {
     .then((res) => {
       localStorage.setItem('jwt', res.jwt);
       localStorage.setItem('username', res.name);
+      localStorage.setItem('userId', res.id);
       makeHeader();
-      makeBriefSection();
+      //makeBriefSection();
       return res;
     })
     .catch((err) => {
@@ -310,27 +333,6 @@ function onNews() {
 function onSandBox() {
   clearContentContainer();
   makeSandBoxServiceSection();
-}
-
-/**
- * Функция пересчета документа в Песочнице
- */
-function calcSandBox(income, flows, outcome, calcMode) {
-
-  const provider = new SandBoxProvider();
-
-
-  //собираем входящий баланс
-  const incomeSet = provider.transformStocks(income);
-
-  //собираем обороты
-  const flowsSet = provider.transformFlows(flows);
-
-  //собираем исходящие остатки
-  const outcomeSet = provider.transformStocks(outcome);
-
-  return provider.calcStocksAndFlows(incomeSet, flowsSet, outcomeSet, calcMode);
-
 }
 
 /**

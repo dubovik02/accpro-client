@@ -1,5 +1,3 @@
-import AccComponent from "../AccComponent";
-
 /**
  * Фабрика форм
  */
@@ -63,6 +61,42 @@ export default class FormsFactory {
                         <p class="popup__text">или</p>
                         <a href="#" class="link popup__link popup__link_small popup-signin__signup">Зарегистрироваться</a>
                       </div>`;
+
+    form.insertAdjacentHTML('afterbegin', formHtml);
+
+    return form;
+
+  }
+
+  createSingleGridForm(formName, gridElement) {
+
+    const form = document.createElement('form');
+    form.classList.add('popup__form');
+    form.setAttribute('name', formName);
+
+    form.insertAdjacentElement('afterbegin', gridElement);
+
+    const groupHtml = `<p class="popup__error-info"></p>
+                      <button type="button" id="submit" class="button button_color_blue popup__button popup__button-open">Открыть</button>`;
+
+    form.insertAdjacentHTML('beforeend', groupHtml);
+
+    return form;
+
+  }
+
+  createInputTextForm(formName, labelText, inpType, inpName) {
+
+    const form = document.createElement('form');
+    form.classList.add('popup__form');
+    form.setAttribute('name', formName);
+
+    const formHtml = `<label for="input-text" class="popup__label">${labelText}</label>
+                      <input type="${inpType}" name="${inpName}" id="input-text" class="input popup__input" placeholder="Введите значение" required>
+
+                      <p class="popup__error-info"></p>
+                      <button type="button" id="submit" class="button button_color_blue popup__button popup__button-open">Применить</button>
+                      `;
 
     form.insertAdjacentHTML('afterbegin', formHtml);
 

@@ -8,6 +8,9 @@
 @import url('./__submenu-list/service-section__submenu-list.css');
 @import url('./__submenu-item/service-section__submenu-item.css');
 @import url('./__sublink/service-section__sublink.css');
+@import url('./__status-container/service-section__status-container.css');
+@import url('./__span/service-section__span.css');
+
 
 
 .service-section {

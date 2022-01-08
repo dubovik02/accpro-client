@@ -41,7 +41,7 @@ export default class AccComponent {
 
   /**
    * Создает DOM компонента и сохраняет его в _componentDOM
-   * Переопределяпется
+   * Переопределяется
    */
   createDOM() {
   }

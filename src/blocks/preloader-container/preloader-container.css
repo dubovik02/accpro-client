@@ -1,5 +1,6 @@
 @import url('./__title/preloader-container__title.css');
 @import url('./__image/preloader-container__image.css');
+@import url('./_absolute/preloader-container_absolute.css');
 
 .preloader-container {
   display: flex;

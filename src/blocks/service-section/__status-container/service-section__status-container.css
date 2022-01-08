@@ -1,0 +1,7 @@
+@import url(./_column/service-section__status-container_column.css);
+@import url(./_row/service-section__status-container_row.css);
+
+.service-section__status-container {
+  display: flex;
+  justify-content: space-between;
+}

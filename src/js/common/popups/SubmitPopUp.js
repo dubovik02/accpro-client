@@ -45,10 +45,17 @@ export default class SubmitPopUp extends AccPopup {
       this.close();
     })
     .catch((err) => {
-      err.json()
+
+      if (!err instanceof Error) {
+        err.json()
         .then((errRes) => {
           this._handleError(errRes, caption);
         });
+      }
+      else {
+        this._handleError(err, caption);
+      }
+
     });
   }
 
@@ -76,7 +83,7 @@ export default class SubmitPopUp extends AccPopup {
    * Обработка и отображение ошибки сабмита
    */
   _handleError(errRes, butText) {
-    this._errorInfo.textContent = errRes.message;
+    this._errorInfo.textContent = errRes.message ? errRes.message : errRes.statusText;
     this._errorInfo.classList.add('popup__error-info_is-visible');
     this._setButtonSubmitStatus(butText, false);
   }

@@ -160,4 +160,88 @@ export default class Api extends BaseApi {
 
   }
 
+  /**
+   * Сохраняет документ из песочницы
+   */
+   saveSandBoxDocument(sandBoxDoc) {
+
+    return this.parseResponse(fetch(`${this._serverHttp}/sbdocs/new`,
+    {
+      credentials: 'include',
+
+      method: 'POST',
+
+      headers: {
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json'
+      },
+
+      body: JSON.stringify(sandBoxDoc),
+
+    }));
+
+  }
+
+  /**
+   * Возвращает все документы пользователя
+   */
+  getUserSandBoxDocuments(userId) {
+
+    return this.parseResponse(fetch(`${this._serverHttp}/sbdocs/user/${userId}`,
+    {
+      credentials: 'include',
+
+      method: 'GET',
+
+      headers: {
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json'
+      }
+
+    }));
+
+  }
+
+  /**
+   * Возвращает документ по Id
+   */
+  getSandBoxDocument(docId) {
+
+    return this.parseResponse(fetch(`${this._serverHttp}/sbdocs/${docId}`,
+    {
+      credentials: 'include',
+
+      method: 'GET',
+
+      headers: {
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json'
+      }
+
+    }));
+
+  }
+
+  /**
+   * Обновляет документ по Id
+   */
+  updateSandBoxDocument(sandBoxDoc) {
+
+    return this.parseResponse(fetch(`${this._serverHttp}/sbdocs/${sandBoxDoc._id}`,
+    {
+      credentials: 'include',
+
+      method: 'PUT',
+
+      headers: {
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json'
+      },
+
+      body: JSON.stringify(sandBoxDoc),
+
+    }));
+
+  }
+
 }
