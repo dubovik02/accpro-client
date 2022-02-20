@@ -1,0 +1,25 @@
+@import url(./__content/dialog__content.css);
+@import url(./__close/dialog__close.css);
+@import url(./__title/dialog__title.css);
+@import url(./_is-opened/dialog_is-opened.css);
+@import url(./__text/dialog__text.css);
+@import url(./__button-section/dialog__button-section.css);
+@import url(./__button/dialog__button.css);
+@import url(./__header-section/dialog__header-section.css);
+@import url(./__icon/dialog__icon.css);
+@import url(./__form-section/dialog__form-section.css);
+
+.dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, .5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  display: none;
+  z-index: 3;
+}

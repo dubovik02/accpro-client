@@ -26,6 +26,9 @@ export default class SubmitPopUp extends AccPopup {
 
   createDOM() {
     super.createDOM();
+    if (this.getProps().popupWidth) {
+      this.getDOM().querySelector('.popup__content').style.width = this.getProps().popupWidth;
+    }
     this._errorInfo = this._form.querySelector('.popup__error-info');
     this._submitButton = this._form.elements.submit;
     this._setSubmitListener();

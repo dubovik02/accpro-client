@@ -1,0 +1,5 @@
+.dialog__button-section {
+  display: flex;
+  margin-top: 24px;
+  justify-content: right;
+}

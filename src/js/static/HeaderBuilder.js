@@ -52,12 +52,12 @@ export default class HeaderBuilder extends AccComponent {
                           </a>
                           <menu class="menu">
                             <ul class="menu-list">
-                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold menu-item-news" href="#">Новости</a></li>
-                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold menu-item-sandbox" href="#">Песочница</a></li>
-                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold" href="#">Учет</a></li>
-                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold" href="#">Отчетность</a></li>
-                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold" href="#">Справочники</a></li>
-                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold" href="#">Библиотека</a></li>
+                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold menu-item-news">Новости</a></li>
+                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold menu-item-sandbox">Песочница</a></li>
+                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold">Учет</a></li>
+                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold">Отчетность</a></li>
+                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold">Справочники</a></li>
+                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold">Библиотека</a></li>
                             </ul>
                           </menu>`;
 

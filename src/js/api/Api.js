@@ -244,4 +244,24 @@ export default class Api extends BaseApi {
 
   }
 
+  /**
+   * Возвращает документ по Id
+   */
+  getShareSandBoxDocument(docId) {
+
+    return this.parseResponse(fetch(`${this._serverHttp}/share/${docId}`,
+    {
+      credentials: 'include',
+
+      method: 'GET',
+
+      headers: {
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json'
+      }
+
+    }));
+
+  }
+
 }

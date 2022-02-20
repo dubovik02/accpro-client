@@ -15,7 +15,7 @@ import AccComponent from './js/common/AccComponent';
 import { getNewsPeriod } from './js/lib/date';
 import SandBoxBuilder from './js/static/services/sandbox/SandBoxBuilder';
 import SandBoxProvider from './js/static/services/sandbox/SandBoxProvider';
-import ComponentsFactory from "./js/common/factories/ComponentsFactory"
+import ComponentsFactory from "./js/common/factories/ComponentsFactory";
 
 /*-------------Константы----------------*/
 
@@ -56,7 +56,16 @@ let popupSignIn;
 function onLoadDOM() {
 
   makeHeader();
-  makeBriefSection();
+
+  const params = new URLSearchParams(document.location.search);
+  const reqId = params.get('id');
+  //если есть ссылка на конкретный документ, открываем его
+  if (reqId) {
+    makeSandBoxServiceSection(reqId);
+  }
+  else {
+    makeBriefSection();
+  }
   makeFooter();
 
 }
@@ -222,7 +231,7 @@ function filterNewsSection(keyWordsArr, fromDateStr, toDateStr) {
 /**
  * Формирует секцию сервиса Песочницы
  */
-function makeSandBoxServiceSection() {
+function makeSandBoxServiceSection(reqId) {
 
   if (!sandBoxProvider) {
     sandBoxProvider = new SandBoxProvider({
@@ -239,12 +248,18 @@ function makeSandBoxServiceSection() {
       openSBFunction: sandBoxProvider.openSandBoxDialog,
       newSBFunction: sandBoxProvider.newSandBox,
       fileContentFunction: sandBoxProvider.openUpdateFileContentDialog,
+      shareFunction: sandBoxProvider.createShareLink,
+      createAndShowShareLink: sandBoxProvider.createAndShowShareLink,
     });
 
     sandBoxProvider.setServiceBuilder(sandBoxServiceSection);
     sandBoxServiceSection.createDOM();
-    //подгружаем пустой документ
-    sandBoxProvider.newSandBox();
+    if (reqId) {//подгружаем запрашиваемый
+      sandBoxProvider._openShareSandBox(reqId);
+    }
+    else {//подгружаем пустой документ
+      sandBoxProvider.newSandBox();
+    }
   }
 
   contentSectionContainer.appendChild(sandBoxServiceSection.getDOM());

@@ -93,6 +93,7 @@ export default class FormsFactory {
 
     const formHtml = `<label for="input-text" class="popup__label">${labelText}</label>
                       <input type="${inpType}" name="${inpName}" id="input-text" class="input popup__input" placeholder="Введите значение" required>
+                      <p class="popup__error-label"></p>
 
                       <p class="popup__error-info"></p>
                       <button type="button" id="submit" class="button button_color_blue popup__button popup__button-open">Применить</button>

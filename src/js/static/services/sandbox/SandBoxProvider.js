@@ -6,8 +6,11 @@ import ServiceProvider from "../ServiceProvider";
 import SelectFromGridPopUp from "../../popups/SelectFromGridPopUp";
 import FormsFactory from "../../../common/factories/FormsFactory";
 import GridFactory from "../../../common/factories/GridFactory";
-import AccMessageDialog from "../../../common/dialogs/AccMessageDialog";
 import InputValuePopUp from "../../../static/popups/InputValuePopUp";
+import FormInputsValidator from "../../../validators/FormInputsValidator";
+import Properties from "../../../properties/Properties";
+import Dialog from "../../../common/dialogs/Dialog";
+
 /**
  * Провайдер сервиса Песочницы
  */
@@ -20,7 +23,6 @@ import InputValuePopUp from "../../../static/popups/InputValuePopUp";
   /**
    * Функция пересчета документа в Песочнице
    */
-
   calcSandBox = (income, flows, outcome, calcMode) => {
     return this._calcSandBox(income, flows, outcome, calcMode)
   }
@@ -39,19 +41,18 @@ import InputValuePopUp from "../../../static/popups/InputValuePopUp";
   /**
    * Функция сохранения документа из Песочницы
    */
-
-  saveSandBox = (income, flows, outcome, description) => {
-    return this._saveSandBox(income, flows, outcome, description)
+  saveSandBox = (income, flows, outcome, description, share) => {
+    return this._saveSandBox(income, flows, outcome, description, share)
   }
 
-  _saveSandBox(income, flows, outcome, description) {
+  _saveSandBox(income, flows, outcome, description, share) {
 
     //собираем баланс и обороты
     const incomeSet = this.transformStocks(income);
     const flowsSet = this.transformFlows(flows);
     const outcomeSet = this.transformStocks(outcome);
 
-    let sbdoc = this.createDocument(incomeSet, flowsSet, outcomeSet, description);
+    let sbdoc = this.createDocument(incomeSet, flowsSet, outcomeSet, description, share);
 
     //смотрим есть ли ID
     const _id = this.getCurrentDocument()._id;
@@ -93,7 +94,7 @@ import InputValuePopUp from "../../../static/popups/InputValuePopUp";
 
   _openSandBoxDialog() {
 
-    this.getApi().getUserSandBoxDocuments(localStorage.getItem('userId'))
+    return this.getApi().getUserSandBoxDocuments(localStorage.getItem('userId'))
       .then((res) => {
 
         const rowData = [];
@@ -101,6 +102,7 @@ import InputValuePopUp from "../../../static/popups/InputValuePopUp";
           rowData.push({
             id: item._id,
             description: item.description,
+            //share: item.share,
             date: new Date(item.lastupdate).toLocaleString(),
           });
         });
@@ -133,18 +135,12 @@ import InputValuePopUp from "../../../static/popups/InputValuePopUp";
           form: form,
           submitFunction: this.openSandBox,
           gridObj: gridObj,
+          popupWidth: "40%",
         });
         popup.open();
       })
       .catch((err) => {
-        //если не авторизированы - авторизируем
-        if (err.status == 401) {
-          this.getServiceBuilder().getProps().loginFunction.call(this);
-        }
-        else {
-          const popup = new AccMessageDialog(`Ошибка: ${err.statusText} (Код: ${err.status})`);
-          popup.open();
-        };
+        return Promise.reject(err);
       });
 
   }
@@ -166,10 +162,30 @@ import InputValuePopUp from "../../../static/popups/InputValuePopUp";
   }
 
   _openSandBox(docId) {
+
     return this.getApi().getSandBoxDocument(docId)
     .then((res) => {
       this.setCurrentDocument(res[0]);
       this.loadCurrentDocument();
+      return res;
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+  }
+
+  // загрузка расшаренного документа по docId
+  _openShareSandBox(docId) {
+    return this.getApi().getShareSandBoxDocument(docId)
+    .then((res) => {
+      if (res[0]) {
+        this.setCurrentDocument(res[0]);
+        this.loadCurrentDocument();
+      }
+      else {
+        Dialog.ErrorDialog(`Документ не найден или владелец закрыл его!`);
+        this.newSandBox();
+      }
       return res;
     })
     .catch((err) => {
@@ -188,6 +204,7 @@ import InputValuePopUp from "../../../static/popups/InputValuePopUp";
     this.setCurrentDocument({
       _id: null,
       description: "Моя тетрадь",
+      share: false,
       text: {
         income: {},
         flows: {},
@@ -215,6 +232,7 @@ import InputValuePopUp from "../../../static/popups/InputValuePopUp";
       submitFunction: this.updateFileContent,
       title: 'Свойства тетради',
     });
+    const validator = new FormInputsValidator(popup.getForm(), Properties.popupErrMsg);
     popup.open();
   }
 
@@ -226,14 +244,15 @@ import InputValuePopUp from "../../../static/popups/InputValuePopUp";
   }
 
   _updateFileContent(newContent) {
-    const sbdoc = this.getCurrentDocument();
-    sbdoc.description = newContent;
-    if (!sbdoc._id) {//если документ новый и не сохраненный, просто меняем название
+    if (!this.getCurrentDocument()._id) {//если документ новый и не сохраненный, просто меняем название
       this.getCurrentDocument().description = newContent;
       this.loadCurrentDocument();
       return Promise.resolve("done");
     }
     else {
+      const sbdoc = this.getCurrentDocument();
+      const oldContent = sbdoc.description;
+      sbdoc.description = newContent;
       return this.getApi().updateSandBoxDocument(sbdoc)
       .then((res) => {
         if (res.data.ok) {
@@ -242,10 +261,49 @@ import InputValuePopUp from "../../../static/popups/InputValuePopUp";
         }
       })
       .catch((err) => {
+        this.getCurrentDocument().description = oldContent;
         return Promise.reject(err);
       });
     }
+  }
 
+  /**
+   * Функция генерирования ссылки на документ
+   */
+  createShareLink = () => {
+    return this._createShareLink();
+  }
+
+  _createShareLink() {
+    const docId = this.getCurrentDocument()._id;
+    if (docId) {
+      const sbdoc = this.getCurrentDocument();
+      const oldShare = sbdoc.share
+      sbdoc.share = ! oldShare;//инвертируем расшаривание
+      return this.getApi().updateSandBoxDocument(sbdoc)
+      .then((res) => {
+        if (res.data.ok) {
+          //показываем ссылку на документ, если расшаривали его
+          if (!oldShare) {
+            this.createAndShowShareLink();
+          }
+          //загружаем обновленный
+          return this._openSandBox(sbdoc._id);
+        }
+      })
+      .catch((err) => {
+        this.getCurrentDocument().share = oldShare;
+        return Promise.reject(err);
+      });
+    }
+    else {
+      return Promise.reject(new Error('Необходимо сначало сохранить тетрадку'));
+    }
+  }
+
+  //создает и показывает ссылку на расшаренный документ
+  createAndShowShareLink = () => {
+    Dialog.InfoDialog(`Cсылка на тетрадку: ${Properties.site.host}/?id=${this.getCurrentDocument()._id}`)
   }
 
   /**
@@ -353,10 +411,11 @@ import InputValuePopUp from "../../../static/popups/InputValuePopUp";
    * @param {String} description описание тетради
    * @returns {Object} документ
    */
-  createDocument(incomeSet, flowsSet, outcomeSet, description) {
+  createDocument(incomeSet, flowsSet, outcomeSet, description, share) {
 
     return {
       description: description,
+      share: share,
       text: {
         income: incomeSet.toJSON(),
         flows: flowsSet.toJSON(),

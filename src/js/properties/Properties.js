@@ -7,6 +7,7 @@ export default  {
     name: 'Accounting-pro',
     url: 'www.accounting-pro.ru',
     email: 'info@accounting-pro.ru',
+    host: new URL(document.location).host,
   },
 
   /*-Настройка подключений-*/
