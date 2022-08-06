@@ -6,10 +6,10 @@ import ServiceProvider from "../ServiceProvider";
 import SelectFromGridPopUp from "../../popups/SelectFromGridPopUp";
 import FormsFactory from "../../../common/factories/FormsFactory";
 import GridFactory from "../../../common/factories/GridFactory";
-import InputValuePopUp from "../../../static/popups/InputValuePopUp";
 import FormInputsValidator from "../../../validators/FormInputsValidator";
 import Properties from "../../../properties/Properties";
 import Dialog from "../../../common/dialogs/Dialog";
+import InputMultiValuesPopUp from "../../../static/popups/InputMultiValuesPopUp";
 
 /**
  * Провайдер сервиса Песочницы
@@ -41,19 +41,18 @@ import Dialog from "../../../common/dialogs/Dialog";
   /**
    * Функция сохранения документа из Песочницы
    */
-  saveSandBox = (income, flows, outcome, description, share) => {
-    return this._saveSandBox(income, flows, outcome, description, share)
+  saveSandBox = (income, flows, outcome) => {
+    return this._saveSandBox(income, flows, outcome)
   }
 
-  _saveSandBox(income, flows, outcome, description, share) {
+  _saveSandBox(income, flows, outcome) {
 
     //собираем баланс и обороты
     const incomeSet = this.transformStocks(income);
     const flowsSet = this.transformFlows(flows);
     const outcomeSet = this.transformStocks(outcome);
 
-    let sbdoc = this.createDocument(incomeSet, flowsSet, outcomeSet, description, share);
-
+    let sbdoc = this.createDocument(incomeSet, flowsSet, outcomeSet, this.getCurrentDocument().share, this.getCurrentDocument().properties);
     //смотрим есть ли ID
     const _id = this.getCurrentDocument()._id;
 
@@ -101,7 +100,7 @@ import Dialog from "../../../common/dialogs/Dialog";
         res.forEach((item) => {
           rowData.push({
             id: item._id,
-            description: item.description,
+            shortdesc: item.properties.shortdesc,
             //share: item.share,
             date: new Date(item.lastupdate).toLocaleString(),
           });
@@ -109,7 +108,7 @@ import Dialog from "../../../common/dialogs/Dialog";
 
         const columnDefs = [
 
-          { headerName: 'Тетрадь', field: 'description', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter' },
+          { headerName: 'Тетрадь', field: 'shortdesc', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter' },
           { headerName: 'Имя тетради', field: 'id', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter' },
           { headerName: 'Обновлено', field: 'date', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter'},
 
@@ -156,7 +155,7 @@ import Dialog from "../../../common/dialogs/Dialog";
       }
     }
     else {
-      return Promise.reject(new Error('Не выбран документ'));
+      return Promise.reject(new Error('Не выбран документ!'));
     }
 
   }
@@ -175,15 +174,15 @@ import Dialog from "../../../common/dialogs/Dialog";
   }
 
   // загрузка расшаренного документа по docId
-  _openShareSandBox(docId) {
-    return this.getApi().getShareSandBoxDocument(docId)
+  _openShareSandBox(docId, isViewed) {
+    return this.getApi().getShareSandBoxDocument(docId, isViewed)
     .then((res) => {
       if (res[0]) {
         this.setCurrentDocument(res[0]);
         this.loadCurrentDocument();
       }
       else {
-        Dialog.ErrorDialog(`Документ не найден или владелец закрыл его!`);
+        Dialog.ErrorDialog(`Документ не найден или владелец прекратил его публикацию!`);
         this.newSandBox();
       }
       return res;
@@ -203,14 +202,21 @@ import Dialog from "../../../common/dialogs/Dialog";
   _newSandBox() {
     this.setCurrentDocument({
       _id: null,
-      description: "Моя тетрадь",
-      share: false,
+      //description: "Моя тетрадь",
       text: {
         income: {},
         flows: {},
         outcome: {},
       },
       lastupdate: new Date().getTime(),
+      share: false,
+      properties: {
+        shortdesc: 'Моя тетрадь',
+        description: 'Набор проводок по операции',
+        tags: '#МойТэг',
+      },
+      likes: [],
+      views: 0,
     });
     this.loadCurrentDocument();
   }
@@ -223,12 +229,24 @@ import Dialog from "../../../common/dialogs/Dialog";
   }
 
   _openUpdateFileContentDialog() {
-    const inputForm = new FormsFactory().createInputTextForm('input-form', 'Описание', 'text', 'input-field');
-    const inputField = inputForm.querySelector('.popup__input');
-    inputField.value = this.getCurrentDocument().description;
-    const popup = new InputValuePopUp({
+
+    const shortdesc = 'shortdesc';
+    const desc = 'desc';
+    const tags = 'tags';
+
+    const inputForm = new FormsFactory().createPropertiesForm('input-form', shortdesc, desc, tags);
+
+    const shortDescEl = inputForm.querySelector(`.${shortdesc}`);
+    const descEl = inputForm.querySelector(`.${desc}`);
+    const tagsEl = inputForm.querySelector(`.${tags}`);
+
+    shortDescEl.value = this.getCurrentDocument().properties.shortdesc;
+    descEl.value = this.getCurrentDocument().properties.description;
+    tagsEl.value = this.getCurrentDocument().properties.tags;
+
+    const popup = new InputMultiValuesPopUp({
       form: inputForm,
-      input: inputField,
+      inputs: [shortDescEl, descEl, tagsEl],
       submitFunction: this.updateFileContent,
       title: 'Свойства тетради',
     });
@@ -244,15 +262,22 @@ import Dialog from "../../../common/dialogs/Dialog";
   }
 
   _updateFileContent(newContent) {
-    if (!this.getCurrentDocument()._id) {//если документ новый и не сохраненный, просто меняем название
-      this.getCurrentDocument().description = newContent;
+
+    const newProperties = {
+      shortdesc: newContent[0],
+      description: newContent[1],
+      tags: newContent[2],
+    };
+
+    if (!this.getCurrentDocument()._id) {//если документ новый и не сохраненный, просто меняем параметры
+      this.getCurrentDocument().properties = newProperties;
       this.loadCurrentDocument();
       return Promise.resolve("done");
     }
     else {
       const sbdoc = this.getCurrentDocument();
-      const oldContent = sbdoc.description;
-      sbdoc.description = newContent;
+      const oldProperties = sbdoc.properties;
+      sbdoc.properties = newProperties;
       return this.getApi().updateSandBoxDocument(sbdoc)
       .then((res) => {
         if (res.data.ok) {
@@ -261,7 +286,7 @@ import Dialog from "../../../common/dialogs/Dialog";
         }
       })
       .catch((err) => {
-        this.getCurrentDocument().description = oldContent;
+        this.getCurrentDocument().properties = oldProperties;
         return Promise.reject(err);
       });
     }
@@ -303,8 +328,30 @@ import Dialog from "../../../common/dialogs/Dialog";
 
   //создает и показывает ссылку на расшаренный документ
   createAndShowShareLink = () => {
-    Dialog.InfoDialog(`Cсылка на тетрадку: ${Properties.site.host}/?id=${this.getCurrentDocument()._id}`)
+    Dialog.CopyValueDialog('Ссылка на тетрадку:', `${Properties.site.host}/?id=${this.getCurrentDocument()._id}`);
   }
+
+  //рейтинг документа
+  like = () => {
+    return this._like();
+  }
+
+  _like() {
+    const docId = this.getCurrentDocument()._id;
+    //документ новый и не сохранялся
+    if (!docId) {
+      return Promise.reject(new Error('Необходимо сначало сохранить тетрадку!'));
+    }
+    return this.getApi().likeDoc(docId)
+    .then((res) => {
+      this.getCurrentDocument().likes = res.count;
+      return res;
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+  }
+
 
   /**
    * Метод расчета остатков и оборотов
@@ -408,20 +455,23 @@ import Dialog from "../../../common/dialogs/Dialog";
    * @param {AccountsSet} incomeSet входящие остатки
    * @param {AccountingEntriesSet} flowsSet оборооты
    * @param {AccountsSet} outcomeSet исходящие остатки
-   * @param {String} description описание тетради
+   * @param {Boolean} share признак доступности тетради
+   * @param {String} properties свойства тетради
    * @returns {Object} документ
    */
-  createDocument(incomeSet, flowsSet, outcomeSet, description, share) {
+  createDocument(incomeSet, flowsSet, outcomeSet, share, properties) {
 
-    return {
-      description: description,
-      share: share,
+    return  {
       text: {
         income: incomeSet.toJSON(),
         flows: flowsSet.toJSON(),
         outcome: outcomeSet.toJSON(),
       },
       lastupdate: new Date().getTime(),
+      share: share,
+      properties: properties,
+      likes: [],
+      views: 0,
     }
 
   }

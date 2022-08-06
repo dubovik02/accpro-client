@@ -59,8 +59,8 @@ export default class ServiceBuilder extends AccComponent {
     const serviceHtml = `<div class="service-section__status-container">
 
                           <div class="service-section__status-container service-section__status-container_column left-container">
-                            <p class="service-section__name">${this._props.serviceName}</p>
-                            <p class="service-section__description">${this._props.serviceDescription}</p>
+                            <!--p class="service-section__name">${this._props.serviceName}</p>
+                            <p class="service-section__description">${this._props.serviceDescription}</p-->
                           </div>
 
                           <div class="service-section__status-container service-section__status-container_column center-container">

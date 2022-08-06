@@ -245,9 +245,16 @@ export default class Api extends BaseApi {
   }
 
   /**
-   * Возвращает документ по Id
+   *
+   * isViewed - был ранее просмотрен или нет
    */
-  getShareSandBoxDocument(docId) {
+  /**
+   * Возвращает расшаренный документ по Id
+   * @param {String} docId идентификатор документа
+   * @param {Boolean} isViewed отметка о просмотре документа клиентом
+   * @returns документ
+   */
+  getShareSandBoxDocument(docId, isViewed) {
 
     return this.parseResponse(fetch(`${this._serverHttp}/share/${docId}`,
     {
@@ -257,11 +264,28 @@ export default class Api extends BaseApi {
 
       headers: {
         authorization: `Bearer ${localStorage.getItem('jwt')}`,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        isviewed: isViewed,
       }
 
     }));
 
+  }
+
+  //изменение рейтинга документа
+  likeDoc(docId) {
+
+    return this.parseResponse(fetch(`${this._serverHttp}/like/${docId}`,
+      {
+        credentials: 'include',
+
+        method: 'PUT',
+
+        headers: {
+          authorization: `Bearer ${localStorage.getItem('jwt')}`,
+          'Content-Type': 'application/json'
+        }
+      }));
   }
 
 }

@@ -1,0 +1,8 @@
+@import url(./_high-height/input-textarea_high-height.css);
+
+.input-textarea {
+  /* height: 50%!important; */
+  height: 100px!important;
+  border: solid 1px rgba(101, 121, 155,.8)!important;
+  resize: none;
+}

@@ -1,0 +1,8 @@
+.service-section__icon-container {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+
+  margin-top: 0.3em;
+  margin-right: 1em;
+}

@@ -14,6 +14,9 @@ export default class HeaderBuilder extends AccComponent {
    */
   _controlButton;
 
+  //Мменю "Главная"
+  _menuItemMain;
+
   /**
    * Меню "Новости"
    */
@@ -47,17 +50,12 @@ export default class HeaderBuilder extends AccComponent {
       this._componentDOM = document.createElement('section');
       this._componentDOM.classList.add('header');
 
-      const headerHtml = `<a class="link header__link" href="./index.html">
-                            <img class="logo logo_place_header" src="${logo}" alt="логотип"></img>
-                          </a>
+      const headerHtml = `<img class="logo logo_place_header" src="${logo}" alt="логотип"></img>
                           <menu class="menu">
                             <ul class="menu-list">
+                            <li class="menu-list__item"><a class="link menu-link menu-link_font_bold menu-item-main">Главная</a></li>
                               <li class="menu-list__item"><a class="link menu-link menu-link_font_bold menu-item-news">Новости</a></li>
                               <li class="menu-list__item"><a class="link menu-link menu-link_font_bold menu-item-sandbox">Песочница</a></li>
-                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold">Учет</a></li>
-                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold">Отчетность</a></li>
-                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold">Справочники</a></li>
-                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold">Библиотека</a></li>
                             </ul>
                           </menu>`;
 
@@ -91,6 +89,9 @@ export default class HeaderBuilder extends AccComponent {
    * Создает пункты меню
    */
   _createMenuItems() {
+    this._menuItemMain = this._componentDOM.querySelector('.menu-item-main');
+    this._menuItemsList.push(this._menuItemMain);
+
     this._menuItemNews = this._componentDOM.querySelector('.menu-item-news');
     this._menuItemsList.push(this._menuItemNews);
 
@@ -103,6 +104,7 @@ export default class HeaderBuilder extends AccComponent {
    */
   _setMenuItemsListeners() {
     if (this._menuActions instanceof Object) {
+      this._setMenuItemListener(this._menuItemMain, this._menuActions.main);
       this._setMenuItemListener(this._menuItemNews, this._menuActions.news);
       this._setMenuItemListener(this._menuItemSandBox, this._menuActions.sandBox);
     }
@@ -139,3 +141,7 @@ export default class HeaderBuilder extends AccComponent {
   }
 
 }
+
+/* <a class="link header__link" href="./index.html">
+                            <img class="logo logo_place_header" src="${logo}" alt="логотип"></img>
+                          </a> */

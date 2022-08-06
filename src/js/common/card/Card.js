@@ -46,7 +46,7 @@ export default class Card extends AccComponent {
     const date = new Date(this._props.publishedAt);
     const dateStr = this._parseDate(date);
 
-    const imgUrl = this._props.urlToImage !== null ? this._props.urlToImage : Properties.card.defaultImg;
+    const imgUrl = this._props.urlToImage !== "" ? this._props.urlToImage : Properties.card.defaultImg;
 
     const cardBody = `<p class="card-link__theme">${this._props.keyWord}</p>
                       <img src="${imgUrl}" alt="${this._props.title}" class="card-link__image">

@@ -10,6 +10,10 @@
 @import url(./__label/popup__label.css);
 @import url(./__actions-container/popup__actions-container.css);
 @import url(./__error-info/popup__error-info.css);
+@import url(./__span/popup__span.css);
+@import url(./__row-container/popup__row-container.css);
+@import url(./__col-container/popup__col-container.css);
+
 
 .popup {
   position: fixed;

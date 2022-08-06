@@ -15,6 +15,8 @@ export default class FormInputsValidator {
   _ERR_REQ_EMAIL_MESSAGE;
   _ERR_SIZE_PASSWORD_MESSAGE;
   _ERR_ALLOW_LETTERS_MESSAGE;
+  _ERR_ALLOW_TAGS_MESSAGE;
+
 
   static MIN_STRING_LENGTH = 2;
   static MAX_STRING_LENGTH = 30;
@@ -36,6 +38,7 @@ export default class FormInputsValidator {
     this._ERR_REQ_EMAIL_MESSAGE = msgObj.EmailErrMessage;
     this._ERR_SIZE_PASSWORD_MESSAGE = msgObj.PasswordLengthErrMessage;
     this._ERR_ALLOW_LETTERS_MESSAGE = msgObj.AllowLettersMessage;
+    this._ERR_ALLOW_TAGS_MESSAGE = msgObj.AllowTagsMessage;
   }
 
 
@@ -91,7 +94,7 @@ export default class FormInputsValidator {
       return false;
     }
 
-    if ((inputEl.validity.tooShort || (inputEl.value.length > FormInputsValidator.MAX_STRING_LENGTH)) && inputEl.type !== 'url' && inputEl.type !== 'password') {
+    if ((inputEl.validity.tooShort || (inputEl.value.length > FormInputsValidator.MAX_STRING_LENGTH)) && inputEl.type !== 'url' && inputEl.type !== 'password' && inputEl.type !== 'textarea') {
       this._setErrors(inputEl, errEl, this._ERR_SIZE_STRING_MESSAGE);
       return false;
     }
@@ -108,6 +111,12 @@ export default class FormInputsValidator {
 
     if (inputEl.validity.patternMismatch && inputEl.type === 'email') {
       this._setErrors(inputEl, errEl, this._ERR_REQ_EMAIL_MESSAGE);
+      return false;
+    }
+
+    //если проверяем поле с тэгами - id поля должно быть input-tags
+    if (inputEl.validity.patternMismatch && inputEl.type === 'text' && inputEl.id === 'input-tags') {
+      this._setErrors(inputEl, errEl, this._ERR_ALLOW_TAGS_MESSAGE);
       return false;
     }
 

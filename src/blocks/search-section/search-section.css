@@ -1,0 +1,9 @@
+@import url('./__container/search-section__container.css');
+@import url('./__input-search/search-section__input-search.css');
+
+.search-section {
+  padding: 0em 3em 5em 5em;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+}

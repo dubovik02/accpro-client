@@ -105,5 +105,53 @@ export default class FormsFactory {
 
   }
 
+  createInputTextAreaForm(formName, labelText, inpName, rows) {
+
+    const form = document.createElement('form');
+    form.classList.add('popup__form');
+    form.setAttribute('name', formName);
+
+    const formHtml = `<label for="input-text" class="popup__label">${labelText}</label>
+                      <textarea type="textarea" name="${inpName}" id="input-text" rows="${rows}" class="popup__input input input-textarea" placeholder="Введите значение" required>
+                      </textarea>
+                      <p class="popup__error-label"></p>
+
+                      <p class="popup__error-info"></p>
+                      <button type="button" id="submit" class="button button_color_blue popup__button popup__button-open">Применить</button>
+                      `;
+
+    form.insertAdjacentHTML('afterbegin', formHtml);
+
+    return form;
+
+  }
+
+  createPropertiesForm(formName, shortDescElName, descriptionElName, tagsElName) {
+
+    const form = document.createElement('form');
+    form.classList.add('popup__form');
+    form.setAttribute('name', formName);
+
+    const formHtml = `<label for="input-text" class="popup__label">Название</label>
+                      <input type="text" name="${shortDescElName}" id="input-text" class="input popup__input ${shortDescElName}" placeholder="Название" minlength="2" required>
+                      <p class="popup__error-label"></p>
+
+                      <label for="input-desc" class="popup__label">Описание</label>
+                      <textarea type="textarea" name="${descriptionElName}" id="input-desc" class="popup__input input input-textarea input-textarea_high-height ${descriptionElName}" placeholder="Укажите содержание тетради: объекты, операции, ситуации. Другим пользователям будет легче найти и понять решение."></textarea>
+                      <p class="popup__error-label"></p>
+
+                      <label for="input-tags" class="popup__label">Тэги</label>
+                      <input type="tags" name="${tagsElName}" id="input-tags" class="input popup__input ${tagsElName}" placeholder="#определите#тэги" pattern="(#[A-Za-zА-Яа-я0-9]{1,20}){1,5}">
+                      <p class="popup__error-label"></p>
+
+                      <p class="popup__error-info"></p>
+                      <button type="button" id="submit" class="button button_color_blue popup__button popup__button-open">Применить</button>
+                      `;
+
+    form.insertAdjacentHTML('afterbegin', formHtml);
+
+    return form;
+
+  }
 
 }

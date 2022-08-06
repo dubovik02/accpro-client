@@ -31,7 +31,7 @@ export default  {
 
   /*-Настройка представления новостей-*/
   newsList: {
-    newsPeriod: 60,
+    newsPeriod: 730,
     count: 8,
     showStep: 4,
   },
@@ -66,7 +66,8 @@ export default  {
     LinkErrMessage: 'Здесь должна быть ссылка',
     EmailErrMessage: 'Укажите валидный e-mail',
     PasswordLengthErrMessage: 'Должно быть не менее 8 символов',
-    AllowLettersMessage: 'Используйте только буквы и дефис'
+    AllowLettersMessage: 'Используйте только буквы и дефис',
+    AllowTagsMessage: 'Не более 5 тэгов. Длина тэга до 20 символов.'
   },
 
   /*-Настройки сервиса Песoчницы-*/

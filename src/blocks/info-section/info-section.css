@@ -1,0 +1,8 @@
+@import url('./__card-container/info-section__card-container.css');
+@import url('./__title/info-section__title.css');
+
+.info-section {
+  padding: 5em 3em;
+  display: flex;
+  flex-direction: column;
+}

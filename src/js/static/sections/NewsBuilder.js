@@ -28,6 +28,9 @@ export default class NewsBuilder extends SectionBuilder {
    */
   _dateTo;
 
+  //внутрений разделитель тэга
+  _innerTagSeparator = '  ';
+
   constructor(props) {
     props.sectionTitle = 'Новости';
     props.sectionSubtitle = `Что нового и примечательного?`;
@@ -139,14 +142,14 @@ export default class NewsBuilder extends SectionBuilder {
     const keyWords = [];
     this._tagsList.forEach(item => {
       if (!item.classList.contains('filter__tag-link_unactive')) {
-        keyWords.push(item.textContent.split(' ')[0]);
+        keyWords.push(item.textContent.split(this._innerTagSeparator)[0]);
       }
     })
 
     // еслм условия отбора не установлены - отбираем все
     if (!keyWords.length) {
       this._tagsList.forEach(item => {
-        keyWords.push(item.textContent.split(' ')[0]);
+        keyWords.push(item.textContent.split(this._innerTagSeparator)[0]);
       })
     }
 
@@ -199,7 +202,7 @@ export default class NewsBuilder extends SectionBuilder {
     let keyWordHtml = '';
 
     for (let item of newsMap) {
-      keyWordHtml = keyWordHtml + `<p class="link filter__tag-link filter__tag-link_unactive">${item[0] + ' (' + item[1] + ')'}</p>`;
+      keyWordHtml = keyWordHtml + `<p class="link filter__tag-link filter__tag-link_unactive">${item[0] + this._innerTagSeparator + '(' + item[1] + ')'}</p>`;
     }
 
     this._tagsContainer.insertAdjacentHTML('afterbegin', keyWordHtml);

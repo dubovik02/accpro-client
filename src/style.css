@@ -13,11 +13,15 @@
 @import url('./blocks/logo/logo.css');
 @import url('./blocks/link/link.css');
 @import url('./blocks/content/content.css');
+@import url('./blocks/content-container/content-container.css');
 @import url('./blocks/content-section/content-section.css');
 @import url('./blocks/service-section/service-section.css');
 @import url('./blocks/card-link/card-link.css');
 @import url('./blocks/circle-preloader/circle-preloader.css');
 @import url('./blocks/preloader-container/preloader-container.css');
+@import url('./blocks/info-section/info-section.css');
+@import url('./blocks/info-card/info-card.css');
+@import url('./blocks/search-section/search-section.css');
 
 /*----Элементы управления------*/
 @import url('./controls/button/button.css');
@@ -33,6 +37,7 @@
 @import url('./controls/fields-grid/fields-grid.css');
 @import url('./blocks/filter/filter.css');
 @import url('./blocks/grid/grid.css');
+@import url('./controls/input-textarea/input-textarea.css');
 
 /*----Попапы--------------------*/
 @import url('./blocks/popup/popup.css');

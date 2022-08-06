@@ -26,7 +26,6 @@ const contentSection = document.querySelector('.content');
 const contentSectionContainer = document.querySelector('.content-container');
 
 /*-Api-*/
-//const newsApi = new NewsApi(Properties.connection.newsapi.url, Properties.connection.newsapi.token);
 const api = new Api(Properties.connection.accapi.url, localStorage.getItem('jwt'));
 
 /*-Header-*/
@@ -86,6 +85,7 @@ function makeHeader() {
       isButLogin: isLoggedIn !== null ? false : true,
       username: localStorage.getItem('username'),
       menuActions: {
+        main: onMain,
         news: onNews,
         sandBox: onSandBox,
       },
@@ -115,14 +115,6 @@ function makeHeader() {
  */
 function makeBriefSection() {
 
-  if (localStorage.getItem('jwt')) {
-    if (brief instanceof AccComponent) {
-      brief.getDOM().remove();
-    }
-
-    makeNewsSection();
-  }
-  else {
     brief = new BriefBuilder({});
     brief.createDOM();
 
@@ -137,7 +129,7 @@ function makeBriefSection() {
     const validator = new FormInputsValidator(popupSignUp.getForm(), Properties.popupErrMsg);
 
     contentSectionContainer.appendChild(brief.getDOM());
-  }
+
 }
 
 /**
@@ -250,12 +242,17 @@ function makeSandBoxServiceSection(reqId) {
       fileContentFunction: sandBoxProvider.openUpdateFileContentDialog,
       shareFunction: sandBoxProvider.createShareLink,
       createAndShowShareLink: sandBoxProvider.createAndShowShareLink,
+      likeFunction: sandBoxProvider.like,
     });
 
     sandBoxProvider.setServiceBuilder(sandBoxServiceSection);
     sandBoxServiceSection.createDOM();
     if (reqId) {//подгружаем запрашиваемый
-      sandBoxProvider._openShareSandBox(reqId);
+      const isViewed = localStorage.getItem(reqId) ? true : false;
+      if (!isViewed) {
+        localStorage.setItem(`${reqId}`, true);
+      }
+      sandBoxProvider._openShareSandBox(reqId, isViewed);
     }
     else {//подгружаем пустой документ
       sandBoxProvider.newSandBox();
@@ -302,7 +299,6 @@ function signIn(params) {
       localStorage.setItem('username', res.name);
       localStorage.setItem('userId', res.id);
       makeHeader();
-      //makeBriefSection();
       return res;
     })
     .catch((err) => {
@@ -331,6 +327,14 @@ function showSignInPopup() {
  */
 function showSignUpPopup() {
   popupSignUp.open();
+}
+
+/**
+ * Обработчик меню Главная
+ */
+ function onMain() {
+  clearContentContainer();
+  makeBriefSection();
 }
 
 /**

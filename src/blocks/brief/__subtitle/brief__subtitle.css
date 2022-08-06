@@ -1,12 +1,12 @@
 .brief__subtitle {
 
-    max-width: 70%;
-    font-size: 3em;
+    /* max-width: 70%; */
+    font-size: 2em;
     font-weight: bold;
     color: white;
     margin: 0;
     padding: 0;
-    padding-bottom: 1em;
+    /* padding-bottom: 1em; */
     z-index: 1;
 
 }
