@@ -141,7 +141,7 @@ export default class FormsFactory {
                       <p class="popup__error-label"></p>
 
                       <label for="input-tags" class="popup__label">Тэги</label>
-                      <input type="tags" name="${tagsElName}" id="input-tags" class="input popup__input ${tagsElName}" placeholder="#определите#тэги" pattern="(#[A-Za-zА-Яа-я0-9]{1,20}){1,5}">
+                      <input type="tags" name="${tagsElName}" id="input-tags" class="input popup__input ${tagsElName}" placeholder="#определите#тэги" pattern="(#[A-Za-zА-Яа-я0-9]{2,20}){1,5}">
                       <p class="popup__error-label"></p>
 
                       <p class="popup__error-info"></p>

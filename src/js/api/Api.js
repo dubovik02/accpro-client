@@ -288,4 +288,60 @@ export default class Api extends BaseApi {
       }));
   }
 
+  // fulltext поиск по документам
+  fullTextSearch(searchString) {
+
+    return this.parseResponse(fetch(`${this._serverHttp}/search/${searchString}`,
+    {
+      credentials: 'include',
+
+      method: 'GET',
+
+      headers: {
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json',
+      }
+
+    }));
+
+  }
+
+  // поиск документов по шаблону
+  templateSearch(searchOptionsObject) {
+
+    return this.parseResponse(fetch(`${this._serverHttp}/template/search`,
+    {
+      credentials: 'include',
+
+      method: 'POST',
+
+      headers: {
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json',
+      },
+
+      body: JSON.stringify(searchOptionsObject),
+
+    }));
+
+  }
+
+  //получение ТОП тэгов
+  getTopTags(topCount) {
+
+    return this.parseResponse(fetch(`${this._serverHttp}/tags/toptags/${topCount}`,
+    {
+      credentials: 'include',
+
+      method: 'GET',
+
+      headers: {
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json',
+      }
+
+    }));
+
+  }
+
 }

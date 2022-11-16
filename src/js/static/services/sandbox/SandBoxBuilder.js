@@ -119,6 +119,11 @@ export default class SandBoxBuilder extends ServiceBuilder {
     */
    _likeFunction;
 
+   /**
+    * Функция отрабатывающая при завершении редактировании ячейки
+    */
+   _cellEditingFunction;
+
   /**
    * Компоненты характеристик файла
    */
@@ -138,8 +143,8 @@ export default class SandBoxBuilder extends ServiceBuilder {
 
 
   constructor(props) {
-    props.serviceName = 'Бухгалтерская песочница';
-    props.serviceDescription = 'Сервис совместной работы над бухгалтерским кодом - проводками';
+    //props.serviceName = 'Бухгалтерская песочница';
+    //props.serviceDescription = 'Сервис совместной работы над бухгалтерским кодом - проводками';
     super(props)
     this._calcFunction = this._props.calcFunction;
     this._saveFunction = this._props.saveFunction;
@@ -150,6 +155,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
     this._shareFunction = this._props.shareFunction;
     this._createAndShowShareLink = this._props.createAndShowShareLink;
     this._likeFunction = this._props.likeFunction;
+    this._cellEditingFunction = this._props.cellEditingFunction;
   }
 
   createDOM() {
@@ -297,6 +303,12 @@ export default class SandBoxBuilder extends ServiceBuilder {
   _createGridObject(gridElement, gridOptions) {
     const grid = new Grid(gridElement, gridOptions);
     grid.gridOptions.api.sizeColumnsToFit();
+    grid.gridOptions.api.addEventListener('cellEditingStopped', () => {
+      const incomeArr = this.getStockGridData(this._openingGridObject);
+      const outcomeArr = this.getStockGridData(this._closeingGridObject);
+      const flowsArr = this.getFlowGridData(this._flowGridObject);
+      this._cellEditingFunction.call(this, incomeArr, outcomeArr, flowsArr);
+    });
     return grid;
   }
 
@@ -488,7 +500,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
   }
 
   /**
-   * Обработчик определенияя описания тетради
+   * Обработчик определения описания тетради
    */
   _setUpFileContentItem() {
     this._fileContentComponent.addEventListener('click', () => {

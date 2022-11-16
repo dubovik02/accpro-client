@@ -16,9 +16,10 @@ import { getNewsPeriod } from './js/lib/date';
 import SandBoxBuilder from './js/static/services/sandbox/SandBoxBuilder';
 import SandBoxProvider from './js/static/services/sandbox/SandBoxProvider';
 import ComponentsFactory from "./js/common/factories/ComponentsFactory";
-
-/*-------------Константы----------------*/
-
+import SearchBuilder from './js/static/services/search/SearchBuilder';
+import SearchProvider from './js/static/services/search/SearchProvider';
+import SearchResultsPanel from './js/static/services/search/SearchResultsPanel';
+import LibraryBuilder from './js/static/services/library/LibraryBuilder';
 
 /*-------------Переменные----------------*/
 const page = document.querySelector('.page');
@@ -27,6 +28,9 @@ const contentSectionContainer = document.querySelector('.content-container');
 
 /*-Api-*/
 const api = new Api(Properties.connection.accapi.url, localStorage.getItem('jwt'));
+
+/*-Число тэгов для отображения-*/
+const topTagsCount = Properties.search.maxTopTagsCount;
 
 /*-Header-*/
 let header;
@@ -42,6 +46,11 @@ let newsCardsList;
 let sandBoxServiceSection;
 let sandBoxProvider;
 
+/*-Поиск-*/
+let searchBuilder;
+let searchProvider;
+let searchResultPanel;
+
 /*-Попапы-*/
 /*-Регистрация-*/
 let popupSignUp;
@@ -53,7 +62,6 @@ let popupSignIn;
  * Общая процедура, вызываемая при загрузки страницы
  */
 function onLoadDOM() {
-
   makeHeader();
 
   const params = new URLSearchParams(document.location.search);
@@ -66,14 +74,12 @@ function onLoadDOM() {
     makeBriefSection();
   }
   makeFooter();
-
 }
 
 /**
  * Функция формирования заголовка
  */
 function makeHeader() {
-
   const isLoggedIn = localStorage.getItem('jwt');
 
   if (header instanceof AccComponent) {
@@ -86,8 +92,9 @@ function makeHeader() {
       username: localStorage.getItem('username'),
       menuActions: {
         main: onMain,
-        news: onNews,
+        //news: onNews,
         sandBox: onSandBox,
+        search: onSearch,
       },
     }
   );
@@ -114,8 +121,12 @@ function makeHeader() {
  * Формирует brief-секцию
  */
 function makeBriefSection() {
-
-    brief = new BriefBuilder({});
+    brief = new BriefBuilder({
+      searchHTML: new ComponentsFactory().getSearchFormHTML(),
+      searchFunction: searchSbDoc,
+      topTagsFunction: loadTopTags,///////////////
+      librarySection: new LibraryBuilder({}),//////////////////
+    });
     brief.createDOM();
 
     popupSignUp = new SignUpPopUp({
@@ -127,19 +138,17 @@ function makeBriefSection() {
     });
 
     const validator = new FormInputsValidator(popupSignUp.getForm(), Properties.popupErrMsg);
-
     contentSectionContainer.appendChild(brief.getDOM());
-
 }
 
 /**
  * Формирует секцию новостей
  */
 function makeNewsSection() {
-
   newsSection = new NewsBuilder({
     cardsList: new CardsList({}),
     showStep: Properties.newsList.showStep,
+    getNewsFunction: api.getNews,
     filterFunction: filterNewsSection,
   });
   newsSection.createDOM();
@@ -179,7 +188,6 @@ function makeNewsSection() {
  * Накладывает фильтр на секцию новостей (коллбэк события фильтрации)
  */
 function filterNewsSection(keyWordsArr, fromDateStr, toDateStr) {
-
   //Очищаем предыдущие активности
   if (newsSection.getEmptyComponentDOM()) {
     newsSection.getEmptyComponentDOM().remove();
@@ -217,14 +225,12 @@ function filterNewsSection(keyWordsArr, fromDateStr, toDateStr) {
     newsSection.addErrorDOM(`Ошибка: ${err.message}`);
     return Promise.reject(err);
   })
-
 }
 
 /**
  * Формирует секцию сервиса Песочницы
  */
 function makeSandBoxServiceSection(reqId) {
-
   if (!sandBoxProvider) {
     sandBoxProvider = new SandBoxProvider({
       api: api,
@@ -243,6 +249,7 @@ function makeSandBoxServiceSection(reqId) {
       shareFunction: sandBoxProvider.createShareLink,
       createAndShowShareLink: sandBoxProvider.createAndShowShareLink,
       likeFunction: sandBoxProvider.like,
+      cellEditingFunction: sandBoxProvider.synchronizeModel,
     });
 
     sandBoxProvider.setServiceBuilder(sandBoxServiceSection);
@@ -258,9 +265,7 @@ function makeSandBoxServiceSection(reqId) {
       sandBoxProvider.newSandBox();
     }
   }
-
   contentSectionContainer.appendChild(sandBoxServiceSection.getDOM());
-
 }
 
 /**
@@ -276,7 +281,6 @@ function makeFooter() {
  * Функция регистрации пользователя (коллбэк для регистрации)
  */
 function signUp(params) {
-
   return api.signUp(params.userName, params.userPass, params.userEmail)
     .then((res) => {
       signIn(params);//сразу входим после успешной регистрации
@@ -285,14 +289,12 @@ function signUp(params) {
     .catch((err) => {
       return Promise.reject(err);
     });
-
 }
 
 /**
  * Функция входа
  */
 function signIn(params) {
-
   return api.signIn(params.userEmail, params.userPass)
     .then((res) => {
       localStorage.setItem('jwt', res.jwt);
@@ -340,11 +342,10 @@ function showSignUpPopup() {
 /**
  * Обработчик меню Новости
  */
-function onNews() {
-  clearContentContainer();
-  makeNewsSection();
-}
-
+// function onNews() {
+//   clearContentContainer();
+//   makeNewsSection();
+// }
 
 /**
  * Обработчик меню Песочница
@@ -354,6 +355,15 @@ function onSandBox() {
   makeSandBoxServiceSection();
 }
 
+
+/**
+ * Обработчик меню Поиск
+ */
+ function onSearch() {
+  clearContentContainer();
+  makeSearchSection(null, null);
+}
+
 /**
  * Удаляет содержимое контентного контейнера
  */
@@ -361,6 +371,46 @@ function clearContentContainer() {
   while (contentSectionContainer.firstChild) {
     contentSectionContainer.removeChild(contentSectionContainer.firstChild);
   }
+}
+
+/**
+ * Поиск тетрадки по запросу
+ * @param {String} searchString поисковая строка
+ */
+function searchSbDoc(searchString, searchObject) {
+  clearContentContainer();
+  makeSearchSection(searchString, searchObject);
+  header.setActiveMenuItem(header.getMenuItemSearch());
+}
+
+function makeSearchSection(searchString, searchObject) {
+  if (!searchProvider) {
+    searchProvider = new SearchProvider({
+      api: api,
+    });
+  }
+
+  searchResultPanel = new SearchResultsPanel({
+  });
+
+  searchBuilder = new SearchBuilder({
+    searchHTML: new ComponentsFactory().getAdvancedSearchFormHTML(),
+    searchString: searchString,
+    searchResultsComponent: searchResultPanel,
+    searchFunction: searchProvider.search,
+    searchObject: searchObject,
+  });
+
+  searchProvider.setServiceBuilder(searchBuilder);
+  searchBuilder.createDOM();
+  contentSectionContainer.appendChild(searchBuilder.getDOM());
+  if (!(!searchString && !searchObject)) {//если что-то ищем
+    searchBuilder.search(searchBuilder.getSearchString(), searchObject);
+  }
+}
+
+function loadTopTags() {
+  return api.getTopTags(topTagsCount);
 }
 
 /**

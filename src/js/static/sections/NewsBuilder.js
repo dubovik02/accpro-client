@@ -48,8 +48,6 @@ export default class NewsBuilder extends SectionBuilder {
    * Формирует дополнительную секцию-фильтр
    */
   _createAdditionalDOM() {
-
-    //if (this._cardsList.getCardsListLength() !== 0) {
       this._preBlock.insertAdjacentHTML('afterbegin', this._createFilterSectionDOM());
       this._tagsContainer = this._componentDOM.querySelector('.filter__container-tags');
       this._buildTagsContainer();
@@ -64,10 +62,33 @@ export default class NewsBuilder extends SectionBuilder {
 
      this._setDataFilterListener(this._dateTo);
      this._setDataFilterListener(this._dateFrom);
-
-   //}
-
   }
+
+  //получает и рендерит новости
+  // getNews(fromDateStr, nowDateStr, newsCardsList, newsListContainer) {
+  //   this._props.getNewsFunction.call(this, fromDateStr, nowDateStr)
+  //   .then((res) => {
+  //     this.getPreloaderComponentDOM().remove();
+  //     if (res.length === 0) {
+  //       this.addNoEntityDOM('Новостей на сегодня нет :(');
+  //     }
+  //     else {
+  //       //newsCardsList = new CardsList({});
+  //       res.forEach((item) => {
+  //         const cardData = this.dbCardTransform(item);
+  //         const card = new Card(cardData);
+  //         newsCardsList.addCard(card);
+  //       });
+  //       this.setCardsList(newsCardsList);
+  //       this.createDOM();
+  //       newsListContainer.appendChild(this.getDOM());
+  //     }
+  //   })
+  //   .catch((err) => {
+  //     this.getPreloaderComponentDOM().remove();
+  //     this.addErrorDOM(`Ошибка: ${err.message}`);
+  //   });
+  // }
 
   /**
    * Создает подсекцию с фильтрами
@@ -223,4 +244,19 @@ export default class NewsBuilder extends SectionBuilder {
     }
   }
 
+  /**
+   * Трансформирует объект новости из БД в объект данных карточки новостей
+   * @param {Object} объект новости из БД
+   */
+  dbCardTransform(dbObject) {
+    return {
+      url: dbObject.link,
+      publishedAt: dbObject.date,
+      keyWord: dbObject.keyword,
+      urlToImage: dbObject.image,
+      title: dbObject.title,
+      description: dbObject.text,
+      source: dbObject.source,
+    };
+  }
 }

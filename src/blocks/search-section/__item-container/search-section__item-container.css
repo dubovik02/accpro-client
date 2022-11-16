@@ -1,0 +1,15 @@
+.search-section__item-container {
+  cursor: pointer;
+  margin-bottom: 1em;
+  padding: 1em 1em 1em 0em;
+  max-width: 50%;
+  /* box-shadow: 0 .2em .2em rgba(101, 121, 155,.8); */
+  /* border-radius: .4em;
+  background-color: whitesmoke; */
+  overflow: hidden;
+}
+
+.search-section__item-container:hover {
+  /* transform: translateY(-.3em); */
+  /* box-shadow: 0 .2em .2em 0 rgba(101, 121, 155,.8); */
+}

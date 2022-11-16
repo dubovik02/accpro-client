@@ -32,7 +32,7 @@ export default class AccDialog extends AccComponent {
 
    constructor(props) {
      super(props);
-     this._dialogTitle = this._props.title;
+     this._dialogTitle = this._props.title ? this._props.title : '';
      this._dialogMessage = this._props.message;
      this._form = this._props.form;
      this._setDefaultOpenListener();

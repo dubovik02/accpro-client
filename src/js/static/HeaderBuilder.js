@@ -20,7 +20,7 @@ export default class HeaderBuilder extends AccComponent {
   /**
    * Меню "Новости"
    */
-  _menuItemNews;
+  _menuItemSearch;
 
   /**
    * Меню "Песочница"
@@ -54,7 +54,7 @@ export default class HeaderBuilder extends AccComponent {
                           <menu class="menu">
                             <ul class="menu-list">
                             <li class="menu-list__item"><a class="link menu-link menu-link_font_bold menu-item-main">Главная</a></li>
-                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold menu-item-news">Новости</a></li>
+                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold menu-item-search">Поиск</a></li>
                               <li class="menu-list__item"><a class="link menu-link menu-link_font_bold menu-item-sandbox">Песочница</a></li>
                             </ul>
                           </menu>`;
@@ -92,8 +92,8 @@ export default class HeaderBuilder extends AccComponent {
     this._menuItemMain = this._componentDOM.querySelector('.menu-item-main');
     this._menuItemsList.push(this._menuItemMain);
 
-    this._menuItemNews = this._componentDOM.querySelector('.menu-item-news');
-    this._menuItemsList.push(this._menuItemNews);
+    this._menuItemSearch = this._componentDOM.querySelector('.menu-item-search');
+    this._menuItemsList.push(this._menuItemSearch);
 
     this._menuItemSandBox = this._componentDOM.querySelector('.menu-item-sandbox');
     this._menuItemsList.push(this._menuItemSandBox);
@@ -105,7 +105,7 @@ export default class HeaderBuilder extends AccComponent {
   _setMenuItemsListeners() {
     if (this._menuActions instanceof Object) {
       this._setMenuItemListener(this._menuItemMain, this._menuActions.main);
-      this._setMenuItemListener(this._menuItemNews, this._menuActions.news);
+      this._setMenuItemListener(this._menuItemSearch, this._menuActions.search);
       this._setMenuItemListener(this._menuItemSandBox, this._menuActions.sandBox);
     }
 
@@ -136,8 +136,8 @@ export default class HeaderBuilder extends AccComponent {
     });
   }
 
-  getMenuItemNews() {
-    return this._menuItemNews;
+  getMenuItemSearch() {
+    return this._menuItemSearch;
   }
 
 }

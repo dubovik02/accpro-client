@@ -79,6 +79,13 @@ export default  {
       rowCount: 12,
     }
 
-  }
+  },
+
+  /*-Настройки сервиса поиска-*/
+  search: {
+    minchar: 3,
+    maxchar: 100,
+    maxTopTagsCount: 5,
+  },
 
 }

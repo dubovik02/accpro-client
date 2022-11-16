@@ -28,14 +28,12 @@ import InputMultiValuesPopUp from "../../../static/popups/InputMultiValuesPopUp"
   }
 
   _calcSandBox(income, flows, outcome, calcMode) {
-
     //собираем баланс и обороты
     const incomeSet = this.transformStocks(income);
     const flowsSet = this.transformFlows(flows);
     const outcomeSet = this.transformStocks(outcome);
 
     return this.calcStocksAndFlows(incomeSet, flowsSet, outcomeSet, calcMode);
-
   }
 
   /**
@@ -262,7 +260,6 @@ import InputMultiValuesPopUp from "../../../static/popups/InputMultiValuesPopUp"
   }
 
   _updateFileContent(newContent) {
-
     const newProperties = {
       shortdesc: newContent[0],
       description: newContent[1],
@@ -352,13 +349,27 @@ import InputMultiValuesPopUp from "../../../static/popups/InputMultiValuesPopUp"
     });
   }
 
+  /**
+   * Синхранизация модели и представления
+   */
+  synchronizeModel = (incomeArr, outcomeArr, flowsArr) => {
+    const income = this.transformStocks(incomeArr);
+    const outcome = this.transformStocks(outcomeArr);
+    const flows = this.transformFlows(flowsArr);
+    let sbdoc = this.createDocument(income, flows, outcome,
+      this.getCurrentDocument().share, this.getCurrentDocument().properties);
+    sbdoc._id = this.getCurrentDocument()._id;
+
+    this.setCurrentDocument(sbdoc);
+  }
+
 
   /**
    * Метод расчета остатков и оборотов
    * @param {AccountsSet} incomeAccSet входящие остатки
    * @param {AccountingEntriesSet} entriesSet обороты
    * @param {AccountsSet} outcomeAccSet исходящие остатки
-   * @param {Number} calcMode режим расчета (0 - входящие, 1 - обороты, 2 - исходящие)
+   * @param {Number} calcMode режим расчета (0 - входящие, 1 - ни чего не считаем, 2 - исходящие)
    */
    calcStocksAndFlows = (incomeAccSet, entriesSet, outcomeAccSet, calcMode) => {
     return this._calcStocksAndFlows(incomeAccSet, entriesSet, outcomeAccSet, calcMode);
@@ -370,6 +381,9 @@ import InputMultiValuesPopUp from "../../../static/popups/InputMultiValuesPopUp"
     if (calcMode == 0) {
       outcomeAccSet.calcStocks(entriesSet, true);
       return outcomeAccSet.toJSON();
+    }
+    if (calcMode == 1) {
+      return '0';
     }
     if (calcMode == 2) {
       incomeAccSet.calcStocks(entriesSet, false);
