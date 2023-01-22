@@ -1,3 +1,5 @@
+@import url('./_center/service-section__icon-container_center.css');
+
 .service-section__icon-container {
   display: flex;
   justify-content: start;

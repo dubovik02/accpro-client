@@ -143,8 +143,6 @@ export default class SandBoxBuilder extends ServiceBuilder {
 
 
   constructor(props) {
-    //props.serviceName = 'Бухгалтерская песочница';
-    //props.serviceDescription = 'Сервис совместной работы над бухгалтерским кодом - проводками';
     super(props)
     this._calcFunction = this._props.calcFunction;
     this._saveFunction = this._props.saveFunction;
@@ -188,7 +186,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
 
                                 <div class="service-section__icon-container">
                                   <div class="service-section__icon-container">
-                                    <img class="service-section__icon like" src="${like}">
+                                    <img class="service-section__icon service-section__icon_linked like" src="${like}">
                                     <span class="service-section__span likes-counter"></span>
                                   </div>
                                   <div class="service-section__icon-container">

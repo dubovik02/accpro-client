@@ -49,7 +49,7 @@ export default class SubmitPopUp extends AccPopup {
     })
     .catch((err) => {
 
-      if (!err instanceof Error) {
+      if (!(err instanceof Error)) {
         err.json()
         .then((errRes) => {
           this._handleError(errRes, caption);

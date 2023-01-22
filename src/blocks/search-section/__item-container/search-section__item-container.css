@@ -1,5 +1,5 @@
 .search-section__item-container {
-  cursor: pointer;
+  /* cursor: pointer; */
   margin-bottom: 1em;
   padding: 1em 1em 1em 0em;
   max-width: 50%;

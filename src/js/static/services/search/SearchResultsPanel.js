@@ -14,6 +14,9 @@ export default class SearchResultsPanel extends AccComponent {
 
   _idClassPrefix = 'item-';
 
+  _showTitle = 'подробнее';
+  _hideTitle = 'скрыть';
+
   constructor(props) {
     super(props);
   }
@@ -21,35 +24,6 @@ export default class SearchResultsPanel extends AccComponent {
   createDOM() {
     this._componentDOM = document.createElement('service-section');
     this._componentDOM.classList.add('service-section');
-
-    // const componentHTML = '';
-
-    // if (this.getSearchString() && this.getSearchResult().length) {
-    //   componentHTML = `
-    //                   <div class="service-section__container">
-    //                     <p class="service-section__description">
-    //                       Найдено:
-    //                       <span class="service-section__span">${this.getSearchResult().length} результата(ов)</span>
-    //                       по запросу:
-    //                       <span class="service-section__span">${this.getSearchString()}</span>
-    //                     </p>
-
-    //                   </div>
-    //                   `;
-    // }
-    // const componentHTML = `
-    //                   <div class="service-section__container">
-    //                     <p class="service-section__description">
-    //                       Найдено:
-    //                       <span class="service-section__span">${this.getSearchResult().length} результата(ов)</span>
-    //                       по запросу:
-    //                       <span class="service-section__span">${this.getSearchString()}</span>
-    //                     </p>
-
-    //                   </div>
-    //                   `;
-
-    // this._componentDOM.insertAdjacentHTML('afterbegin', componentHTML);
     this._componentDOM.insertAdjacentElement('beforeend', this._createSearchResultElement());
   }
 
@@ -73,8 +47,8 @@ export default class SearchResultsPanel extends AccComponent {
     }
     else {
       componentHTML = `
-                      <div class="service-section__container">
-                        <img class="info-card__icon" src="${issueIco}" alt="вопрос">
+                      <div class="service-section__icon-container service-section__icon-container_center">
+                        <img class="service-section__icon service-section__icon_256" src="${issueIco}" alt="вопрос">
                       </div>
                       `;
     }
@@ -90,11 +64,22 @@ export default class SearchResultsPanel extends AccComponent {
     this.getSearchResult().forEach((item) => {
       const itemHTML = this._createSearchedItemHTML(item);
       resultElement.insertAdjacentHTML('beforeend', itemHTML);
-      const itemElem = resultElement.querySelector(`.${this._idClassPrefix}${item._id}`);
 
+      const itemElem = resultElement.querySelector(`.${this._idClassPrefix}${item._id}`);
+      const descLink = resultElement.querySelector(`.description-link${item._id}`);
+      const descText = resultElement.querySelector(`.description-text${item._id}`);
+
+      // показываем/скрываем описание
+      descLink.addEventListener('click', (event) => {
+        descText.classList.toggle('service-section__description_not-visible');
+        descLink.textContent = descLink.textContent === this._showTitle ? this._hideTitle : this._showTitle;
+        event.stopPropagation();
+      });
+
+      //по клику открываем документ
       itemElem.addEventListener('click', (event) => {
         window.open(`http://${Properties.site.host}/?id=${item._id}`, '_blank');
-        event.preventDefault();
+        event.stopPropagation();
       });
     });
 
@@ -104,10 +89,10 @@ export default class SearchResultsPanel extends AccComponent {
   //формирует html-представление для списка найденных документов
   _createSearchedItemHTML(item) {
     return `
-            <div class="search-section__item-container ${this._idClassPrefix}${item._id}">
+            <div class="search-section__item-container">
               <p class="service-section__description">
                 Тетрадь:
-                <span class="service-section__span file-name">${item._id}</span>
+                <span class="service-section__span service-section__span_file-description file-name ${this._idClassPrefix}${item._id}">${item._id}</span>
               </p>
 
               <p class="service-section__description">
@@ -117,12 +102,18 @@ export default class SearchResultsPanel extends AccComponent {
 
               <p class="service-section__description">
                 Название:
-                <span class="service-section__span service-section__span_file-description description">${item.properties.shortdesc}</span>
+                <span class="service-section__span">${item.properties.shortdesc}</span>
               </p>
 
               <p class="service-section__description">
                 Хэш-теги:
-                <span class="service-section__span service-section__span_file-description description">${item.properties.tags}</span>
+                <span class="service-section__span">${item.properties.tags}</span>
+              </p>
+
+              <p class="service-section__description">
+                Описание:
+                <span class="service-section__span service-section__span_file-description description-link${item._id}">${this._showTitle}</span>
+                <p class="service-section__description service-section__description_not-visible description-text${item._id}">${item.properties.description}</p>
               </p>
 
               <div class="service-section__icon-container">
@@ -135,6 +126,7 @@ export default class SearchResultsPanel extends AccComponent {
                   <span class="service-section__span views-counter">${item.views}</span>
                 </div>
               </div>
+
             </div>
             `;
   }

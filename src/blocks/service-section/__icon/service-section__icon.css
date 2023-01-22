@@ -1,7 +1,10 @@
+@import url('./_256/service-section__icon_256.css');
+@import url('./_linked/service-section__icon_linked.css');
+
 .service-section__icon {
   height: 1.3em;
   width: 1.3em;
 
   margin-right: 0.3em;
-  cursor: pointer;
+  /* cursor: pointer; */
 }

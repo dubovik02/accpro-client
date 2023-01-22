@@ -31,14 +31,6 @@ export default class SearchBuilder extends ServiceBuilder {
   }
 
   createSearchPanel() {
-    // const titleHTML = `
-    //                   <div class="service-section__container">
-    //                     <p class="service-section__name">${this._props.serviceName}</p>
-    //                     <p class="service-section__description">${this._props.serviceDescription}</p>
-    //                   </div>
-    //                   `;
-
-    // this._leftContainer.insertAdjacentHTML('afterbegin', titleHTML);
     this._centerContainer.insertAdjacentHTML('afterbegin', this._props.searchHTML);
 
     this._setUpSearchOptionsList();
@@ -88,7 +80,9 @@ export default class SearchBuilder extends ServiceBuilder {
 
   _execSearch = () => {
     this.setSearchString(this._searchTextElement.value);
-    this.search(this.getSearchString(), this.getSearchObject());
+    if (this.getSearchString()) {
+      this.search(this.getSearchString(), this.getSearchObject());
+    }
   }
 
   search(searchString, searchObject) {
@@ -125,7 +119,7 @@ export default class SearchBuilder extends ServiceBuilder {
   }
 
   setSearchString(value) {
-    this._searchString = value;
+    this._searchString = value.trim();
   }
 
   setSearchObject(value) {

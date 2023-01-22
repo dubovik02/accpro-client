@@ -1,10 +1,7 @@
 import './style.css';
 import HeaderBuilder from './js/static/HeaderBuilder';
 import FooterBuilder from './js/static/FooterBuilder';
-import NewsBuilder from './js/static/sections/NewsBuilder';
 import Properties from './js/properties/Properties';
-import CardsList from './js/common/card/CardsList'
-import Card from './js/common/card/Card';
 import Api from './js/api/Api';
 import BriefBuilder from './js/static/BriefBuilder';
 import FormsFactory from './js/common/factories/FormsFactory';
@@ -12,7 +9,6 @@ import SignUpPopUp from './js/static/popups/SignUpPopUp';
 import FormInputsValidator from './js/validators/FormInputsValidator';
 import SignInPopUp from './js/static/popups/SignInPopUp';
 import AccComponent from './js/common/AccComponent';
-import { getNewsPeriod } from './js/lib/date';
 import SandBoxBuilder from './js/static/services/sandbox/SandBoxBuilder';
 import SandBoxProvider from './js/static/services/sandbox/SandBoxProvider';
 import ComponentsFactory from "./js/common/factories/ComponentsFactory";
@@ -37,10 +33,6 @@ let header;
 
 /*-Бриф-*/
 let brief;
-
-/*-News-*/
-let newsSection;
-let newsCardsList;
 
 /*-Песочница-*/
 let sandBoxServiceSection;
@@ -111,7 +103,6 @@ function makeHeader() {
     submitFunction: signIn,
     signUpFunction: showSignUpPopup,
   });
-
   const validator = new FormInputsValidator(popupSignIn.getForm(), Properties.popupErrMsg);
 
   contentSection.insertAdjacentElement('afterbegin', header.getDOM());
@@ -139,92 +130,6 @@ function makeBriefSection() {
 
     const validator = new FormInputsValidator(popupSignUp.getForm(), Properties.popupErrMsg);
     contentSectionContainer.appendChild(brief.getDOM());
-}
-
-/**
- * Формирует секцию новостей
- */
-function makeNewsSection() {
-  newsSection = new NewsBuilder({
-    cardsList: new CardsList({}),
-    showStep: Properties.newsList.showStep,
-    getNewsFunction: api.getNews,
-    filterFunction: filterNewsSection,
-  });
-  newsSection.createDOM();
-  newsSection.addPreloaderDOM('Минуточку, загружаем новости ...');
-
-  contentSectionContainer.appendChild(newsSection.getDOM());
-
-  const {nowDateStr, fromDateStr} = getNewsPeriod(true);
-
-  api.getNews(fromDateStr, nowDateStr)
-  .then((res) => {
-    newsSection.getPreloaderComponentDOM().remove();
-    if (res.length === 0) {
-      newsSection.addNoEntityDOM('Новостей на сегодня нет :(');
-    }
-    else {
-      newsCardsList = new CardsList({});
-      res.forEach((item) => {
-        const cardData = dbCardTransform(item);
-        const card = new Card(cardData);
-        newsCardsList.addCard(card);
-      });
-      newsSection.setCardsList(newsCardsList);
-      newsSection.createDOM();
-      contentSectionContainer.appendChild(newsSection.getDOM());
-    }
-  })
-  .catch((err) => {
-    newsSection.getPreloaderComponentDOM().remove();
-    newsSection.addErrorDOM(`Ошибка: ${err.message}`);
-  });
-
-  header.setActiveMenuItem(header.getMenuItemNews());
-}
-
-/**
- * Накладывает фильтр на секцию новостей (коллбэк события фильтрации)
- */
-function filterNewsSection(keyWordsArr, fromDateStr, toDateStr) {
-  //Очищаем предыдущие активности
-  if (newsSection.getEmptyComponentDOM()) {
-    newsSection.getEmptyComponentDOM().remove();
-  }
-
-  if (newsSection.getErrorComponentDOM()) {
-    newsSection.getErrorComponentDOM().remove();
-  }
-
-  newsSection.deleteCards();
-  //делаем прелоадер
-  newsSection.addPreloaderDOM('Отбираем новости .....');
-
-  //Получаем данные карточек по условиям фильтрации и отрисовываем их
-  return api.getNewsByKeyWords(fromDateStr, toDateStr, keyWordsArr)
-  .then((res) => {
-    newsSection.getPreloaderComponentDOM().remove();
-    if (res.length === 0) {
-      newsSection.addNoEntityDOM('Новостей по тематике нет :(');
-    }
-    else {
-      newsCardsList = new CardsList({});
-      res.forEach((item) => {
-        const cardData = dbCardTransform(item);
-        const card = new Card(cardData);
-        newsCardsList.addCard(card);
-      });
-      newsSection.setCardsList(newsCardsList);
-      newsSection.createCards();
-    }
-    return res;
-  })
-  .catch((err) => {
-    newsSection.getPreloaderComponentDOM().remove();
-    newsSection.addErrorDOM(`Ошибка: ${err.message}`);
-    return Promise.reject(err);
-  })
 }
 
 /**
@@ -340,21 +245,12 @@ function showSignUpPopup() {
 }
 
 /**
- * Обработчик меню Новости
- */
-// function onNews() {
-//   clearContentContainer();
-//   makeNewsSection();
-// }
-
-/**
  * Обработчик меню Песочница
  */
 function onSandBox() {
   clearContentContainer();
   makeSandBoxServiceSection();
 }
-
 
 /**
  * Обработчик меню Поиск
@@ -411,22 +307,6 @@ function makeSearchSection(searchString, searchObject) {
 
 function loadTopTags() {
   return api.getTopTags(topTagsCount);
-}
-
-/**
- * Трансформирует объект новости из БД в объект данных карточки новостей
- * @param {Object} объект новости из БД
- */
-function dbCardTransform(dbObject) {
-  return {
-    url: dbObject.link,
-    publishedAt: dbObject.date,
-    keyWord: dbObject.keyword,
-    urlToImage: dbObject.image,
-    title: dbObject.title,
-    description: dbObject.text,
-    source: dbObject.source,
-  };
 }
 
 /*----------------------------Обработчики событий--------------------------------*/

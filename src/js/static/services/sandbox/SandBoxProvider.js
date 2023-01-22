@@ -200,7 +200,6 @@ import InputMultiValuesPopUp from "../../../static/popups/InputMultiValuesPopUp"
   _newSandBox() {
     this.setCurrentDocument({
       _id: null,
-      //description: "Моя тетрадь",
       text: {
         income: {},
         flows: {},
@@ -487,7 +486,6 @@ import InputMultiValuesPopUp from "../../../static/popups/InputMultiValuesPopUp"
       likes: [],
       views: 0,
     }
-
   }
 
   /**
