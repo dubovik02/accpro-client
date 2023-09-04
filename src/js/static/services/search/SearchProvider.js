@@ -11,12 +11,12 @@ export default class SearchProvider extends ServiceProvider {
     return this._search(searchString, searchObject);
   }
 
-  _search(searchString, searchObject) {
-    if (searchObject) {
-      return this.templateSearch(searchObject);
+  _search(searchTemplate) {
+    if (searchTemplate instanceof Object) {
+      return this.templateSearch(searchTemplate);
     }
     else {
-      return this.fullTextSearch(searchString);
+      return this.fullTextSearch(searchTemplate);
     }
   }
 

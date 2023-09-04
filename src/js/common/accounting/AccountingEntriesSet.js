@@ -1,3 +1,4 @@
+import { initialiseAgGridWithWebComponents } from "ag-grid-community";
 import AccEntity from "../AccEntity";
 import AccountingEntry from "./AccountingEntry";
 
@@ -61,6 +62,23 @@ export default class AccountingEntriesSet extends AccEntity {
       this.add(entrieObj);
     })
 
+  }
+
+  /**
+   * проверяет равенство дебета и кредита в наборе и возвращает
+   * абсолютную разность между дебетом и кредитом
+   */
+  wellBalanced() {
+
+    let sDeb = 0;
+    let sCred = 0;
+
+    this._entriesSet.forEach((item) => {
+      sDeb =+ item.getSum();
+      sCred =+ item.getSum();
+    });
+
+    return Math.abs(sDeb - sCred);
   }
 
 }

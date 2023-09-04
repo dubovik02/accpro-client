@@ -76,8 +76,8 @@ export default class BriefBuilder extends AccComponent {
 
                       </div>
 
-                      <!--<div class="info-section">
-                        <p class="info-section__title">Открытая библиотека решений</p>
+                      <!--div class="info-section">
+                        <p class="info-section__title">Популярные публикации</p>
                         <div class="info-section__card-container">
                           <div class="info-card">
                             <img class="info-card__icon" src="${issueIco}" alt="вопрос">
@@ -96,7 +96,7 @@ export default class BriefBuilder extends AccComponent {
                             <p class="info-card__title">Делимся!</p>
                           </div>
                         </div>
-                      </div>-->
+                      </div--!>
                       `;
 
     this._componentDOM.insertAdjacentHTML('afterbegin', briefHtml);
@@ -155,7 +155,7 @@ export default class BriefBuilder extends AccComponent {
       Dialog.InfoDialog(`Поисковый запрос должен содержать от ${minlen} до ${maxlen} символов.`);
     }
     else {
-      this._searchFunction.call(this, searchString, null);
+      this._searchFunction.call(this, searchString, searchString);
     }
   }
 
@@ -172,7 +172,7 @@ export default class BriefBuilder extends AccComponent {
         this._tagsContainer.insertAdjacentHTML('beforeend', tagHtml);
         const tagElem = this._tagsContainer.querySelector(`.brief__tags-text-${item._id}`);
         tagElem.addEventListener('click', () => {
-          this._searchFunction.call(this, item._id, {'properties.tags': {$regex: `.*#${item._id}.*`, $options: 'i'} });
+          this._searchFunction.call(this, item._id, {'properties.tags': {$regex: `.*${item._id}.*`, $options: 'i'}, /*searchString: `${item._id}`*/ });
         });
       });
 

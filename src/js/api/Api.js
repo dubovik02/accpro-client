@@ -344,4 +344,44 @@ export default class Api extends BaseApi {
 
   }
 
+  //запрос восстановления пароля
+  restorePassword(params) {
+
+    return this.parseResponse(fetch(`${this._serverHttp}/restorePassword`,
+    {
+      credentials: 'include',
+
+      method: 'POST',
+
+      headers: {
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json',
+      },
+
+      body: JSON.stringify(params),
+
+    }));
+
+  }
+
+  //смена пароля
+  updateUserPassword(params) {
+
+    return this.parseResponse(fetch(`${this._serverHttp}/restorePassword`,
+    {
+      credentials: 'include',
+
+      method: 'PUT',
+
+      headers: {
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json',
+      },
+
+      body: JSON.stringify(params),
+
+    }));
+
+  }
+
 }

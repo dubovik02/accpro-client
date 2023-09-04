@@ -16,6 +16,9 @@ import SearchBuilder from './js/static/services/search/SearchBuilder';
 import SearchProvider from './js/static/services/search/SearchProvider';
 import SearchResultsPanel from './js/static/services/search/SearchResultsPanel';
 import LibraryBuilder from './js/static/services/library/LibraryBuilder';
+import RestorePopUp from './js/static/popups/RestorePopUp';
+import Dialog from './js/common/dialogs/Dialog';
+import NewPasswordPopUp from './js/static/popups/NewPasswordPopUp';
 
 /*-------------Переменные----------------*/
 const page = document.querySelector('.page');
@@ -48,6 +51,10 @@ let searchResultPanel;
 let popupSignUp;
 /*-Вход-*/
 let popupSignIn;
+/*-Запрос восстановлениие пароля-*/
+let popupRestore;
+/*-Восстановление пароля-*/
+let popUpNewPassword;
 
 /*-------------Функции-------------------*/
 /**
@@ -57,14 +64,25 @@ function onLoadDOM() {
   makeHeader();
 
   const params = new URLSearchParams(document.location.search);
-  const reqId = params.get('id');
-  //если есть ссылка на конкретный документ, открываем его
-  if (reqId) {
-    makeSandBoxServiceSection(reqId);
-  }
-  else {
+  const reqId = params.get('id');//запрос документа
+  const userKey = params.get('key');//запрос восстановления доступа
+  const userEmail = params.get('email');
+
+  if (!reqId && !userKey) {
     makeBriefSection();
   }
+  else {
+    if (reqId) {
+      makeSandBoxServiceSection(reqId);
+    }
+    if (userKey) {
+      makeBriefSection();
+      localStorage.setItem('userKey', userKey);
+      localStorage.setItem('userEmail', userEmail);
+      showNewPasswordPopup();
+    }
+  }
+
   makeFooter();
 }
 
@@ -102,8 +120,39 @@ function makeHeader() {
     form: new FormsFactory().createSignInForm('signin'),
     submitFunction: signIn,
     signUpFunction: showSignUpPopup,
+    restoreFunction: showRestorePopup,
   });
-  const validator = new FormInputsValidator(popupSignIn.getForm(), Properties.popupErrMsg);
+  const validatorSignIn = new FormInputsValidator(popupSignIn.getForm(), Properties.popupErrMsg);
+
+  popupSignUp = new SignUpPopUp({
+    title: 'Регистрация пользователя',
+    // butOpen: brief.getButtonSignUp(),
+    form: new FormsFactory().createSignUpForm('signup'),
+    submitFunction: signUp,
+    signInFunction: showSignInPopup,
+  });
+  const validatorSignUp = new FormInputsValidator(popupSignUp.getForm(), Properties.popupErrMsg);
+
+  popupRestore = new RestorePopUp({
+    title: 'Восстановление пароля',
+    form: new FormsFactory().createRestoreForm('restore'),
+    signUpFunction: showSignUpPopup,
+    submitFunction: restorePassword,
+    afterCloseDialogFunction: () => {Dialog.InfoDialog(
+      `Инструкции по восстановлению пароля направлены на электронную почту ${localStorage.getItem('userEmail')}`)},
+  });
+  const validatorRestore = new FormInputsValidator(popupRestore.getForm(), Properties.popupErrMsg);
+
+  popUpNewPassword = new NewPasswordPopUp({
+    title: 'Восстановление пароля',
+    form: new FormsFactory().createNewPasswordForm('newpassword'),
+    submitFunction: changeUserPassword,
+    afterCloseDialogFunction: () => {
+      Dialog.InfoDialog(`Новый пароль пользователя ${localStorage.getItem('userEmail')} установлен.`);
+      // showSignInPopup();
+    },
+  });
+  const validatorNewPassword = new FormInputsValidator(popUpNewPassword.getForm(), Properties.popupErrMsg);
 
   contentSection.insertAdjacentElement('afterbegin', header.getDOM());
 }
@@ -119,16 +168,6 @@ function makeBriefSection() {
       librarySection: new LibraryBuilder({}),//////////////////
     });
     brief.createDOM();
-
-    popupSignUp = new SignUpPopUp({
-      title: 'Регистрация пользователя',
-      butOpen: brief.getButtonSignUp(),
-      form: new FormsFactory().createSignUpForm('signup'),
-      submitFunction: signUp,
-      signInFunction: showSignInPopup,
-    });
-
-    const validator = new FormInputsValidator(popupSignUp.getForm(), Properties.popupErrMsg);
     contentSectionContainer.appendChild(brief.getDOM());
 }
 
@@ -146,6 +185,8 @@ function makeSandBoxServiceSection(reqId) {
     sandBoxServiceSection = new SandBoxBuilder({
       calcFunction: sandBoxProvider.calcSandBox,
       saveFunction: sandBoxProvider.saveSandBox,
+      saveCopyFunction: sandBoxProvider.saveSandBoxCopy,
+      printFunction: sandBoxProvider.printSandBox,
       loginFunction: showSignInPopup,
       preloader: new ComponentsFactory().createPreloader('Минуточку ...'),
       openSBFunction: sandBoxProvider.openSandBoxDialog,
@@ -155,10 +196,12 @@ function makeSandBoxServiceSection(reqId) {
       createAndShowShareLink: sandBoxProvider.createAndShowShareLink,
       likeFunction: sandBoxProvider.like,
       cellEditingFunction: sandBoxProvider.synchronizeModel,
+      checkModelFunction: sandBoxProvider.checkModel,
     });
 
     sandBoxProvider.setServiceBuilder(sandBoxServiceSection);
     sandBoxServiceSection.createDOM();
+    contentSectionContainer.appendChild(sandBoxServiceSection.getDOM());
     if (reqId) {//подгружаем запрашиваемый
       const isViewed = localStorage.getItem(reqId) ? true : false;
       if (!isViewed) {
@@ -170,7 +213,10 @@ function makeSandBoxServiceSection(reqId) {
       sandBoxProvider.newSandBox();
     }
   }
-  contentSectionContainer.appendChild(sandBoxServiceSection.getDOM());
+  else {
+    contentSectionContainer.appendChild(sandBoxServiceSection.getDOM());
+  }
+
 }
 
 /**
@@ -214,6 +260,37 @@ function signIn(params) {
 }
 
 /**
+ * запроос восстановления пароля
+ */
+function restorePassword(params) {
+  return api.restorePassword(params)
+    .then((res) => {
+      return res;
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
+/**
+ * Смена пароля
+ */
+function changeUserPassword(obj) {
+  const params = {
+    key: localStorage.getItem('userKey'),
+    email: localStorage.getItem('userEmail'),
+    password: obj.newPass,
+  };
+  return api.updateUserPassword(params)
+    .then((res) => {
+      return res;
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
+/**
  * Функция логаута
  */
 function logout() {
@@ -234,6 +311,20 @@ function showSignInPopup() {
  */
 function showSignUpPopup() {
   popupSignUp.open();
+}
+
+/**
+ * Показывает попап запроса восстановления пароля
+ */
+function showRestorePopup() {
+  popupRestore.open();
+}
+
+/**
+ * Показывает попап восстановления пароля
+ */
+function showNewPasswordPopup() {
+  popUpNewPassword.open();
 }
 
 /**
@@ -258,6 +349,7 @@ function onSandBox() {
  function onSearch() {
   clearContentContainer();
   makeSearchSection(null, null);
+  // makeSearchSection('', {});
 }
 
 /**
@@ -271,15 +363,15 @@ function clearContentContainer() {
 
 /**
  * Поиск тетрадки по запросу
- * @param {String} searchString поисковая строка
  */
-function searchSbDoc(searchString, searchObject) {
+function searchSbDoc(searchString, searchTemplate) {
   clearContentContainer();
-  makeSearchSection(searchString, searchObject);
+  makeSearchSection(searchString, searchTemplate);
   header.setActiveMenuItem(header.getMenuItemSearch());
 }
 
-function makeSearchSection(searchString, searchObject) {
+function makeSearchSection(searchString, searchTemplate) {
+
   if (!searchProvider) {
     searchProvider = new SearchProvider({
       api: api,
@@ -291,18 +383,19 @@ function makeSearchSection(searchString, searchObject) {
 
   searchBuilder = new SearchBuilder({
     searchHTML: new ComponentsFactory().getAdvancedSearchFormHTML(),
-    searchString: searchString,
     searchResultsComponent: searchResultPanel,
     searchFunction: searchProvider.search,
-    searchObject: searchObject,
+    searchString: searchString,
+    searchTemplate: searchTemplate,
   });
 
   searchProvider.setServiceBuilder(searchBuilder);
   searchBuilder.createDOM();
   contentSectionContainer.appendChild(searchBuilder.getDOM());
-  if (!(!searchString && !searchObject)) {//если что-то ищем
-    searchBuilder.search(searchBuilder.getSearchString(), searchObject);
+  if (searchTemplate) {//если что-то ищем
+    searchBuilder.search(searchTemplate);
   }
+
 }
 
 function loadTopTags() {

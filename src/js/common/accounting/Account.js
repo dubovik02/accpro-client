@@ -33,16 +33,16 @@ import AccEntity from '../AccEntity';
    * Входящий остаток
    */
   _openBalance = {
-    debet: 0,
-    credit: 0,
+    debet: 0.00,
+    credit: 0.00,
   };
 
   /**
    * Исходящий остаток
    */
   _closeBalance = {
-     debet: 0,
-     credit: 0,
+     debet: 0.00,
+     credit: 0.00,
    };
 
   /**
@@ -302,7 +302,7 @@ import AccEntity from '../AccEntity';
   }
 
   /**
-   * Фрормирует объекТ из JSON-объекта
+   * Формирует объект класса из JSON-объекта
    * @param {Object} obj
    */
   parseJSON(obj) {

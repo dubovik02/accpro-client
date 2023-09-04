@@ -1,3 +1,5 @@
+import Dialog from "../../../common/dialogs/Dialog";
+import Properties from "../../../properties/Properties";
 import ServiceBuilder from "../ServiceBuilder";
 
 /**
@@ -9,40 +11,36 @@ export default class SearchBuilder extends ServiceBuilder {
   _searchButton;
   _searchTextElement;
   _searchString;
+  _searchTemplate;
   _searchResultsPanel;
   _searchFunction;
-  _searchObject;
   _searchOptionsList = [];
+  _searchField = null;
 
   constructor(props) {
     props.serviceName = 'Поиск';
     props.serviceDescription = 'Ищем тетрадки по запросу';
     super(props);
-    this.setSearchFunction(this._props.searchFunction);
-    this.setSearchObject(this._props.searchObject);
+    this.setSearchString(this._props.searchString);
+    this.setSearchTemplate(this._props.searchTemplate);
   }
 
   createDOM() {
     super.createDOM();
     this.createSearchPanel();
     this.createSearchResultsPanel(null);
-    this.setSearchListener();
+    // this.setSearchField(Object.keys(this.getSearchTemplate())[0]);
+    this.setActiveSearchListItem();
+    this.setSearchButtonListener();
     this.setSearchEnterListener();
   }
 
   createSearchPanel() {
     this._centerContainer.insertAdjacentHTML('afterbegin', this._props.searchHTML);
-
     this._setUpSearchOptionsList();
-
     this._searchButton = this._componentDOM.querySelector('.search-section__button-search');
-
     this._searchTextElement = this._componentDOM.querySelector('.search-section__input-search');
-
-    if (this._props.searchString) {
-      this.setSearchString(this._props.searchString);
-      this._searchTextElement.value = this.getSearchString();
-    }
+    this._searchTextElement.value = this.getSearchString();
   }
 
   _setUpSearchOptionsList() {
@@ -51,10 +49,10 @@ export default class SearchBuilder extends ServiceBuilder {
       item.addEventListener('click', () => {
         this._searchOptionsList.forEach((item) => {item.classList.remove('search-section__link_active')});
         item.classList.toggle('search-section__link_active');
-        const searchField = item.getAttribute('field');
+        this.setSearchField(item.getAttribute('field'));
         this.setSearchString(this._searchTextElement.value);
-        const searchObj = searchField ? { [searchField] : {$regex: `.*${this.getSearchString()}.*`, $options: 'i'} } : null;
-        this.setSearchObject(searchObj);
+        const searchObj = this.getSearchField() ? { [this.getSearchField()] : {$regex: `.*${''}.*`, $options: 'i'} } : null;
+        this.setSearchTemplate(searchObj);
         this._execSearch();
      });
     });
@@ -62,13 +60,13 @@ export default class SearchBuilder extends ServiceBuilder {
 
   createSearchResultsPanel(searchResult) {
     this._searchResultsPanel = this._props.searchResultsComponent;
-    this._searchResultsPanel.setSearchString(this.getSearchString());
+    this._searchResultsPanel.setSearchString(this._searchTextElement.value);
     this._searchResultsPanel.setSearchResult(searchResult ? searchResult : []);
     this._searchResultsPanel.createDOM();
     this._componentDOM.insertAdjacentElement('beforeend', this._searchResultsPanel.getDOM());
   };
 
-  setSearchListener() {
+  setSearchButtonListener() {
     this._searchButton.addEventListener('click', () => {
       this._execSearch();
     });
@@ -79,17 +77,30 @@ export default class SearchBuilder extends ServiceBuilder {
   }
 
   _execSearch = () => {
-    this.setSearchString(this._searchTextElement.value);
-    if (this.getSearchString()) {
-      this.search(this.getSearchString(), this.getSearchObject());
+    let searchString = this._searchTextElement.value;
+    if (!this.checkSearchString(searchString)) {
+      Dialog.InfoDialog(`Уточните пожалуйста поисковый запрос.`);
+      return;
     }
+
+    this.setSearchString(searchString);
+
+    if (this.getSearchField()) {
+      this.getSearchTemplate()[this.getSearchField()] = {$regex: `.*${this.getSearchString()}.*`, $options: 'i', /*searchString: searchString*/};
+    }
+    else {
+      this.setSearchTemplate(this.getSearchString());
+    }
+
+    this.search(this.getSearchTemplate());
   }
 
-  search(searchString, searchObject) {
+  search(searchTemplate) {
+
     this._searchResultsPanel.clearContent();
     this._searchResultsPanel.addPreloaderDOM('Минуточку...');
 
-    this._props.searchFunction.call(this, searchString, searchObject)
+    this._props.searchFunction.call(this, this.getSearchTemplate())
     .then((docs) => {
       this._searchResultsPanel.getPreloaderComponentDOM().remove();
       if (docs.length > 0) {
@@ -119,16 +130,34 @@ export default class SearchBuilder extends ServiceBuilder {
   }
 
   setSearchString(value) {
-    this._searchString = value.trim();
+    this._searchString = value ? value.trim() : value;
   }
 
-  setSearchObject(value) {
-    this._searchObject = value;
+  getSearchField() {
+    return this._searchField;
   }
 
-  getSearchObject() {
-    return this._searchObject;
+  setSearchField(value) {
+    this._searchField = value;
   }
+
+  getSearchTemplate() {
+    return this._searchTemplate;
+  }
+
+  setSearchTemplate(value) {
+    this._searchTemplate = value;
+  }
+
+  setActiveSearchListItem() {
+    this._searchOptionsList.forEach((item) => {
+      item.classList.remove('search-section__link_active');
+      let atrr = item.getAttribute('field');
+      if (atrr == this.getSearchField()) {
+        item.classList.toggle('search-section__link_active');
+      }
+    });
+  };
 
   /**
    * Обработчик enter
@@ -139,6 +168,18 @@ export default class SearchBuilder extends ServiceBuilder {
       this._execSearch();
       event.preventDefault();
     }
+  }
+
+  // Проверка корректности строки ввода
+  checkSearchString(searchValue) {
+
+    let searchString = searchValue.trim()
+    const minlen = Properties.search.minchar;
+    const maxlen = Properties.search.maxchar;
+    if (! (searchString && (searchString.length >= minlen && searchString.length <= maxlen) ) ) {
+      return false;
+    }
+    return true;
   }
 
 }

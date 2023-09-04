@@ -58,6 +58,11 @@ export default class FormsFactory {
                       <button type="button" id="submit" class="button button_color_blue popup__button popup__button-signin">Войти</button>
 
                       <div class="popup__actions-container">
+                        <p class="popup__text">Забыли пароль?</p>
+                        <a href="#" class="link popup__link popup__link_small popup-signin__restore">Восстановить пароль</a>
+                      </div>
+
+                      <div class="popup__actions-container">
                         <p class="popup__text">или</p>
                         <a href="#" class="link popup__link popup__link_small popup-signin__signup">Зарегистрироваться</a>
                       </div>`;
@@ -66,6 +71,49 @@ export default class FormsFactory {
 
     return form;
 
+  }
+
+  createRestoreForm(formName) {
+
+    const form = document.createElement('form');
+    form.classList.add('popup__form');
+    form.setAttribute('name', formName);
+
+    const formHtml = `<label for="email-field-login" class="popup__label">Email</label>
+                      <input type="email" name="email" id="email-field-login" class="input popup__input" placeholder="Введите e-mail указанный при регистрации" pattern="^[A-Za-z0-9](-|_)?(([A-Za-z0-9_]+-?)?)+[A-Za-z0-9]?@([A-Za-z0-9\-_]+\.)+[A-Za-z]{2,}" required>
+                      <p class="popup__error-label popup__error-label-name"></p>
+
+                      <p class="popup__error-info"></p>
+
+                      <button type="button" id="submit" class="button button_color_blue popup__button popup__button-signin">Восстановить</button>
+
+                      <div class="popup__actions-container">
+                        <p class="popup__text">или</p>
+                        <a href="#" class="link popup__link popup__link_small popup-restore__signup">Зарегистрироваться</a>
+                      </div>`;
+
+    form.insertAdjacentHTML('afterbegin', formHtml);
+
+    return form;
+
+  }
+
+  createNewPasswordForm(formName) {
+    const form = document.createElement('form');
+    form.classList.add('popup__form');
+    form.setAttribute('name', formName);
+
+    const formHtml = `<label for="password-field" class="popup__label">Новый пароль</label>
+                    <input type="password" name="password"  id="password-field" class="input popup__input" minlength="8" placeholder="Введите новый пароль" required>
+                    <p class="popup__error-label popup__error-label-password"></p>
+
+                    <p class="popup__error-info"></p>
+
+                    <button type="button" id="submit" class="button button_color_blue popup__button button__signup">Сменить пароль</button>`;
+
+    form.insertAdjacentHTML('afterbegin', formHtml);
+
+    return form;
   }
 
   createSingleGridForm(formName, gridElement) {

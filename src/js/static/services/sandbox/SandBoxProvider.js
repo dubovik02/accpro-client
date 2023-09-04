@@ -10,6 +10,7 @@ import FormInputsValidator from "../../../validators/FormInputsValidator";
 import Properties from "../../../properties/Properties";
 import Dialog from "../../../common/dialogs/Dialog";
 import InputMultiValuesPopUp from "../../../static/popups/InputMultiValuesPopUp";
+import PrintFactory from "../../../common/factories/PrintFactory";
 
 /**
  * Провайдер сервиса Песочницы
@@ -78,6 +79,42 @@ import InputMultiValuesPopUp from "../../../static/popups/InputMultiValuesPopUp"
         return Promise.reject(err);
       });
     }
+
+  }
+
+  /**
+   * Функция сохранения документа из Песочницы
+   */
+  saveSandBoxCopy = (income, flows, outcome) => {
+    return this._saveSandBoxCopy(income, flows, outcome);
+  }
+
+  _saveSandBoxCopy(income, flows, outcome) {
+
+    this.getCurrentDocument()._id = null;
+    this.getCurrentDocument().properties.shortdesc = this.getCurrentDocument().properties.shortdesc + ' (копия)';
+    this.getCurrentDocument().share = false;
+    return this.saveSandBox(income, flows, outcome);
+
+  }
+
+  /**
+   * Функция печати документа из Песочницы
+   */
+   printSandBox = () => {
+    return this._printSandBox();
+  }
+
+  _printSandBox() {
+
+    let doc = this.getCurrentDocument();
+    let openWindow = window.open("", "title", "attributes");
+    // openWindow.document.write(docContainer.innerHTML);
+    openWindow.document.write(new PrintFactory().printSbDocToHTML(doc));
+    openWindow.document.close();
+    openWindow.focus();
+    openWindow.print();
+    openWindow.close();
 
   }
 
@@ -186,6 +223,7 @@ import InputMultiValuesPopUp from "../../../static/popups/InputMultiValuesPopUp"
       return res;
     })
     .catch((err) => {
+      this.newSandBox();//при ошибке запроса - новый документ
       return Promise.reject(err);
     });
   }
@@ -362,6 +400,22 @@ import InputMultiValuesPopUp from "../../../static/popups/InputMultiValuesPopUp"
     this.setCurrentDocument(sbdoc);
   }
 
+  /**
+   * Проверка данных представления
+   */
+  checkModel = (incomeArr, outcomeArr, flowsArr) => {
+
+    const income = this.transformStocks(incomeArr);
+    const outcome = this.transformStocks(outcomeArr);
+    const flows = this.transformFlows(flowsArr);
+
+    return {
+      incomeBalanced: income.wellBalanced(0),
+      outcomeBalanced: outcome.wellBalanced(1),
+    }
+
+  }
+
 
   /**
    * Метод расчета остатков и оборотов
@@ -409,12 +463,12 @@ import InputMultiValuesPopUp from "../../../static/popups/InputMultiValuesPopUp"
         const acc = new Account();
         acc.setAccNumber(accObj.accountNumber);
         acc.setOpenBalance({
-          debet: accObj.debet == null ? 0 : accObj.debet,
-          credit: accObj.credit == null ? 0 : accObj.credit,
+          debet: Number(accObj.debet == null ? 0 : accObj.debet),
+          credit: Number(accObj.credit == null ? 0 : accObj.credit),
         });
         acc.setCloseBalance({
-          debet: accObj.debet == null ? 0 : accObj.debet,
-          credit: accObj.credit == null ? 0 : accObj.credit,
+          debet: Number(accObj.debet == null ? 0 : accObj.debet),
+          credit: Number(accObj.credit == null ? 0 : accObj.credit),
         });
         acc.setDescription(accObj.note);
         accSet.add(acc);
@@ -494,6 +548,12 @@ import InputMultiValuesPopUp from "../../../static/popups/InputMultiValuesPopUp"
   loadCurrentDocument() {
     if (this.getCurrentDocument()) {
       this.getServiceBuilder().loadData(this.getCurrentDocument());
+
+      const incomeArr = this.getServiceBuilder().getStockGridData(this.getServiceBuilder()._openingGridObject);
+      const outcomeArr = this.getServiceBuilder().getStockGridData(this.getServiceBuilder()._closeingGridObject);
+      const flowsArr = this.getServiceBuilder().getFlowGridData(this.getServiceBuilder()._flowGridObject);
+      this.getServiceBuilder().checkModelAndRender(incomeArr, outcomeArr, flowsArr);
+
     }
   }
 

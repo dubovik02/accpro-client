@@ -126,4 +126,31 @@ export default class AccountsSet extends AccEntity {
 
   }
 
+
+  /**
+   * проверяет равенство дебета и кредита в наборе (баланс набора) и возвращает
+   * абсолютную разность между дебетом и кредитом
+   * @param {Number} stockType 0 проверяет входящие остатки, 1 проверяет исходящие остатки
+   */
+   wellBalanced(stocksType) {
+
+    let sDeb = 0;
+    let sCred = 0;
+
+    if (!stocksType) {
+      this._accountsSet.forEach((item) => {
+        sDeb = sDeb + item.getOpenBalance().debet;
+        sCred = sCred + item.getOpenBalance().credit;
+      });
+    }
+    else {
+      this._accountsSet.forEach((item) => {
+        sDeb = sDeb + item.getCloseBalance().debet;
+        sCred = sCred + item.getCloseBalance().credit;
+      });
+    }
+
+    return Math.abs(sDeb - sCred);
+  }
+
 }

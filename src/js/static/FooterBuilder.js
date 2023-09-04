@@ -36,10 +36,10 @@ export default class FooterBuilder extends AccComponent {
                                 <p class="footer__text">${Properties.site.email}</p>
                               </a>
 
-                              <a href="https://github.com" class="link footer__link" target="_blank">
+                              <!--a href="https://github.com" class="link footer__link" target="_blank">
                                 <img class="footer__ico" src="${gitIco}"></img>
                                 <p class="footer__text">Мы на GitHub</p>
-                              </a>
+                              </a--!>
 
                             </div>`;
 

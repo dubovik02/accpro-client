@@ -70,6 +70,16 @@ export default class SandBoxBuilder extends ServiceBuilder {
   _menuSave;
 
   /**
+   * Пункт меню "Сохранить копию"
+   */
+   _menuSaveAsCopy;
+
+   /**
+   * Пункт меню "печать"
+   */
+    _menuPrint;
+
+  /**
    * Меню Свойства
    */
   _menuProperties;
@@ -100,6 +110,16 @@ export default class SandBoxBuilder extends ServiceBuilder {
   _saveFunction;
 
   /**
+   * Функция сохранения копии
+   */
+  _saveCopyFunction;
+
+  /**
+   * Функция печати документа
+   */
+   _printFunction;
+
+  /**
    * Функция публикации документа
    */
   _shareFunction;
@@ -124,6 +144,11 @@ export default class SandBoxBuilder extends ServiceBuilder {
     */
    _cellEditingFunction;
 
+   /**
+    * функция провери данных тетради
+    */
+   _checkModelFunctioin;
+
   /**
    * Компоненты характеристик файла
    */
@@ -146,6 +171,8 @@ export default class SandBoxBuilder extends ServiceBuilder {
     super(props)
     this._calcFunction = this._props.calcFunction;
     this._saveFunction = this._props.saveFunction;
+    this._saveCopyFunction = this._props.saveCopyFunction;
+    this._printFunction = this._props.printFunction;
     this._shareFunction = this._props.shareFunction;
     this._loadFunction = this._props.loadFunction;
     this._fileContentFunction = this._props.fileContentFunction;
@@ -154,6 +181,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
     this._createAndShowShareLink = this._props.createAndShowShareLink;
     this._likeFunction = this._props.likeFunction;
     this._cellEditingFunction = this._props.cellEditingFunction;
+    this._checkModelFunctioin = this._props.checkModelFunction;
   }
 
   createDOM() {
@@ -215,12 +243,11 @@ export default class SandBoxBuilder extends ServiceBuilder {
   _createServiceMenu() {
 
     const menuHtml = `<ul class="service-section__menu-list">
+
                         <li class="service-section__menu-item">
                           <a class="link service-section__link menu-item-new">Создать</a>
                         </li>
-                        <li class="service-section__menu-item">
-                          <a class="link service-section__link menu-item-properties">Свойства</a>
-                        </li>
+
                         <li class="service-section__menu-item">
                           <a class="link service-section__link menu-item-open">Открыть</a>
                         </li>
@@ -228,8 +255,21 @@ export default class SandBoxBuilder extends ServiceBuilder {
                           <a class="link service-section__link  menu-item-save">Сохранить</a>
                         </li>
                         <li class="service-section__menu-item">
+                          <a class="link service-section__link  menu-item-saveascopy">Сохранить копию</a>
+                        </li>
+
+
+                        <li class="service-section__menu-item">
+                          <a class="link service-section__link  menu-item-print">Печать</a>
+                        </li>
+
+                        <li class="service-section__menu-item">
+                          <a class="link service-section__link menu-item-properties">Свойства</a>
+                        </li>
+                        <li class="service-section__menu-item">
                           <a class="link service-section__link menu-item-share">Поделиться</a>
                         </li>
+
                         <li class="service-section__menu-item">
                           <a class="link service-section__link menu-item-calc">
                             Рассчитать
@@ -286,7 +326,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
    * @return {Element} элемент Grid
    */
   _createGridElement(title, className) {
-    const gridHtml = `<p class="grid__title">${title}</p>
+    const gridHtml = `<p class="grid__title grid__title-${className}">${title}</p>
                       <div style="height: 270px; max-width: 100%;" class="${className} ag-theme-alpine"></div>`;
     this._serviceView.insertAdjacentHTML('beforeend', gridHtml);
     return this._serviceView.querySelector(`.${className}`);
@@ -306,6 +346,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
       const outcomeArr = this.getStockGridData(this._closeingGridObject);
       const flowsArr = this.getFlowGridData(this._flowGridObject);
       this._cellEditingFunction.call(this, incomeArr, outcomeArr, flowsArr);
+      this.checkModelAndRender(incomeArr, outcomeArr, flowsArr);
     });
     return grid;
   }
@@ -323,10 +364,10 @@ export default class SandBoxBuilder extends ServiceBuilder {
         colId: 'rowNum',
         valueGetter: 'node.id',
         width: 30,
-        pinned: 'left'
+        pinned: 'left',
       },
 
-      { headerName: 'Счет', field: 'accountNumber', resizable: true, editable: true,},
+      { headerName: 'Счет', field: 'accountNumber', resizable: true, editable: true, rowDrag: true, },
       { headerName: 'Остаток по дебету', field: 'debet', resizable: true, editable: true, valueFormatter: this.currencyFormatter,},
       { headerName: 'Остаток по кредиту', field: 'credit', resizable: true, editable: true, valueFormatter: this.currencyFormatter,},
       { headerName: 'Пояснение', field: 'note', resizable: true, editable: true },
@@ -343,7 +384,11 @@ export default class SandBoxBuilder extends ServiceBuilder {
     // let the grid know which columns and what data to use
     const gridOptions = {
       columnDefs: columnDefs,
-      rowData: rowData
+      rowData: rowData,
+      rowDragManaged: true,
+      animateRows: true,
+      undoRedoCellEditing: true,
+      undoRedoCellEditingLimit: 20,
     };
 
     return gridOptions;
@@ -365,9 +410,9 @@ export default class SandBoxBuilder extends ServiceBuilder {
         pinned: 'left'
       },
 
-      { headerName: 'Содержание операции', field: 'operationDesc', resizable: true, editable: true,},
-      { headerName: 'Счет по дебету', field: 'debet', resizable: true, editable: true,},
-      { headerName: 'Счет по кредиту', field: 'credit', resizable: true, editable: true,},
+      { headerName: 'Содержание операции', field: 'operationDesc', resizable: true, editable: true, rowDrag: true,},
+      { headerName: 'Счет по дебету', field: 'debet', resizable: true, editable: true, },
+      { headerName: 'Счет по кредиту', field: 'credit', resizable: true, editable: true, },
       { headerName: 'Сумма', field: 'summ', resizable: true, editable: true, valueFormatter: this.currencyFormatter,},
       { headerName: 'Пояснение', field: 'note', resizable: true, editable: true,},
 
@@ -384,12 +429,15 @@ export default class SandBoxBuilder extends ServiceBuilder {
     // let the grid know which columns and what data to use
     const gridOptions = {
       columnDefs: columnDefs,
-      rowData: rowData
+      rowData: rowData,
+      rowDragManaged: true,
+      animateRows: true,
+      undoRedoCellEditing: true,
+      undoRedoCellEditingLimit: 20,
     };
 
     return gridOptions;
   }
-
 
   /**
    * Инициация пунктов меню и обработчиков событий меню
@@ -397,6 +445,8 @@ export default class SandBoxBuilder extends ServiceBuilder {
   _setUpMenuItems() {
     this._setUpMenuItemCalc();
     this._setUpMenuItemSave();
+    this._setUpMenuItemSaveCopy();
+    this._setUpMenuItemPrint();
     this._setUpMenuItemOpen();
     this._setUpMenuItemNew();
     this._setUpFileContentItem();
@@ -460,6 +510,52 @@ export default class SandBoxBuilder extends ServiceBuilder {
         preloader.remove();
         this.handleError(err);
       });
+    })
+  }
+
+  /**
+   * Настройка меню Сохранить как
+   */
+   _setUpMenuItemSaveCopy() {
+    this._menuSaveAsCopy = this._serviceMenu.querySelector('.menu-item-saveascopy');
+    this._menuSaveAsCopy.addEventListener('click', () => {
+
+       let preloader = this.getProps().preloader;
+       this._componentDOM.appendChild(preloader);
+
+       const income = this.getStockGridData(this._openingGridObject);
+       const outcome = this.getStockGridData(this._closeingGridObject);
+       const flows = this.getFlowGridData(this._flowGridObject);
+
+       this._saveCopyFunction.call(this, income, flows, outcome)
+       .then((res) => {
+         preloader.remove();
+       })
+       .catch((err) => {
+         preloader.remove();
+         this.handleError(err);
+       });
+    })
+  }
+
+  /**
+   * Настройка меню Печать
+   */
+   _setUpMenuItemPrint() {
+    this._menuPrint = this._serviceMenu.querySelector('.menu-item-print');
+    this._menuPrint.addEventListener('click', () => {
+
+       // let preloader = this.getProps().preloader;
+       //this._componentDOM.appendChild(preloader);
+       this._printFunction.call(this, []);
+      //  .then((res) => {
+      //    preloader.remove();
+      //  })
+      //  .catch((err) => {
+      //    preloader.remove();
+      //    this.handleError(err);
+      //  });
+
     })
   }
 
@@ -577,7 +673,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
     let totalObj = [];
     stockGrid.gridOptions.api.forEachNode((rowNode, index) => {
       let currentObj = {
-        accountNumber: rowNode.data.accountNumber,
+        accountNumber: rowNode.data.accountNumber ? rowNode.data.accountNumber.trim() : rowNode.data.accountNumber,
         debet: rowNode.data.debet,
         credit: rowNode.data.credit,
         note: rowNode.data.note,
@@ -701,7 +797,6 @@ export default class SandBoxBuilder extends ServiceBuilder {
 
     this._fileContentComponent.textContent = doc.properties.shortdesc;
     this._fileLikesCountComponent.textContent = doc.likes.length;
-    //this._fileLikesCountComponent.textContent = doc.likes;
     this._fileViewsComponent.textContent = doc.views;
 
     this._fileLastUpdateComponent.textContent = new Date(doc.lastupdate).toLocaleString();
@@ -717,6 +812,39 @@ export default class SandBoxBuilder extends ServiceBuilder {
       flows: this.getFlowGridData(this._flowGridObject),
       outcome: this.getStockGridData(this._closeingGridObject),
       share: this.getShareStatus(),
+    }
+  }
+
+  checkModelAndRender = (incomeArr, outcomeArr, flowsArr) => {
+    let checkResult = this._checkModel(incomeArr, outcomeArr, flowsArr);
+    this._renderCheckList(checkResult);
+  }
+
+  /**
+   * проверяет данные модели
+   */
+  _checkModel = (incomeArr, outcomeArr, flowsArr) => {
+    return this._checkModelFunctioin.call(this, incomeArr, outcomeArr, flowsArr);
+  }
+
+  /**
+   * Визуализирует результаты проверки
+   * @param {Object} checkResult объект результатов проверки
+   */
+  _renderCheckList = (checkResult) => {
+    //проверяем входящий
+    if (checkResult.incomeBalanced) {
+      document.querySelector('.grid__title-opening-grid').classList.add('grid__title_color-red');
+    }
+    else {
+      document.querySelector('.grid__title-opening-grid').classList.remove('grid__title_color-red');
+    }
+    //проверяем исходящий
+    if (checkResult.outcomeBalanced) {
+      document.querySelector('.grid__title-closeing-grid').classList.add('grid__title_color-red');
+    }
+    else {
+      document.querySelector('.grid__title-closeing-grid').classList.remove('grid__title_color-red');
     }
   }
 
