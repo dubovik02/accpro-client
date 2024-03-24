@@ -1,5 +1,8 @@
+@import url('./_color-red/grid__title_color-red.css');
+
 .grid__title {
   font-size: 1.5em;
   font-weight: bold;
   margin: 1em 0;
+  color: black;
 }

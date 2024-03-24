@@ -11,7 +11,7 @@
   /**
    * Документ
    */
-  _currentDocument = {};
+  _currentDocument = null; //{}
 
   /**
    * Построитель представления сервиса

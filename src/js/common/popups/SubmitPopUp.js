@@ -1,4 +1,5 @@
 import AccPopup from "./AccPopup";
+import Properties from "../../properties/Properties";
 /**
  * Попап сабмита информации
  */
@@ -10,9 +11,14 @@ export default class SubmitPopUp extends AccPopup {
   _submitButton;
 
   /**
-   * Кнопка сабмита
+   * Функция сабмита
    */
   _submitFunction;
+
+  /**
+   * Запускается после отработки сабмита и закрытия диалога
+   */
+  _afterCloseDialogFunction;
 
   /**
    * Элемент отображения общего сообщения об ошибке
@@ -22,10 +28,14 @@ export default class SubmitPopUp extends AccPopup {
   constructor(prop) {
     super(prop);
     this._submitFunction = this._props.submitFunction;
+    this._afterCloseDialogFunction = this._props.afterCloseDialogFunction;
   }
 
   createDOM() {
     super.createDOM();
+    if (this.getProps().popupWidth) {
+      this.getDOM().querySelector('.popup__content').style.width = this.getProps().popupWidth;
+    }
     this._errorInfo = this._form.querySelector('.popup__error-info');
     this._submitButton = this._form.elements.submit;
     this._setSubmitListener();
@@ -38,15 +48,23 @@ export default class SubmitPopUp extends AccPopup {
   _submit = () => {
 
     const caption = this._submitButton.textContent;
-    this._setButtonSubmitStatus('Выполняется ...', true);
+    this._setButtonSubmitStatus(`${Properties.lang.dict.popups.inProgress} ...`, true);
     this._submitFunction.call(this, this._getInputsValues())
-    .then((res) => {
+    .then(() => {
       this._setButtonSubmitStatus(caption, false);
       this.close();
+      if (this._afterCloseDialogFunction instanceof Function) {
+        this._afterCloseDialogFunction.call(this, [])
+        .then((_res) => {
+        })
+        .catch((err) => {
+          return Promise.reject(err);
+        });
+      }
     })
     .catch((err) => {
 
-      if (!err instanceof Error) {
+      if (!(err instanceof Error)) {
         err.json()
         .then((errRes) => {
           this._handleError(errRes, caption);

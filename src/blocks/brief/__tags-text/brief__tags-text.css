@@ -1,0 +1,15 @@
+.brief__tags-text {
+  cursor: pointer;
+
+  font-size: 1em;
+  color: white;
+
+  max-width: 25%;
+  overflow: hidden;
+
+  background-color:rgb(101, 121, 155);
+  border-radius: 1em;
+
+  margin-right: 1em;
+  padding: .5em;
+}

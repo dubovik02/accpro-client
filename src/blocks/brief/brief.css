@@ -2,15 +2,20 @@
 @import url('./__subtitle/brief__subtitle.css');
 @import url('./__text/brief__text.css');
 @import url('./__button-registration/brief__button-registration.css');
+@import url('./__tags-container/brief__tags-container.css');
+@import url('./__tags-text/brief__tags-text.css');
 
 
 .brief {
     position: relative;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     background-image: url('../../images/brief-cover.jpg');
     background-size: cover;
     padding: 3em 3em 3em 3em;
+    min-height: 75vh;
 }
 
 .brief::before {

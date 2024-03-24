@@ -1,4 +1,7 @@
+@import url(./_not-visible/service-section__description_not-visible.css);
+
 .service-section__description {
   font-size: 1em;
+  /* font-weight: bold; */
   margin: 0;
 }

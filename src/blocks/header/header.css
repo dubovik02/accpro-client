@@ -1,10 +1,11 @@
 @import url('../header/__button-login/header__button-login.css');
 @import url('../header/__link/header__link.css');
+@import url('../header/__buttons-container/header__buttons-container.css');
 
 .header {
     display: flex;
     justify-content: flex-start;
     align-items: center;
     /*border-bottom: solid 2px rgb(101, 121, 155);*/
-    background-color: black;    
+    background-color: black;
 }

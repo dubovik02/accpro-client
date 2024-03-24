@@ -1,0 +1,19 @@
+@import url('./__title/info-card__title.css');
+@import url('./__text/info-card__text.css');
+@import url('./__icon/info-card__icon.css');
+
+.info-card {
+  padding: 1em;
+  display: flex;
+  flex-direction: column;
+  border-radius: .4em;
+  text-decoration: none;
+  border: 1px solid rgba(101, 121, 155,.8);
+  /* box-shadow: 0 .5em .5em rgba(101, 121, 155,.8); */
+  justify-content: right;
+  max-width: 30%;
+}
+
+/* .info-card:hover {
+  transform: translateY(-.3em);
+} */

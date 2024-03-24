@@ -56,11 +56,14 @@ export default class ServiceBuilder extends AccComponent {
     this._componentDOM = document.createElement('service-section');
     this._componentDOM.classList.add('service-section');
 
+    const nameElem = this._props.serviceName ? `<p class="service-section__name">${this._props.serviceName}</p>` : '';
+    const descElem = this._props.serviceDescription ? `<p class="service-section__description">${this._props.serviceDescription}</p>` : '';
+
     const serviceHtml = `<div class="service-section__status-container">
 
                           <div class="service-section__status-container service-section__status-container_column left-container">
-                            <p class="service-section__name">${this._props.serviceName}</p>
-                            <p class="service-section__description">${this._props.serviceDescription}</p>
+                            ${nameElem}
+                            ${descElem}
                           </div>
 
                           <div class="service-section__status-container service-section__status-container_column center-container">

@@ -1,0 +1,10 @@
+@import url('./_center/service-section__icon-container_center.css');
+
+.service-section__icon-container {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+
+  margin-top: 0.3em;
+  margin-right: 1em;
+}

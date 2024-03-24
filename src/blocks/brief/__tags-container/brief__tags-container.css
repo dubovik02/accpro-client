@@ -1,0 +1,7 @@
+.brief__tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  min-width: 50%;
+  z-index: 1;
+  justify-content: center;
+}

@@ -244,4 +244,144 @@ export default class Api extends BaseApi {
 
   }
 
+  /**
+   *
+   * isViewed - был ранее просмотрен или нет
+   */
+  /**
+   * Возвращает расшаренный документ по Id
+   * @param {String} docId идентификатор документа
+   * @param {Boolean} isViewed отметка о просмотре документа клиентом
+   * @returns документ
+   */
+  getShareSandBoxDocument(docId, isViewed) {
+
+    return this.parseResponse(fetch(`${this._serverHttp}/share/${docId}`,
+    {
+      credentials: 'include',
+
+      method: 'GET',
+
+      headers: {
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json',
+        isviewed: isViewed,
+      }
+
+    }));
+
+  }
+
+  //изменение рейтинга документа
+  likeDoc(docId) {
+
+    return this.parseResponse(fetch(`${this._serverHttp}/like/${docId}`,
+      {
+        credentials: 'include',
+
+        method: 'PUT',
+
+        headers: {
+          authorization: `Bearer ${localStorage.getItem('jwt')}`,
+          'Content-Type': 'application/json'
+        }
+      }));
+  }
+
+  // fulltext поиск по документам
+  fullTextSearch(searchString) {
+
+    return this.parseResponse(fetch(`${this._serverHttp}/search/${searchString}`,
+    {
+      credentials: 'include',
+
+      method: 'GET',
+
+      headers: {
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json',
+      }
+
+    }));
+
+  }
+
+  // поиск документов по шаблону
+  templateSearch(searchOptionsObject) {
+
+    return this.parseResponse(fetch(`${this._serverHttp}/template/search`,
+    {
+      credentials: 'include',
+
+      method: 'POST',
+
+      headers: {
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json',
+      },
+
+      body: JSON.stringify(searchOptionsObject),
+
+    }));
+
+  }
+
+  //получение ТОП тэгов
+  getTopTags(topCount) {
+
+    return this.parseResponse(fetch(`${this._serverHttp}/tags/toptags/${topCount}`,
+    {
+      credentials: 'include',
+
+      method: 'GET',
+
+      headers: {
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json',
+      }
+
+    }));
+
+  }
+
+  //запрос восстановления пароля
+  restorePassword(params) {
+
+    return this.parseResponse(fetch(`${this._serverHttp}/restorePassword`,
+    {
+      credentials: 'include',
+
+      method: 'POST',
+
+      headers: {
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json',
+      },
+
+      body: JSON.stringify(params),
+
+    }));
+
+  }
+
+  //смена пароля
+  updateUserPassword(params) {
+
+    return this.parseResponse(fetch(`${this._serverHttp}/restorePassword`,
+    {
+      credentials: 'include',
+
+      method: 'PUT',
+
+      headers: {
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json',
+      },
+
+      body: JSON.stringify(params),
+
+    }));
+
+  }
+
 }

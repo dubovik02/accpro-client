@@ -1,0 +1,11 @@
+@import url('./_large-size/info-section__image_large-size.css');
+@import url('./_small-size/info-section__image_small-size.css');
+
+.info-section__image {
+  /* max-width: 50%; */
+  background-color: rgb(101,121,155);
+  height: auto;
+  margin-right: 3em;
+  padding: .7em;
+  border-radius: 1em;
+}

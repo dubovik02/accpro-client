@@ -1,11 +1,11 @@
 .brief__title {
 
-    max-width: 70%;
-    font-size: 4.5em;
+    /* max-width: 70%; */
+    font-size: 2.5em;
     font-weight: bold;
     color: white;
     margin: 0;
     padding: 0;
-    padding-bottom: 1em;   
-    z-index: 1; 
+    padding-bottom: 1em;
+    z-index: 1;
 }

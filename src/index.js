@@ -1,10 +1,7 @@
 import './style.css';
 import HeaderBuilder from './js/static/HeaderBuilder';
 import FooterBuilder from './js/static/FooterBuilder';
-import NewsBuilder from './js/static/sections/NewsBuilder';
 import Properties from './js/properties/Properties';
-import CardsList from './js/common/card/CardsList'
-import Card from './js/common/card/Card';
 import Api from './js/api/Api';
 import BriefBuilder from './js/static/BriefBuilder';
 import FormsFactory from './js/common/factories/FormsFactory';
@@ -12,13 +9,17 @@ import SignUpPopUp from './js/static/popups/SignUpPopUp';
 import FormInputsValidator from './js/validators/FormInputsValidator';
 import SignInPopUp from './js/static/popups/SignInPopUp';
 import AccComponent from './js/common/AccComponent';
-import { getNewsPeriod } from './js/lib/date';
 import SandBoxBuilder from './js/static/services/sandbox/SandBoxBuilder';
 import SandBoxProvider from './js/static/services/sandbox/SandBoxProvider';
-import ComponentsFactory from "./js/common/factories/ComponentsFactory"
-
-/*-------------Константы----------------*/
-
+import ComponentsFactory from "./js/common/factories/ComponentsFactory";
+import SearchBuilder from './js/static/services/search/SearchBuilder';
+import SearchProvider from './js/static/services/search/SearchProvider';
+import SearchResultsPanel from './js/static/services/search/SearchResultsPanel';
+import RestorePopUp from './js/static/popups/RestorePopUp';
+import Dialog from './js/common/dialogs/Dialog';
+import NewPasswordPopUp from './js/static/popups/NewPasswordPopUp';
+import rusDict from './js/languages/rus';
+import engDict from './js/languages/eng';
 
 /*-------------Переменные----------------*/
 const page = document.querySelector('.page');
@@ -26,8 +27,10 @@ const contentSection = document.querySelector('.content');
 const contentSectionContainer = document.querySelector('.content-container');
 
 /*-Api-*/
-//const newsApi = new NewsApi(Properties.connection.newsapi.url, Properties.connection.newsapi.token);
 const api = new Api(Properties.connection.accapi.url, localStorage.getItem('jwt'));
+
+/*-Число тэгов для отображения-*/
+const topTagsCount = Properties.search.maxTopTagsCount;
 
 /*-Header-*/
 let header;
@@ -35,19 +38,35 @@ let header;
 /*-Бриф-*/
 let brief;
 
-/*-News-*/
-let newsSection;
-let newsCardsList;
-
 /*-Песочница-*/
 let sandBoxServiceSection;
 let sandBoxProvider;
+
+/*-Поиск-*/
+let searchBuilder;
+let searchProvider;
+let searchResultPanel;
 
 /*-Попапы-*/
 /*-Регистрация-*/
 let popupSignUp;
 /*-Вход-*/
 let popupSignIn;
+/*-Запрос восстановлениие пароля-*/
+let popupRestore;
+/*-Восстановление пароля-*/
+let popUpNewPassword;
+
+/*-текущий словарь-*/
+let currentDictionary;
+
+/*-разделы-*/
+const MAIN_PAGE = 0;
+const SEARCH_PAGE = 1;
+const SANDBOX_PAGE = 2;
+
+/*-текущий активный раздел-*/
+let activePage = MAIN_PAGE;
 
 /*-------------Функции-------------------*/
 /**
@@ -55,17 +74,45 @@ let popupSignIn;
  */
 function onLoadDOM() {
 
-  makeHeader();
-  makeBriefSection();
-  makeFooter();
+  let dict;
+  if (navigator.language.toLowerCase() == 'ru-ru') {
+    dict = rusDict;
+  }
+  else {
+    dict = engDict;
+  }
+  setCurrentDictionary(dict);
 
+  makeHeader();
+
+  const params = new URLSearchParams(document.location.search);
+  const reqId = params.get('id');//запрос документа
+  const userKey = params.get('key');//запрос восстановления доступа
+  const userEmail = params.get('email');
+
+  if (!reqId && !userKey) {
+    makeBriefSection();
+  }
+  else {
+    if (reqId) {
+      makeSandBoxServiceSection(reqId);
+      activePage = SANDBOX_PAGE;
+    }
+    if (userKey) {
+      makeBriefSection();
+      localStorage.setItem('userKey', userKey);
+      localStorage.setItem('userEmail', userEmail);
+      showNewPasswordPopup();
+    }
+  }
+
+  makeFooter();
 }
 
 /**
  * Функция формирования заголовка
  */
 function makeHeader() {
-
   const isLoggedIn = localStorage.getItem('jwt');
 
   if (header instanceof AccComponent) {
@@ -77,26 +124,59 @@ function makeHeader() {
       isButLogin: isLoggedIn !== null ? false : true,
       username: localStorage.getItem('username'),
       menuActions: {
-        news: onNews,
+        main: onMain,
+        //news: onNews,
         sandBox: onSandBox,
+        search: onSearch,
       },
     }
   );
   header.createDOM();
 
   if (isLoggedIn) {
-    header.getControlButton().addEventListener('click', logout);
+    header.getButtonLogin().addEventListener('click', logout);
   }
 
+  header.getLangButton().addEventListener('click', toggleDictionary);
+
   popupSignIn = new SignInPopUp({
-    title: 'Войти в систему',
-    butOpen: isLoggedIn !== null ? null : header.getControlButton(),
+    title: `${Properties.lang.dict.popups.signinTitle}`,
+    butOpen: isLoggedIn !== null ? null : header.getButtonLogin(),
     form: new FormsFactory().createSignInForm('signin'),
     submitFunction: signIn,
     signUpFunction: showSignUpPopup,
+    restoreFunction: showRestorePopup,
   });
+  const validatorSignIn = new FormInputsValidator(popupSignIn.getForm(), Properties.lang.dict.errors);
 
-  const validator = new FormInputsValidator(popupSignIn.getForm(), Properties.popupErrMsg);
+  popupSignUp = new SignUpPopUp({
+    title: `${Properties.lang.dict.popups.signupTitle}`,
+    // butOpen: brief.getButtonSignUp(),
+    form: new FormsFactory().createSignUpForm('signup'),
+    submitFunction: signUp,
+    signInFunction: showSignInPopup,
+  });
+  const validatorSignUp = new FormInputsValidator(popupSignUp.getForm(), Properties.lang.dict.errors);
+
+  popupRestore = new RestorePopUp({
+    title: `${Properties.lang.dict.popups.restorePassTitle}`,
+    form: new FormsFactory().createRestoreForm('restore'),
+    signUpFunction: showSignUpPopup,
+    submitFunction: restorePassword,
+    afterCloseDialogFunction: () => {Dialog.InfoDialog(
+      `${Properties.lang.dict.promts.sendRestorePass} ${localStorage.getItem('userEmail')}`)},
+  });
+  const validatorRestore = new FormInputsValidator(popupRestore.getForm(), Properties.lang.dict.errors);
+
+  popUpNewPassword = new NewPasswordPopUp({
+    title: 'Восстановление пароля',
+    form: new FormsFactory().createNewPasswordForm('newpassword'),
+    submitFunction: changeUserPassword,
+    afterCloseDialogFunction: () => {
+      Dialog.InfoDialog(`${Properties.lang.dict.promts.newPassChanged} ${localStorage.getItem('userEmail')}.`);
+    },
+  });
+  const validatorNewPassword = new FormInputsValidator(popUpNewPassword.getForm(), Properties.lang.dict.errors);
 
   contentSection.insertAdjacentElement('afterbegin', header.getDOM());
 }
@@ -105,149 +185,60 @@ function makeHeader() {
  * Формирует brief-секцию
  */
 function makeBriefSection() {
-
-  if (localStorage.getItem('jwt')) {
-    if (brief instanceof AccComponent) {
-      brief.getDOM().remove();
-    }
-
-    makeNewsSection();
-  }
-  else {
-    brief = new BriefBuilder({});
-    brief.createDOM();
-
-    popupSignUp = new SignUpPopUp({
-      title: 'Регистрация пользователя',
-      butOpen: brief.getButtonSignUp(),
-      form: new FormsFactory().createSignUpForm('signup'),
-      submitFunction: signUp,
-      signInFunction: showSignInPopup,
+    brief = new BriefBuilder({
+      searchHTML: new ComponentsFactory().getSearchFormHTML(),
+      searchFunction: searchSbDoc,
+      topTagsFunction: loadTopTags,
     });
-
-    const validator = new FormInputsValidator(popupSignUp.getForm(), Properties.popupErrMsg);
-
+    brief.createDOM();
     contentSectionContainer.appendChild(brief.getDOM());
-  }
-}
-
-/**
- * Формирует секцию новостей
- */
-function makeNewsSection() {
-
-  newsSection = new NewsBuilder({
-    cardsList: new CardsList({}),
-    showStep: Properties.newsList.showStep,
-    filterFunction: filterNewsSection,
-  });
-  newsSection.createDOM();
-  newsSection.addPreloaderDOM('Минуточку, загружаем новости ...');
-
-  contentSectionContainer.appendChild(newsSection.getDOM());
-
-  const {nowDateStr, fromDateStr} = getNewsPeriod(true);
-
-  api.getNews(fromDateStr, nowDateStr)
-  .then((res) => {
-    newsSection.getPreloaderComponentDOM().remove();
-    if (res.length === 0) {
-      newsSection.addNoEntityDOM('Новостей на сегодня нет :(');
-    }
-    else {
-      newsCardsList = new CardsList({});
-      res.forEach((item) => {
-        const cardData = dbCardTransform(item);
-        const card = new Card(cardData);
-        newsCardsList.addCard(card);
-      });
-      newsSection.setCardsList(newsCardsList);
-      newsSection.createDOM();
-      contentSectionContainer.appendChild(newsSection.getDOM());
-    }
-  })
-  .catch((err) => {
-    newsSection.getPreloaderComponentDOM().remove();
-    newsSection.addErrorDOM(`Ошибка: ${err.message}`);
-  });
-
-  header.setActiveMenuItem(header.getMenuItemNews());
-}
-
-/**
- * Накладывает фильтр на секцию новостей (коллбэк события фильтрации)
- */
-function filterNewsSection(keyWordsArr, fromDateStr, toDateStr) {
-
-  //Очищаем предыдущие активности
-  if (newsSection.getEmptyComponentDOM()) {
-    newsSection.getEmptyComponentDOM().remove();
-  }
-
-  if (newsSection.getErrorComponentDOM()) {
-    newsSection.getErrorComponentDOM().remove();
-  }
-
-  newsSection.deleteCards();
-  //делаем прелоадер
-  newsSection.addPreloaderDOM('Отбираем новости .....');
-
-  //Получаем данные карточек по условиям фильтрации и отрисовываем их
-  return api.getNewsByKeyWords(fromDateStr, toDateStr, keyWordsArr)
-  .then((res) => {
-    newsSection.getPreloaderComponentDOM().remove();
-    if (res.length === 0) {
-      newsSection.addNoEntityDOM('Новостей по тематике нет :(');
-    }
-    else {
-      newsCardsList = new CardsList({});
-      res.forEach((item) => {
-        const cardData = dbCardTransform(item);
-        const card = new Card(cardData);
-        newsCardsList.addCard(card);
-      });
-      newsSection.setCardsList(newsCardsList);
-      newsSection.createCards();
-    }
-    return res;
-  })
-  .catch((err) => {
-    newsSection.getPreloaderComponentDOM().remove();
-    newsSection.addErrorDOM(`Ошибка: ${err.message}`);
-    return Promise.reject(err);
-  })
-
 }
 
 /**
  * Формирует секцию сервиса Песочницы
  */
-function makeSandBoxServiceSection() {
-
+function makeSandBoxServiceSection(reqId) {
   if (!sandBoxProvider) {
     sandBoxProvider = new SandBoxProvider({
       api: api,
     });
   }
 
-  if (!sandBoxServiceSection) {
-    sandBoxServiceSection = new SandBoxBuilder({
-      calcFunction: sandBoxProvider.calcSandBox,
-      saveFunction: sandBoxProvider.saveSandBox,
-      loginFunction: showSignInPopup,
-      preloader: new ComponentsFactory().createPreloader('Минуточку ...'),
-      openSBFunction: sandBoxProvider.openSandBoxDialog,
-      newSBFunction: sandBoxProvider.newSandBox,
-      fileContentFunction: sandBoxProvider.openUpdateFileContentDialog,
-    });
+  sandBoxServiceSection = new SandBoxBuilder({
+    calcFunction: sandBoxProvider.calcSandBox,
+    saveFunction: sandBoxProvider.saveSandBox,
+    saveCopyFunction: sandBoxProvider.saveSandBoxCopy,
+    printFunction: sandBoxProvider.printSandBox,
+    loginFunction: showSignInPopup,
+    preloader: new ComponentsFactory().createPreloader(`${Properties.lang.dict.dialogs.waitPlease}`),
+    openSBFunction: sandBoxProvider.openSandBoxDialog,
+    newSBFunction: sandBoxProvider.newSandBox,
+    fileContentFunction: sandBoxProvider.openUpdateFileContentDialog,
+    shareFunction: sandBoxProvider.createShareLink,
+    createAndShowShareLink: sandBoxProvider.createAndShowShareLink,
+    likeFunction: sandBoxProvider.like,
+    cellEditingFunction: sandBoxProvider.synchronizeModel,
+    checkModelFunction: sandBoxProvider.checkModel,
+  });
 
-    sandBoxProvider.setServiceBuilder(sandBoxServiceSection);
-    sandBoxServiceSection.createDOM();
-    //подгружаем пустой документ
-    sandBoxProvider.newSandBox();
-  }
-
+  sandBoxProvider.setServiceBuilder(sandBoxServiceSection);
+  sandBoxServiceSection.createDOM();
   contentSectionContainer.appendChild(sandBoxServiceSection.getDOM());
+  if (reqId) {//подгружаем запрашиваемый
+    const isViewed = localStorage.getItem(reqId) ? true : false;
+    if (!isViewed) {
+      localStorage.setItem(`${reqId}`, true);
+    }
+    sandBoxProvider._openShareSandBox(reqId, isViewed);
+  }
+  else {// если есть активный документ - подгружаем его
+    if (sandBoxProvider.getCurrentDocument()) {
+      sandBoxProvider.loadCurrentDocument();
+    }
+    else {//подгружаем пустой документ
+      sandBoxProvider.newSandBox();
+    }
+  }
 
 }
 
@@ -264,7 +255,6 @@ function makeFooter() {
  * Функция регистрации пользователя (коллбэк для регистрации)
  */
 function signUp(params) {
-
   return api.signUp(params.userName, params.userPass, params.userEmail)
     .then((res) => {
       signIn(params);//сразу входим после успешной регистрации
@@ -273,21 +263,49 @@ function signUp(params) {
     .catch((err) => {
       return Promise.reject(err);
     });
-
 }
 
 /**
  * Функция входа
  */
 function signIn(params) {
-
   return api.signIn(params.userEmail, params.userPass)
     .then((res) => {
       localStorage.setItem('jwt', res.jwt);
       localStorage.setItem('username', res.name);
       localStorage.setItem('userId', res.id);
       makeHeader();
-      //makeBriefSection();
+      return res;
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
+/**
+ * запроос восстановления пароля
+ */
+function restorePassword(params) {
+  return api.restorePassword(params)
+    .then((res) => {
+      return res;
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
+/**
+ * Смена пароля
+ */
+function changeUserPassword(obj) {
+  const params = {
+    key: localStorage.getItem('userKey'),
+    email: localStorage.getItem('userEmail'),
+    password: obj.newPass,
+  };
+  return api.updateUserPassword(params)
+    .then((res) => {
       return res;
     })
     .catch((err) => {
@@ -305,6 +323,43 @@ function logout() {
 }
 
 /**
+ * установка текущего словаря
+ */
+function setCurrentDictionary(dict) {
+  currentDictionary = dict;
+  Properties.lang.dict = currentDictionary;
+}
+
+/**
+ * Переключение словаря
+ */
+function toggleDictionary() {
+  if (currentDictionary == rusDict) {
+    setCurrentDictionary(engDict);
+  }
+  else {
+    setCurrentDictionary(rusDict);
+  }
+
+  makeHeader();
+
+  switch (activePage) {
+    case MAIN_PAGE:
+      onMain();
+      break;
+    case SEARCH_PAGE:
+      onSearch();
+      break;
+    case SANDBOX_PAGE:
+      onSandBox();
+      break;
+    default:
+      onMain();
+  }
+
+}
+
+/**
  * Показывает попап входа
  */
 function showSignInPopup() {
@@ -319,13 +374,36 @@ function showSignUpPopup() {
 }
 
 /**
- * Обработчик меню Новости
+ * Показывает попап запроса восстановления пароля
  */
-function onNews() {
-  clearContentContainer();
-  makeNewsSection();
+function showRestorePopup() {
+  popupRestore.open();
 }
 
+/**
+ * Показывает попап восстановления пароля
+ */
+function showNewPasswordPopup() {
+  popUpNewPassword.open();
+}
+
+/**
+ * Обработчик меню Главная
+ */
+ function onMain() {
+  clearContentContainer();
+  makeBriefSection();
+  activePage = MAIN_PAGE;
+}
+
+/**
+ * Обработчик меню Поиск
+ */
+ function onSearch() {
+  clearContentContainer();
+  makeSearchSection(null, null);
+  activePage = SEARCH_PAGE;
+}
 
 /**
  * Обработчик меню Песочница
@@ -333,6 +411,7 @@ function onNews() {
 function onSandBox() {
   clearContentContainer();
   makeSandBoxServiceSection();
+  activePage = SANDBOX_PAGE;
 }
 
 /**
@@ -345,19 +424,44 @@ function clearContentContainer() {
 }
 
 /**
- * Трансформирует объект новости из БД в объект данных карточки новостей
- * @param {Object} объект новости из БД
+ * Поиск тетрадки по запросу
  */
-function dbCardTransform(dbObject) {
-  return {
-    url: dbObject.link,
-    publishedAt: dbObject.date,
-    keyWord: dbObject.keyword,
-    urlToImage: dbObject.image,
-    title: dbObject.title,
-    description: dbObject.text,
-    source: dbObject.source,
-  };
+function searchSbDoc(searchString, searchTemplate) {
+  clearContentContainer();
+  makeSearchSection(searchString, searchTemplate);
+  header.setActiveMenuItem(header.getMenuItemSearch());
+}
+
+function makeSearchSection(searchString, searchTemplate) {
+
+  if (!searchProvider) {
+    searchProvider = new SearchProvider({
+      api: api,
+    });
+  }
+
+  searchResultPanel = new SearchResultsPanel({
+  });
+
+  searchBuilder = new SearchBuilder({
+    searchHTML: new ComponentsFactory().getAdvancedSearchFormHTML(),
+    searchResultsComponent: searchResultPanel,
+    searchFunction: searchProvider.search,
+    searchString: searchString,
+    searchTemplate: searchTemplate,
+  });
+
+  searchProvider.setServiceBuilder(searchBuilder);
+  searchBuilder.createDOM();
+  contentSectionContainer.appendChild(searchBuilder.getDOM());
+  if (searchTemplate) {//если что-то ищем
+    searchBuilder.search(searchTemplate);
+  }
+
+}
+
+function loadTopTags() {
+  return api.getTopTags(topTagsCount);
 }
 
 /*----------------------------Обработчики событий--------------------------------*/

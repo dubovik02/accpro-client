@@ -2,6 +2,8 @@ import AccComponent from '../common/AccComponent';
 import logo from '../../images/logo.png';
 import signInIco from '../../images/sign-in.png';
 import logoutIco from '../../images/logout.png';
+import langIco from '../../images/world24.png';
+import Properties from '../properties/Properties';
 
 /**
  * Класс формирования заголовка
@@ -12,12 +14,20 @@ export default class HeaderBuilder extends AccComponent {
   /**
    * Кнопка входа/логаута
    */
-  _controlButton;
+  _buttonLogin;
+
+  /**
+   * Выбор языка
+   */
+   _buttonLang;
+
+  //Мменю "Главная"
+  _menuItemMain;
 
   /**
    * Меню "Новости"
    */
-  _menuItemNews;
+  _menuItemSearch;
 
   /**
    * Меню "Песочница"
@@ -32,7 +42,7 @@ export default class HeaderBuilder extends AccComponent {
   /**
    * набор экшенов для пунктов меню
    */
-  _menuActions
+  _menuActions;
 
   constructor(props) {
     super(props);
@@ -47,17 +57,12 @@ export default class HeaderBuilder extends AccComponent {
       this._componentDOM = document.createElement('section');
       this._componentDOM.classList.add('header');
 
-      const headerHtml = `<a class="link header__link" href="./index.html">
-                            <img class="logo logo_place_header" src="${logo}" alt="логотип"></img>
-                          </a>
+      const headerHtml = `<img class="logo logo_place_header" src="${logo}" alt="логотип"></img>
                           <menu class="menu">
                             <ul class="menu-list">
-                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold menu-item-news" href="#">Новости</a></li>
-                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold menu-item-sandbox" href="#">Песочница</a></li>
-                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold" href="#">Учет</a></li>
-                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold" href="#">Отчетность</a></li>
-                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold" href="#">Справочники</a></li>
-                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold" href="#">Библиотека</a></li>
+                            <li class="menu-list__item"><a class="link menu-link menu-link_font_bold menu-item-main">${Properties.lang.dict.header.mainTitle}</a></li>
+                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold menu-item-search">${Properties.lang.dict.header.searchTitle}</a></li>
+                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold menu-item-sandbox">${Properties.lang.dict.header.sandBoxTitle}</a></li>
                             </ul>
                           </menu>`;
 
@@ -65,34 +70,66 @@ export default class HeaderBuilder extends AccComponent {
 
       this._createMenuItems();
       this._setMenuItemsListeners();
-      this._createButton(this._props.isButLogin);
+      this._createLoginButton(this._props.isButLogin);
+      this._createLangButton();
 
-      this._componentDOM.appendChild(this._controlButton);
+      let buttonContainer = document.createElement('div');
+      buttonContainer.classList.add('header__buttons-container');
+
+      buttonContainer.appendChild(this._buttonLogin);
+      buttonContainer.appendChild(this._buttonLang);
+
+      this._componentDOM.appendChild(buttonContainer);
   }
 
   /**
    * Создает базовую кнопку и настраивает ее
    */
-  _createButton(isButLogin) {
-    this._controlButton = document.createElement('button');
-    this._controlButton.classList.add('button');
-    this._controlButton.classList.add('header__button-login');
-    this._controlButton.setAttribute('title', (isButLogin ? 'Войти' : `Выход (${localStorage.getItem('username')})`))
+  _createLoginButton(isButLogin) {
 
-    const ico = isButLogin ? `<img src="${signInIco}"></img>` : `<img src="${logoutIco}"></img>`
-    this._controlButton.insertAdjacentHTML('afterbegin', ico);
+    this._buttonLogin = document.createElement('button');
+    this._buttonLogin.classList.add('button');
+    this._buttonLogin.classList.add('header__button-login');
+    this._buttonLogin.setAttribute('title',
+      (isButLogin ? `${Properties.lang.dict.header.login}` : `${Properties.lang.dict.header.logout} (${localStorage.getItem('username')})`));
+
+    const ico = isButLogin ? `<img src="${signInIco}"></img>` : `<img src="${logoutIco}"></img>`;
+    this._buttonLogin.insertAdjacentHTML('afterbegin', ico);
+
   }
 
-  getControlButton() {
-    return this._controlButton;
+  /**
+   * создаем языковое меню
+   */
+   _createLangButton() {
+
+    this._buttonLang = document.createElement('button');
+    this._buttonLang.classList.add('button');
+    this._buttonLang.classList.add('header__button-login');
+    this._buttonLang.setAttribute('title', 'Русский/English');
+
+    const icoLang = `<img src="${langIco}"></img>`;
+    this._buttonLang.insertAdjacentHTML('afterbegin', icoLang);
+
+  }
+
+  getButtonLogin() {
+    return this._buttonLogin;
+  }
+
+  getLangButton() {
+    return this._buttonLang;
   }
 
   /**
    * Создает пункты меню
    */
   _createMenuItems() {
-    this._menuItemNews = this._componentDOM.querySelector('.menu-item-news');
-    this._menuItemsList.push(this._menuItemNews);
+    this._menuItemMain = this._componentDOM.querySelector('.menu-item-main');
+    this._menuItemsList.push(this._menuItemMain);
+
+    this._menuItemSearch = this._componentDOM.querySelector('.menu-item-search');
+    this._menuItemsList.push(this._menuItemSearch);
 
     this._menuItemSandBox = this._componentDOM.querySelector('.menu-item-sandbox');
     this._menuItemsList.push(this._menuItemSandBox);
@@ -103,7 +140,8 @@ export default class HeaderBuilder extends AccComponent {
    */
   _setMenuItemsListeners() {
     if (this._menuActions instanceof Object) {
-      this._setMenuItemListener(this._menuItemNews, this._menuActions.news);
+      this._setMenuItemListener(this._menuItemMain, this._menuActions.main);
+      this._setMenuItemListener(this._menuItemSearch, this._menuActions.search);
       this._setMenuItemListener(this._menuItemSandBox, this._menuActions.sandBox);
     }
 
@@ -134,8 +172,8 @@ export default class HeaderBuilder extends AccComponent {
     });
   }
 
-  getMenuItemNews() {
-    return this._menuItemNews;
+  getMenuItemSearch() {
+    return this._menuItemSearch;
   }
 
 }

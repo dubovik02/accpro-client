@@ -1,0 +1,16 @@
+@import url('./__card-container/info-section__card-container.css');
+@import url('./__title/info-section__title.css');
+@import url('./__text/info-section__text.css');
+@import url('./__text-container/info-section__text-container.css');
+@import url('./__row-container/info-section__row-container.css');
+@import url('./__image/info-section__image.css');
+@import url('./_background-black/info-section_background-black.css');
+@import url('./_text-white/info-section_text-white.css');
+@import url('./_title-white/info-section_title-white.css');
+
+
+.info-section {
+  padding: 5em 3em;
+  display: flex;
+  flex-direction: column;
+}

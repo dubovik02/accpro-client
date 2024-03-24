@@ -63,4 +63,21 @@ export default class AccountingEntriesSet extends AccEntity {
 
   }
 
+  /**
+   * проверяет равенство дебета и кредита в наборе и возвращает
+   * абсолютную разность между дебетом и кредитом
+   */
+  wellBalanced() {
+
+    let sDeb = 0;
+    let sCred = 0;
+
+    this._entriesSet.forEach((item) => {
+      sDeb =+ item.getSum();
+      sCred =+ item.getSum();
+    });
+
+    return Math.abs(sDeb - sCred);
+  }
+
 }

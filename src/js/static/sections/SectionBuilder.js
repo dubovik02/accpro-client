@@ -88,8 +88,6 @@ export default class SectionBuilder extends AccComponent {
 
     this._componentDOM.appendChild(contentSection);
 
-
-
   }
 
   getCardsList() {

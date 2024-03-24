@@ -2,7 +2,9 @@ import ServiceBuilder from "../ServiceBuilder";
 import {Grid} from 'ag-grid-community';
 import Properties from "../../../properties/Properties";
 import { Number } from "core-js";
-import AccMessageDialog from "../../../common/dialogs/AccMessageDialog";
+import Dialog from "../../../common/dialogs/Dialog";
+import like from "../../../../images/like32.png";
+import view from "../../../../images/view64.png";
 
 /**
  * Сервис Песочницы
@@ -68,6 +70,21 @@ export default class SandBoxBuilder extends ServiceBuilder {
   _menuSave;
 
   /**
+   * Пункт меню "Сохранить копию"
+   */
+   _menuSaveAsCopy;
+
+   /**
+   * Пункт меню "печать"
+   */
+    _menuPrint;
+
+  /**
+   * Меню Свойства
+   */
+  _menuProperties;
+
+  /**
    * Пункт меню "Поделиться"
    */
   _menuShare;
@@ -93,6 +110,16 @@ export default class SandBoxBuilder extends ServiceBuilder {
   _saveFunction;
 
   /**
+   * Функция сохранения копии
+   */
+  _saveCopyFunction;
+
+  /**
+   * Функция печати документа
+   */
+   _printFunction;
+
+  /**
    * Функция публикации документа
    */
   _shareFunction;
@@ -107,6 +134,21 @@ export default class SandBoxBuilder extends ServiceBuilder {
    */
    _fileContentFunction;
 
+   /**
+    * Функция работы с рейтингом тетради
+    */
+   _likeFunction;
+
+   /**
+    * Функция отрабатывающая при завершении редактировании ячейки
+    */
+   _cellEditingFunction;
+
+   /**
+    * функция провери данных тетради
+    */
+   _checkModelFunctioin;
+
   /**
    * Компоненты характеристик файла
    */
@@ -117,17 +159,29 @@ export default class SandBoxBuilder extends ServiceBuilder {
 
   _fileContentComponent;
 
+  _fileShareComponent;
+
+  _fileLikeComponent;
+  _fileLikesCountComponent;
+
+  _fileViewsComponent;
+
 
   constructor(props) {
-    props.serviceName = 'Бухгалтерская песочница';
-    props.serviceDescription = 'Сервис совместной работы над бухгалтерским кодом - проводками';
     super(props)
     this._calcFunction = this._props.calcFunction;
     this._saveFunction = this._props.saveFunction;
+    this._saveCopyFunction = this._props.saveCopyFunction;
+    this._printFunction = this._props.printFunction;
     this._shareFunction = this._props.shareFunction;
     this._loadFunction = this._props.loadFunction;
     this._fileContentFunction = this._props.fileContentFunction;
     this._currentDocument = this._props.currentDocument;
+    this._shareFunction = this._props.shareFunction;
+    this._createAndShowShareLink = this._props.createAndShowShareLink;
+    this._likeFunction = this._props.likeFunction;
+    this._cellEditingFunction = this._props.cellEditingFunction;
+    this._checkModelFunctioin = this._props.checkModelFunction;
   }
 
   createDOM() {
@@ -144,23 +198,42 @@ export default class SandBoxBuilder extends ServiceBuilder {
    */
   _createStatusBar() {
 
-    const centerStatusBarHtml = `<p class="service-section__description">
-                                  Тетрадь:
+    const centerStatusBarHtml = `
+                                <p class="service-section__description">
+                                  ${Properties.lang.dict.notebook.notebook}:
                                   <span class="service-section__span file-name"></span>
                                    |
                                   <span class="service-section__span file-date"></span>
                                 </p>
 
                                 <p class="service-section__description">
-                                  Описание:
-                                  <span class="service-section__span service-section__span_file-description"></span>
+                                  ${Properties.lang.dict.notebook.name}:
+                                  <span class="service-section__span service-section__span_file-description description"></span>
+                                  <span class="service-section__span service-section__span_file-description sharestatus"></span>
                                 </p>
-                                `;
-    this._centerContainer.insertAdjacentHTML('afterbegin', centerStatusBarHtml);
 
-    this._fileNameComponent = this._centerContainer.querySelector('.file-name');
-    this._fileLastUpdateComponent = this._centerContainer.querySelector('.file-date');
-    this._fileContentComponent = this._centerContainer.querySelector('.service-section__span_file-description');
+                                <div class="service-section__icon-container">
+                                  <div class="service-section__icon-container">
+                                    <img class="service-section__icon service-section__icon_linked like" src="${like}">
+                                    <span class="service-section__span likes-counter"></span>
+                                  </div>
+                                  <div class="service-section__icon-container">
+                                    <img class="service-section__icon" src="${view}">
+                                    <span class="service-section__span views-counter"></span>
+                                  </div>
+                                </div>
+
+                                `;
+
+    this._leftContainer.insertAdjacentHTML('afterbegin', centerStatusBarHtml);
+
+    this._fileNameComponent = this._leftContainer.querySelector('.file-name');
+    this._fileLastUpdateComponent = this._leftContainer.querySelector('.file-date');
+    this._fileContentComponent = this._leftContainer.querySelector('.description');
+    this._fileShareComponent = this._leftContainer.querySelector('.sharestatus');
+    this._fileLikeComponent = this._leftContainer.querySelector('.like');
+    this._fileLikesCountComponent = this._leftContainer.querySelector('.likes-counter');
+    this._fileViewsComponent = this._leftContainer.querySelector('.views-counter');
 
   }
 
@@ -170,29 +243,44 @@ export default class SandBoxBuilder extends ServiceBuilder {
   _createServiceMenu() {
 
     const menuHtml = `<ul class="service-section__menu-list">
+
                         <li class="service-section__menu-item">
-                          <a class="link service-section__link menu-item-new" href="#">Создать</a>
+                          <a class="link service-section__link menu-item-new">${Properties.lang.dict.sandbox.menu.new}</a>
+                        </li>
+
+                        <li class="service-section__menu-item">
+                          <a class="link service-section__link menu-item-open">${Properties.lang.dict.sandbox.menu.open}</a>
                         </li>
                         <li class="service-section__menu-item">
-                          <a class="link service-section__link menu-item-open" href="#">Открыть</a>
+                          <a class="link service-section__link  menu-item-save">${Properties.lang.dict.sandbox.menu.save}</a>
                         </li>
                         <li class="service-section__menu-item">
-                          <a class="link service-section__link  menu-item-save" href="#">Сохранить</a>
+                          <a class="link service-section__link  menu-item-saveascopy">${Properties.lang.dict.sandbox.menu.saveCopy}</a>
+                        </li>
+
+
+                        <li class="service-section__menu-item">
+                          <a class="link service-section__link  menu-item-print">${Properties.lang.dict.sandbox.menu.print}</a>
+                        </li>
+
+                        <li class="service-section__menu-item">
+                          <a class="link service-section__link menu-item-properties">${Properties.lang.dict.sandbox.menu.props}</a>
                         </li>
                         <li class="service-section__menu-item">
-                          <a class="link service-section__link" href="#">Поделиться</a>
+                          <a class="link service-section__link menu-item-share">${Properties.lang.dict.sandbox.menu.share}</a>
                         </li>
+
                         <li class="service-section__menu-item">
-                          <a class="link service-section__link menu-item-calc" href="#">
-                            Рассчитать
+                          <a class="link service-section__link menu-item-calc">
+                            ${Properties.lang.dict.sandbox.menu.calc}
                           </a>
 
                           <ul class="service-section__submenu-list">
                             <li class="service-section__submenu-item">
-                              <a class="link service-section__sublink submenu-item-calc-income" href="#">Входящие остатки</a>
+                              <a class="link service-section__sublink submenu-item-calc-income">${Properties.lang.dict.sandbox.menu.calcIncome}</a>
                             </li>
                             <li class="service-section__submenu-item">
-                              <a class="link service-section__sublink submenu-item-calc-outcome" href="#">Исходящие остатки</a>
+                              <a class="link service-section__sublink submenu-item-calc-outcome">${Properties.lang.dict.sandbox.menu.calcOutcome}</a>
                             </li>
                           </ul>
 
@@ -208,7 +296,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
    * Создает таблицу входящих остатков
    */
   _createOpeningGrid() {
-    this._openingGridElement = this._createGridElement('Входящие остатки (opening balance)','opening-grid');
+    this._openingGridElement = this._createGridElement(`${Properties.lang.dict.sandbox.grids.incomeTitle}`,'opening-grid');
     const gridOptions = this._getStockGridOptions();
     this._openingGridObject = this._createGridObject(this._openingGridElement, gridOptions);
   }
@@ -217,7 +305,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
    * Создает таблицу оборотов
    */
   _createFlowsGrid() {
-    this._flowGridElement = this._createGridElement('Обороты (flows)', 'flow-grid');
+    this._flowGridElement = this._createGridElement(`${Properties.lang.dict.sandbox.grids.flowTitle}`, 'flow-grid');
     const gridOptions = this._getFlowGridOptions();
     this._flowGridObject = this._createGridObject(this._flowGridElement, gridOptions);
   }
@@ -226,7 +314,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
    * Создает таблицу исходящих остатков
    */
   _createClosingGrid() {
-    this._closeingGridElement = this._createGridElement('Исходящие остатки (closeing balance)','closeing-grid');
+    this._closeingGridElement = this._createGridElement(`${Properties.lang.dict.sandbox.grids.outcomeTitle}`,'closeing-grid');
     const gridOptions = this._getStockGridOptions();
     this._closeingGridObject = this._createGridObject(this._closeingGridElement, gridOptions);
   }
@@ -238,7 +326,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
    * @return {Element} элемент Grid
    */
   _createGridElement(title, className) {
-    const gridHtml = `<p class="grid__title">${title}</p>
+    const gridHtml = `<p class="grid__title grid__title-${className}">${title}</p>
                       <div style="height: 270px; max-width: 100%;" class="${className} ag-theme-alpine"></div>`;
     this._serviceView.insertAdjacentHTML('beforeend', gridHtml);
     return this._serviceView.querySelector(`.${className}`);
@@ -253,6 +341,13 @@ export default class SandBoxBuilder extends ServiceBuilder {
   _createGridObject(gridElement, gridOptions) {
     const grid = new Grid(gridElement, gridOptions);
     grid.gridOptions.api.sizeColumnsToFit();
+    grid.gridOptions.api.addEventListener('cellEditingStopped', () => {
+      const incomeArr = this.getStockGridData(this._openingGridObject);
+      const outcomeArr = this.getStockGridData(this._closeingGridObject);
+      const flowsArr = this.getFlowGridData(this._flowGridObject);
+      this._cellEditingFunction.call(this, incomeArr, outcomeArr, flowsArr);
+      this.checkModelAndRender(incomeArr, outcomeArr, flowsArr);
+    });
     return grid;
   }
 
@@ -269,13 +364,13 @@ export default class SandBoxBuilder extends ServiceBuilder {
         colId: 'rowNum',
         valueGetter: 'node.id',
         width: 30,
-        pinned: 'left'
+        pinned: 'left',
       },
 
-      { headerName: 'Счет', field: 'accountNumber', resizable: true, editable: true,},
-      { headerName: 'Остаток по дебету', field: 'debet', resizable: true, editable: true, valueFormatter: this.currencyFormatter,},
-      { headerName: 'Остаток по кредиту', field: 'credit', resizable: true, editable: true, valueFormatter: this.currencyFormatter,},
-      { headerName: 'Пояснение', field: 'note', resizable: true, editable: true },
+      { headerName: `${Properties.lang.dict.sandbox.grids.account}`, field: 'accountNumber', resizable: true, editable: true, rowDrag: true, },
+      { headerName: `${Properties.lang.dict.sandbox.grids.debitStock}`, field: 'debet', resizable: true, editable: true, valueFormatter: this.currencyFormatter,},
+      { headerName: `${Properties.lang.dict.sandbox.grids.creditStock}`, field: 'credit', resizable: true, editable: true, valueFormatter: this.currencyFormatter,},
+      { headerName: `${Properties.lang.dict.sandbox.grids.note}`, field: 'note', resizable: true, editable: true, /*wrapText: true, autoHeight: true,*/ },
 
     ];
 
@@ -289,7 +384,11 @@ export default class SandBoxBuilder extends ServiceBuilder {
     // let the grid know which columns and what data to use
     const gridOptions = {
       columnDefs: columnDefs,
-      rowData: rowData
+      rowData: rowData,
+      rowDragManaged: true,
+      animateRows: true,
+      undoRedoCellEditing: true,
+      undoRedoCellEditingLimit: 20,
     };
 
     return gridOptions;
@@ -311,11 +410,11 @@ export default class SandBoxBuilder extends ServiceBuilder {
         pinned: 'left'
       },
 
-      { headerName: 'Содержание операции', field: 'operationDesc', resizable: true, editable: true,},
-      { headerName: 'Счет по дебету', field: 'debet', resizable: true, editable: true,},
-      { headerName: 'Счет по кредиту', field: 'credit', resizable: true, editable: true,},
-      { headerName: 'Сумма', field: 'summ', resizable: true, editable: true, valueFormatter: this.currencyFormatter,},
-      { headerName: 'Пояснение', field: 'note', resizable: true, editable: true,},
+      { headerName: `${Properties.lang.dict.sandbox.grids.flowNote}`, field: 'operationDesc', resizable: true, editable: true, rowDrag: true, /*wrapText: true, autoHeight: true,*/},
+      { headerName: `${Properties.lang.dict.sandbox.grids.accDebit}`, field: 'debet', resizable: true, editable: true, },
+      { headerName: `${Properties.lang.dict.sandbox.grids.accCredit}`, field: 'credit', resizable: true, editable: true, },
+      { headerName: `${Properties.lang.dict.sandbox.grids.summ}`, field: 'summ', resizable: true, editable: true, valueFormatter: this.currencyFormatter,},
+      { headerName: `${Properties.lang.dict.sandbox.grids.note}`, field: 'note', resizable: true, editable: true, /*wrapText: true, autoHeight: true,*/},
 
     ];
 
@@ -330,12 +429,15 @@ export default class SandBoxBuilder extends ServiceBuilder {
     // let the grid know which columns and what data to use
     const gridOptions = {
       columnDefs: columnDefs,
-      rowData: rowData
+      rowData: rowData,
+      rowDragManaged: true,
+      animateRows: true,
+      undoRedoCellEditing: true,
+      undoRedoCellEditingLimit: 20,
     };
 
     return gridOptions;
   }
-
 
   /**
    * Инициация пунктов меню и обработчиков событий меню
@@ -343,9 +445,15 @@ export default class SandBoxBuilder extends ServiceBuilder {
   _setUpMenuItems() {
     this._setUpMenuItemCalc();
     this._setUpMenuItemSave();
+    this._setUpMenuItemSaveCopy();
+    this._setUpMenuItemPrint();
     this._setUpMenuItemOpen();
     this._setUpMenuItemNew();
     this._setUpFileContentItem();
+    this._setUpMenuItemShare();
+    this._setUpFileShareComponent();
+    this._setUpMenuItemProperties();
+    this._setUpLikeComponent();
   }
 
   /**
@@ -393,30 +501,50 @@ export default class SandBoxBuilder extends ServiceBuilder {
       const income = this.getStockGridData(this._openingGridObject);
       const outcome = this.getStockGridData(this._closeingGridObject);
       const flows = this.getFlowGridData(this._flowGridObject);
-      const description = this._fileContentComponent.textContent;
 
-      this._saveFunction.call(this, income, flows, outcome, description)
+      this._saveFunction.call(this, income, flows, outcome)
       .then((res) => {
         preloader.remove();
       })
       .catch((err) => {
         preloader.remove();
-        if (!err instanceof Error) {
-          const popup = new AccMessageDialog(`Ошибка: ${err.statusText} (Код: ${err.status})`);
-          popup.open();
-        }
-        else {
-          //если не авторизированы - авторизируем
-          if (err.status == 401) {
-            this.getProps().loginFunction.call(this);
-          }
-          else {
-            const popup = new AccMessageDialog(`Ошибка: ${err.message}`);
-            popup.open();
-          }
-        }
-
+        this.handleError(err);
       });
+    })
+  }
+
+  /**
+   * Настройка меню Сохранить как
+   */
+   _setUpMenuItemSaveCopy() {
+    this._menuSaveAsCopy = this._serviceMenu.querySelector('.menu-item-saveascopy');
+    this._menuSaveAsCopy.addEventListener('click', () => {
+
+       let preloader = this.getProps().preloader;
+       this._componentDOM.appendChild(preloader);
+
+       const income = this.getStockGridData(this._openingGridObject);
+       const outcome = this.getStockGridData(this._closeingGridObject);
+       const flows = this.getFlowGridData(this._flowGridObject);
+
+       this._saveCopyFunction.call(this, income, flows, outcome)
+       .then((res) => {
+         preloader.remove();
+       })
+       .catch((err) => {
+         preloader.remove();
+         this.handleError(err);
+       });
+    })
+  }
+
+  /**
+   * Настройка меню Печать
+   */
+   _setUpMenuItemPrint() {
+    this._menuPrint = this._serviceMenu.querySelector('.menu-item-print');
+    this._menuPrint.addEventListener('click', () => {
+       this._printFunction.call(this, []);
     })
   }
 
@@ -426,15 +554,28 @@ export default class SandBoxBuilder extends ServiceBuilder {
   _setUpMenuItemOpen() {
     this._menuOpen = this._serviceMenu.querySelector('.menu-item-open');
     this._menuOpen.addEventListener('click', () => {
-      this.getProps().openSBFunction.call(this);
+      this._openEvent();
     })
+  }
+
+  _openEvent() {
+    let preloader = this.getProps().preloader;
+    this._componentDOM.appendChild(preloader);
+
+    this.getProps().openSBFunction.call(this)
+    .then((res) => {
+      preloader.remove();
+    })
+    .catch((err) => {
+      preloader.remove();
+      this.handleError(err);
+    });
   }
 
   /**
    * Настройка меню Создать
    */
   _setUpMenuItemNew() {
-
     this._menuNew = this._serviceMenu.querySelector('.menu-item-new');
     this._menuNew.addEventListener('click', () => {
       this.getProps().newSBFunction.call(this);
@@ -442,12 +583,75 @@ export default class SandBoxBuilder extends ServiceBuilder {
   }
 
   /**
-   * Обработчик определенияя описания тетради
+   * Обработчик определения описания тетради
    */
   _setUpFileContentItem() {
     this._fileContentComponent.addEventListener('click', () => {
       this._fileContentFunction.call(this);
     })
+  }
+
+  /**
+   * Настройка меню Поделиться
+   */
+   _setUpMenuItemShare() {
+
+    this._menuShare = this._serviceMenu.querySelector('.menu-item-share');
+    this._menuShare.addEventListener('click', () => {
+
+      let preloader = this.getProps().preloader;
+      this._componentDOM.appendChild(preloader);
+
+      this._shareFunction.call(this)
+      .then((res) => {
+        preloader.remove();
+      })
+      .catch((err) => {
+        preloader.remove();
+        this.handleError(err);
+      });
+    });
+  }
+
+  /**
+   * Обработчик определения описания тетради
+   */
+   _setUpFileShareComponent() {
+    this._fileShareComponent.addEventListener('click', () => {
+      this._createAndShowShareLink.call(this);
+    })
+  }
+
+  /**
+   * Насторойка меню Свойства
+   */
+  _setUpMenuItemProperties() {
+    this._menuProperties = this._serviceMenu.querySelector('.menu-item-properties');
+    this._menuProperties.addEventListener('click', () => {
+      this._fileContentFunction.call(this);
+    });
+  }
+
+  /**
+   * Настройка рейтинга
+   */
+  _setUpLikeComponent() {
+    this._fileLikeComponent.addEventListener('click', () => {
+
+      let preloader = this.getProps().preloader;
+      this._componentDOM.appendChild(preloader);
+
+      this._likeFunction.call(this)
+      .then((res) => {
+        preloader.remove();
+        this.setLikesCount(res.count);
+      })
+      .catch((err) => {
+        preloader.remove();
+        this.handleError(err);
+      });
+
+    });
   }
 
   /**
@@ -458,7 +662,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
     let totalObj = [];
     stockGrid.gridOptions.api.forEachNode((rowNode, index) => {
       let currentObj = {
-        accountNumber: rowNode.data.accountNumber,
+        accountNumber: rowNode.data.accountNumber ? rowNode.data.accountNumber.trim() : rowNode.data.accountNumber,
         debet: rowNode.data.debet,
         credit: rowNode.data.credit,
         note: rowNode.data.note,
@@ -577,9 +781,15 @@ export default class SandBoxBuilder extends ServiceBuilder {
     this.setStockGridData(this._openingGridObject, doc.text.income, true);
     this.setFlowGridData(this._flowGridObject, doc.text.flows);
     this.setStockGridData(this._closeingGridObject, doc.text.outcome, false);
-    this._fileNameComponent.textContent = doc._id ? doc._id : "Без имени";
-    this._fileContentComponent.textContent = doc.description;
+
+    this._fileNameComponent.textContent = doc._id ? doc._id : `${Properties.lang.dict.notebook.noname}`;
+
+    this._fileContentComponent.textContent = doc.properties.shortdesc;
+    this._fileLikesCountComponent.textContent = doc.likes.length;
+    this._fileViewsComponent.textContent = doc.views;
+
     this._fileLastUpdateComponent.textContent = new Date(doc.lastupdate).toLocaleString();
+    this.setShareStatus(doc.share == null ? false : doc.share);
   }
 
   getData() {
@@ -589,7 +799,41 @@ export default class SandBoxBuilder extends ServiceBuilder {
       lustUpdate: this._fileLastUpdateComponent.textContent,
       income: this.getStockGridData(this._openingGridObject),
       flows: this.getFlowGridData(this._flowGridObject),
-      outcome: this.getStockGridData(this._closeingGridObject)
+      outcome: this.getStockGridData(this._closeingGridObject),
+      share: this.getShareStatus(),
+    }
+  }
+
+  checkModelAndRender = (incomeArr, outcomeArr, flowsArr) => {
+    let checkResult = this._checkModel(incomeArr, outcomeArr, flowsArr);
+    this._renderCheckList(checkResult);
+  }
+
+  /**
+   * проверяет данные модели
+   */
+  _checkModel = (incomeArr, outcomeArr, flowsArr) => {
+    return this._checkModelFunctioin.call(this, incomeArr, outcomeArr, flowsArr);
+  }
+
+  /**
+   * Визуализирует результаты проверки
+   * @param {Object} checkResult объект результатов проверки
+   */
+  _renderCheckList = (checkResult) => {
+    //проверяем входящий
+    if (checkResult.incomeBalanced) {
+      document.querySelector('.grid__title-opening-grid').classList.add('grid__title_color-red');
+    }
+    else {
+      document.querySelector('.grid__title-opening-grid').classList.remove('grid__title_color-red');
+    }
+    //проверяем исходящий
+    if (checkResult.outcomeBalanced) {
+      document.querySelector('.grid__title-closeing-grid').classList.add('grid__title_color-red');
+    }
+    else {
+      document.querySelector('.grid__title-closeing-grid').classList.remove('grid__title_color-red');
     }
   }
 
@@ -604,8 +848,44 @@ export default class SandBoxBuilder extends ServiceBuilder {
       return '';
     }
 
-    valueNumb = valueNumb.toFixed(2);
+    valueNumb = new Intl.NumberFormat("ru-RU", {style: "decimal", minimumFractionDigits: 2, maximumFractionDigits: 2}).format(valueNumb);
     return valueNumb;
+  }
+
+  /**
+   * Пользовательский обработчик ошибки с сервера
+   * @param {Object} err
+   */
+  handleError(err) {
+    if (!err instanceof Error) {
+      Dialog.ErrorDialog(`${Properties.lang.dict.errors.error}: ${err.statusText} (${Properties.lang.dict.errors.code}: ${err.status})`);
+    }
+    else {
+      //если не авторизированы - авторизируем
+      if (err.status == 401) {
+        this.getProps().loginFunction.call(this);
+      }
+      else {
+        Dialog.ErrorDialog(`${Properties.lang.dict.errors.error}: ${err.message}`);
+      }
+    }
+  }
+
+  getShareStatus() {
+    return this._fileShareComponent.textContent ? true : false;
+  }
+
+  setShareStatus(status) {
+    status ? this._fileShareComponent.textContent = `(${Properties.lang.dict.notebook.share})` : this._fileShareComponent.textContent = '';
+    status ? this._menuShare.textContent = `${Properties.lang.dict.sandbox.menu.unshare}` : this._menuShare.textContent = `${Properties.lang.dict.sandbox.menu.share}`;
+  }
+
+  setLikesCount(count) {
+    this._fileLikesCountComponent.textContent = count;
+  }
+
+  getLikesCount() {
+    return this._fileLikesCountComponent.textContent;
   }
 
 }
