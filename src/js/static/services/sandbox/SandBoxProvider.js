@@ -92,7 +92,8 @@ import PrintFactory from "../../../common/factories/PrintFactory";
   _saveSandBoxCopy(income, flows, outcome) {
 
     this.getCurrentDocument()._id = null;
-    this.getCurrentDocument().properties.shortdesc = this.getCurrentDocument().properties.shortdesc + ' (копия)';
+    this.getCurrentDocument().properties.shortdesc = this.getCurrentDocument().properties.shortdesc
+      + ` (${Properties.lang.dict.general.copy})`;
     this.getCurrentDocument().share = false;
     return this.saveSandBox(income, flows, outcome);
 
@@ -143,9 +144,9 @@ import PrintFactory from "../../../common/factories/PrintFactory";
 
         const columnDefs = [
 
-          { headerName: 'Тетрадь', field: 'shortdesc', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter' },
-          { headerName: 'Имя тетради', field: 'id', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter' },
-          { headerName: 'Обновлено', field: 'date', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter'},
+          { headerName: `${Properties.lang.dict.notebook.notebook}`, field: 'shortdesc', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter' },
+          { headerName: `${Properties.lang.dict.notebook.name}`, field: 'id', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter' },
+          { headerName: `${Properties.lang.dict.notebook.refresh}`, field: 'date', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter'},
 
         ];
 
@@ -165,7 +166,7 @@ import PrintFactory from "../../../common/factories/PrintFactory";
         const gridObj = gridFactory.createGridObject(gridElement, gridOptions);
         const form = new FormsFactory().createSingleGridForm('selectForm', gridElement);
         const popup = new SelectFromGridPopUp({
-          title: 'Выбор тетради',
+          title: `${Properties.lang.dict.popups.selectNotebookTitle}`,
           form: form,
           submitFunction: this.openSandBox,
           gridObj: gridObj,
@@ -190,7 +191,7 @@ import PrintFactory from "../../../common/factories/PrintFactory";
       }
     }
     else {
-      return Promise.reject(new Error('Не выбран документ!'));
+      return Promise.reject(new Error(`${Properties.lang.dict.errors.notebookNotSelected}!`));
     }
 
   }
@@ -217,7 +218,7 @@ import PrintFactory from "../../../common/factories/PrintFactory";
         this.loadCurrentDocument();
       }
       else {
-        Dialog.ErrorDialog(`Документ не найден или владелец прекратил его публикацию!`);
+        Dialog.ErrorDialog(`${Properties.lang.dict.errors.notebookNotFound}!`);
         this.newSandBox();
       }
       return res;
@@ -246,9 +247,9 @@ import PrintFactory from "../../../common/factories/PrintFactory";
       lastupdate: new Date().getTime(),
       share: false,
       properties: {
-        shortdesc: 'Моя тетрадь',
-        description: 'Набор проводок по операции',
-        tags: '#МойТэг',
+        shortdesc: `${Properties.lang.dict.notebook.myNotebook}`,
+        description: `${Properties.lang.dict.notebook.myDescription}`,
+        tags: `${Properties.lang.dict.notebook.myTags}`,
       },
       likes: [],
       views: 0,
@@ -283,9 +284,9 @@ import PrintFactory from "../../../common/factories/PrintFactory";
       form: inputForm,
       inputs: [shortDescEl, descEl, tagsEl],
       submitFunction: this.updateFileContent,
-      title: 'Свойства тетради',
+      title: `${Properties.lang.dict.popups.notebookPropTitle}`,
     });
-    const validator = new FormInputsValidator(popup.getForm(), Properties.popupErrMsg);
+    const validator = new FormInputsValidator(popup.getForm(), Properties.lang.dict.errors);
     popup.open();
   }
 
@@ -356,13 +357,13 @@ import PrintFactory from "../../../common/factories/PrintFactory";
       });
     }
     else {
-      return Promise.reject(new Error('Необходимо сначало сохранить тетрадку'));
+      return Promise.reject(new Error(`${Properties.lang.dict.errors.saveNotebook}!`));
     }
   }
 
   //создает и показывает ссылку на расшаренный документ
   createAndShowShareLink = () => {
-    Dialog.CopyValueDialog('Ссылка на тетрадку:', `${Properties.site.host}/?id=${this.getCurrentDocument()._id}`);
+    Dialog.CopyValueDialog(`${Properties.lang.dict.promts.notebookLink}`, `${Properties.site.host}/?id=${this.getCurrentDocument()._id}`);
   }
 
   //рейтинг документа
@@ -374,7 +375,7 @@ import PrintFactory from "../../../common/factories/PrintFactory";
     const docId = this.getCurrentDocument()._id;
     //документ новый и не сохранялся
     if (!docId) {
-      return Promise.reject(new Error('Необходимо сначало сохранить тетрадку!'));
+      return Promise.reject(new Error(`${Properties.lang.dict.errors.saveNotebook}!`));
     }
     return this.getApi().likeDoc(docId)
     .then((res) => {

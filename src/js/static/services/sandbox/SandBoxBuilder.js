@@ -200,14 +200,14 @@ export default class SandBoxBuilder extends ServiceBuilder {
 
     const centerStatusBarHtml = `
                                 <p class="service-section__description">
-                                  Тетрадь:
+                                  ${Properties.lang.dict.notebook.notebook}:
                                   <span class="service-section__span file-name"></span>
                                    |
                                   <span class="service-section__span file-date"></span>
                                 </p>
 
                                 <p class="service-section__description">
-                                  Название:
+                                  ${Properties.lang.dict.notebook.name}:
                                   <span class="service-section__span service-section__span_file-description description"></span>
                                   <span class="service-section__span service-section__span_file-description sharestatus"></span>
                                 </p>
@@ -245,42 +245,42 @@ export default class SandBoxBuilder extends ServiceBuilder {
     const menuHtml = `<ul class="service-section__menu-list">
 
                         <li class="service-section__menu-item">
-                          <a class="link service-section__link menu-item-new">Создать</a>
+                          <a class="link service-section__link menu-item-new">${Properties.lang.dict.sandbox.menu.new}</a>
                         </li>
 
                         <li class="service-section__menu-item">
-                          <a class="link service-section__link menu-item-open">Открыть</a>
+                          <a class="link service-section__link menu-item-open">${Properties.lang.dict.sandbox.menu.open}</a>
                         </li>
                         <li class="service-section__menu-item">
-                          <a class="link service-section__link  menu-item-save">Сохранить</a>
+                          <a class="link service-section__link  menu-item-save">${Properties.lang.dict.sandbox.menu.save}</a>
                         </li>
                         <li class="service-section__menu-item">
-                          <a class="link service-section__link  menu-item-saveascopy">Сохранить копию</a>
-                        </li>
-
-
-                        <li class="service-section__menu-item">
-                          <a class="link service-section__link  menu-item-print">Печать</a>
+                          <a class="link service-section__link  menu-item-saveascopy">${Properties.lang.dict.sandbox.menu.saveCopy}</a>
                         </li>
 
+
                         <li class="service-section__menu-item">
-                          <a class="link service-section__link menu-item-properties">Свойства</a>
+                          <a class="link service-section__link  menu-item-print">${Properties.lang.dict.sandbox.menu.print}</a>
+                        </li>
+
+                        <li class="service-section__menu-item">
+                          <a class="link service-section__link menu-item-properties">${Properties.lang.dict.sandbox.menu.props}</a>
                         </li>
                         <li class="service-section__menu-item">
-                          <a class="link service-section__link menu-item-share">Поделиться</a>
+                          <a class="link service-section__link menu-item-share">${Properties.lang.dict.sandbox.menu.share}</a>
                         </li>
 
                         <li class="service-section__menu-item">
                           <a class="link service-section__link menu-item-calc">
-                            Рассчитать
+                            ${Properties.lang.dict.sandbox.menu.calc}
                           </a>
 
                           <ul class="service-section__submenu-list">
                             <li class="service-section__submenu-item">
-                              <a class="link service-section__sublink submenu-item-calc-income">Входящие остатки</a>
+                              <a class="link service-section__sublink submenu-item-calc-income">${Properties.lang.dict.sandbox.menu.calcIncome}</a>
                             </li>
                             <li class="service-section__submenu-item">
-                              <a class="link service-section__sublink submenu-item-calc-outcome">Исходящие остатки</a>
+                              <a class="link service-section__sublink submenu-item-calc-outcome">${Properties.lang.dict.sandbox.menu.calcOutcome}</a>
                             </li>
                           </ul>
 
@@ -296,7 +296,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
    * Создает таблицу входящих остатков
    */
   _createOpeningGrid() {
-    this._openingGridElement = this._createGridElement('Входящие остатки','opening-grid');
+    this._openingGridElement = this._createGridElement(`${Properties.lang.dict.sandbox.grids.incomeTitle}`,'opening-grid');
     const gridOptions = this._getStockGridOptions();
     this._openingGridObject = this._createGridObject(this._openingGridElement, gridOptions);
   }
@@ -305,7 +305,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
    * Создает таблицу оборотов
    */
   _createFlowsGrid() {
-    this._flowGridElement = this._createGridElement('Обороты', 'flow-grid');
+    this._flowGridElement = this._createGridElement(`${Properties.lang.dict.sandbox.grids.flowTitle}`, 'flow-grid');
     const gridOptions = this._getFlowGridOptions();
     this._flowGridObject = this._createGridObject(this._flowGridElement, gridOptions);
   }
@@ -314,7 +314,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
    * Создает таблицу исходящих остатков
    */
   _createClosingGrid() {
-    this._closeingGridElement = this._createGridElement('Исходящие остатки','closeing-grid');
+    this._closeingGridElement = this._createGridElement(`${Properties.lang.dict.sandbox.grids.outcomeTitle}`,'closeing-grid');
     const gridOptions = this._getStockGridOptions();
     this._closeingGridObject = this._createGridObject(this._closeingGridElement, gridOptions);
   }
@@ -367,10 +367,10 @@ export default class SandBoxBuilder extends ServiceBuilder {
         pinned: 'left',
       },
 
-      { headerName: 'Счет', field: 'accountNumber', resizable: true, editable: true, rowDrag: true, },
-      { headerName: 'Остаток по дебету', field: 'debet', resizable: true, editable: true, valueFormatter: this.currencyFormatter,},
-      { headerName: 'Остаток по кредиту', field: 'credit', resizable: true, editable: true, valueFormatter: this.currencyFormatter,},
-      { headerName: 'Пояснение', field: 'note', resizable: true, editable: true },
+      { headerName: `${Properties.lang.dict.sandbox.grids.account}`, field: 'accountNumber', resizable: true, editable: true, rowDrag: true, },
+      { headerName: `${Properties.lang.dict.sandbox.grids.debitStock}`, field: 'debet', resizable: true, editable: true, valueFormatter: this.currencyFormatter,},
+      { headerName: `${Properties.lang.dict.sandbox.grids.creditStock}`, field: 'credit', resizable: true, editable: true, valueFormatter: this.currencyFormatter,},
+      { headerName: `${Properties.lang.dict.sandbox.grids.note}`, field: 'note', resizable: true, editable: true, /*wrapText: true, autoHeight: true,*/ },
 
     ];
 
@@ -410,11 +410,11 @@ export default class SandBoxBuilder extends ServiceBuilder {
         pinned: 'left'
       },
 
-      { headerName: 'Содержание операции', field: 'operationDesc', resizable: true, editable: true, rowDrag: true,},
-      { headerName: 'Счет по дебету', field: 'debet', resizable: true, editable: true, },
-      { headerName: 'Счет по кредиту', field: 'credit', resizable: true, editable: true, },
-      { headerName: 'Сумма', field: 'summ', resizable: true, editable: true, valueFormatter: this.currencyFormatter,},
-      { headerName: 'Пояснение', field: 'note', resizable: true, editable: true,},
+      { headerName: `${Properties.lang.dict.sandbox.grids.flowNote}`, field: 'operationDesc', resizable: true, editable: true, rowDrag: true, /*wrapText: true, autoHeight: true,*/},
+      { headerName: `${Properties.lang.dict.sandbox.grids.accDebit}`, field: 'debet', resizable: true, editable: true, },
+      { headerName: `${Properties.lang.dict.sandbox.grids.accCredit}`, field: 'credit', resizable: true, editable: true, },
+      { headerName: `${Properties.lang.dict.sandbox.grids.summ}`, field: 'summ', resizable: true, editable: true, valueFormatter: this.currencyFormatter,},
+      { headerName: `${Properties.lang.dict.sandbox.grids.note}`, field: 'note', resizable: true, editable: true, /*wrapText: true, autoHeight: true,*/},
 
     ];
 
@@ -544,18 +544,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
    _setUpMenuItemPrint() {
     this._menuPrint = this._serviceMenu.querySelector('.menu-item-print');
     this._menuPrint.addEventListener('click', () => {
-
-       // let preloader = this.getProps().preloader;
-       //this._componentDOM.appendChild(preloader);
        this._printFunction.call(this, []);
-      //  .then((res) => {
-      //    preloader.remove();
-      //  })
-      //  .catch((err) => {
-      //    preloader.remove();
-      //    this.handleError(err);
-      //  });
-
     })
   }
 
@@ -793,7 +782,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
     this.setFlowGridData(this._flowGridObject, doc.text.flows);
     this.setStockGridData(this._closeingGridObject, doc.text.outcome, false);
 
-    this._fileNameComponent.textContent = doc._id ? doc._id : "Без имени";
+    this._fileNameComponent.textContent = doc._id ? doc._id : `${Properties.lang.dict.notebook.noname}`;
 
     this._fileContentComponent.textContent = doc.properties.shortdesc;
     this._fileLikesCountComponent.textContent = doc.likes.length;
@@ -859,7 +848,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
       return '';
     }
 
-    valueNumb = valueNumb.toFixed(2);
+    valueNumb = new Intl.NumberFormat("ru-RU", {style: "decimal", minimumFractionDigits: 2, maximumFractionDigits: 2}).format(valueNumb);
     return valueNumb;
   }
 
@@ -869,7 +858,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
    */
   handleError(err) {
     if (!err instanceof Error) {
-      Dialog.ErrorDialog(`Ошибка: ${err.statusText} (Код: ${err.status})`);
+      Dialog.ErrorDialog(`${Properties.lang.dict.errors.error}: ${err.statusText} (${Properties.lang.dict.errors.code}: ${err.status})`);
     }
     else {
       //если не авторизированы - авторизируем
@@ -877,7 +866,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
         this.getProps().loginFunction.call(this);
       }
       else {
-        Dialog.ErrorDialog(`Ошибка: ${err.message}`);
+        Dialog.ErrorDialog(`${Properties.lang.dict.errors.error}: ${err.message}`);
       }
     }
   }
@@ -887,8 +876,8 @@ export default class SandBoxBuilder extends ServiceBuilder {
   }
 
   setShareStatus(status) {
-    status ? this._fileShareComponent.textContent = '(Общий доступ)' : this._fileShareComponent.textContent = '';
-    status ? this._menuShare.textContent = 'Спрятать' : this._menuShare.textContent = 'Поделиться';
+    status ? this._fileShareComponent.textContent = `(${Properties.lang.dict.notebook.share})` : this._fileShareComponent.textContent = '';
+    status ? this._menuShare.textContent = `${Properties.lang.dict.sandbox.menu.unshare}` : this._menuShare.textContent = `${Properties.lang.dict.sandbox.menu.share}`;
   }
 
   setLikesCount(count) {

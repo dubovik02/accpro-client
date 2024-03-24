@@ -41,8 +41,6 @@ export default class FormInputsValidator {
     this._ERR_ALLOW_TAGS_MESSAGE = msgObj.AllowTagsMessage;
   }
 
-
-
   /**
    * Устанавливает обработчик
    */
@@ -65,7 +63,6 @@ export default class FormInputsValidator {
 
   }
 
-
   /**
    * Основной метод проверки
    */
@@ -78,7 +75,6 @@ export default class FormInputsValidator {
     });
 
     this._setSubmitButtonState(!result);
-
   }
 
   /**

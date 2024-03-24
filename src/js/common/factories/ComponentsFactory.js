@@ -1,3 +1,5 @@
+import Properties from '../../properties/Properties';
+
 /**
  * Фабрика компонент
  */
@@ -35,8 +37,8 @@
     const componentDOM = document.createElement('div');
     componentDOM.classList.add('search-section__container');
 
-    const html = `<input class="input search-section__input-search" placeholder="Объекты учета, содержание операции или проводок..."></>
-                  <button class="button search-section__button-search">Найти</button>
+    const html = `<input class="input search-section__input-search" placeholder="${Properties.lang.dict.search.inputSearchObject}"></>
+                  <button class="button search-section__button-search">${Properties.lang.dict.search.buttonFind}</button>
                   `;
     componentDOM.insertAdjacentHTML('afterbegin', html);
     return componentDOM;
@@ -48,8 +50,8 @@
    */
   getSearchFormHTML() {
     return `<div class="search-section__container">
-              <input class="input search-section__input-search" tabindex="0" autofocus size="82" placeholder="Объекты учета, содержание операции или проводок..."></>
-              <button class="button search-section__button-search">Найти</button>
+              <input class="input search-section__input-search" tabindex="0" autofocus size="82" placeholder="${Properties.lang.dict.search.inputSearchObject}"></>
+              <button class="button search-section__button-search">${Properties.lang.dict.search.buttonFind}</button>
             </div>
             `
   }
@@ -63,11 +65,11 @@
             <div>
               ${this.getSearchFormHTML()}
               <div class="search-section__prop-container">
-                <p class="search-section__title">Искать в:</p>
-                <a class="link search-section__link search-section__link-document search-section__link_active">документе</a>
-                <a class="link search-section__link search-section__link-title" field="properties.shortdesc">названии</a>
-                <a class="link search-section__link search-section__link-description" field="properties.description">описании</a>
-                <a class="link search-section__link search-section__link-hashtag" field="properties.tags">хэш-тегах</a>
+                <p class="search-section__title">${Properties.lang.dict.search.searchIn}:</p>
+                <a class="link search-section__link search-section__link-document search-section__link_active">${Properties.lang.dict.search.searchDocument}</a>
+                <a class="link search-section__link search-section__link-title" field="properties.shortdesc">${Properties.lang.dict.search.searchName}</a>
+                <a class="link search-section__link search-section__link-description" field="properties.description">${Properties.lang.dict.search.searchDescription}</a>
+                <a class="link search-section__link search-section__link-hashtag" field="properties.tags">${Properties.lang.dict.search.searchHashTags}</a>
               </div>
             </div>`
   }

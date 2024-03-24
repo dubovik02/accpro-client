@@ -1,4 +1,5 @@
 import AccPopup from "./AccPopup";
+import Properties from "../../properties/Properties";
 /**
  * Попап сабмита информации
  */
@@ -47,7 +48,7 @@ export default class SubmitPopUp extends AccPopup {
   _submit = () => {
 
     const caption = this._submitButton.textContent;
-    this._setButtonSubmitStatus('Выполняется ...', true);
+    this._setButtonSubmitStatus(`${Properties.lang.dict.popups.inProgress} ...`, true);
     this._submitFunction.call(this, this._getInputsValues())
     .then(() => {
       this._setButtonSubmitStatus(caption, false);

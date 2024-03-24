@@ -1,3 +1,5 @@
+import Properties from '../../properties/Properties';
+
 /**
  * Фабрика печати в HTML-представлении
  */
@@ -13,36 +15,31 @@ export default class PrintFactory {
     let docContainer = document.createElement('div');
     // атрибуты тетради
     docContainer.insertAdjacentHTML('beforeend',
-    `<p>Документ: <span  style="font-weight: bold">${doc.properties.shortdesc}</span></p>`);
+    `<p>${Properties.lang.dict.general.document}: <span  style="font-weight: bold">${doc.properties.shortdesc}</span></p>`);
 
     let currentDate = new Date().toLocaleDateString();
     docContainer.insertAdjacentHTML('beforeend',
-    `<p>Дата актуализации: ${doc.lastupdate ? new Date(doc.lastupdate).toLocaleDateString() : currentDate}
-    Дата печати: ${currentDate}</p>`);
-
-    // docContainer.insertAdjacentHTML('beforeend', this._printDelimeterToHTML());
+    `<p>${Properties.lang.dict.notebook.create}: ${doc.lastupdate ? new Date(doc.lastupdate).toLocaleDateString() : currentDate}
+    ${Properties.lang.dict.print.dateOfPrint}: ${currentDate}</p>`);
 
     // содержание тетради
     let docContent = document.createElement('div');
     docContainer.insertAdjacentElement('beforeend', docContent);
 
-
     //входящие
-    docContent.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">Входящие остатки</span></p>`);
+    docContent.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">${Properties.lang.dict.sandbox.grids.incomeTitle}</span></p>`);
     docContent.insertAdjacentHTML('beforeend', this._printDelimeterToHTML());
 
     docContent.insertAdjacentHTML('beforeend', this.printSbDocStocksToHTML(doc.text.income));
 
     // обороты
-
-    docContent.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">Обороты</span></p>`);
+    docContent.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">${Properties.lang.dict.sandbox.grids.flowTitle}</span></p>`);
     docContent.insertAdjacentHTML('beforeend', this._printDelimeterToHTML());
 
     docContent.insertAdjacentHTML('beforeend', this.printSbDocFlowsToHTML(doc.text.flows.entries));
 
     // исходящие остатки
-
-    docContent.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">Исходящие остатки</span></p>`);
+    docContent.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">${Properties.lang.dict.sandbox.grids.outcomeTitle}</span></p>`);
     docContent.insertAdjacentHTML('beforeend', this._printDelimeterToHTML());
 
     docContent.insertAdjacentHTML('beforeend', this.printSbDocStocksToHTML(doc.text.outcome));
@@ -67,10 +64,10 @@ export default class PrintFactory {
     if (stocksObj) {
       //заголовок
       stocksGrid.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">#</span></p>`);
-      stocksGrid.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">Счет</span></p>`);
-      stocksGrid.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">Остаток по дебету</span></p>`);
-      stocksGrid.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">Остаток по кредиту</span></p>`);
-      stocksGrid.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">Пояснение</span></p>`);
+      stocksGrid.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">${Properties.lang.dict.sandbox.grids.account}</span></p>`);
+      stocksGrid.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">${Properties.lang.dict.sandbox.grids.debitStock}</span></p>`);
+      stocksGrid.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">${Properties.lang.dict.sandbox.grids.creditStock}</span></p>`);
+      stocksGrid.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">${Properties.lang.dict.sandbox.grids.note}</span></p>`);
       if (stocksObj.accounts) {
         stocksObj.accounts.forEach(element => {
           stocksGrid.insertAdjacentHTML('beforeend', `<p>${counter++}</p>`);
@@ -99,11 +96,11 @@ export default class PrintFactory {
     margin: 0;`;
 
     flowsGrid.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">#</span></p>`);
-    flowsGrid.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">Содержание операции</span></p>`);
-    flowsGrid.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">Счет по дебету</span></p>`);
-    flowsGrid.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">Счет по кредиту</span></p>`);
-    flowsGrid.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">Сумма</span></p>`);
-    flowsGrid.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">Пояснение</span></p>`);
+    flowsGrid.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">${Properties.lang.dict.sandbox.grids.flowNote}</span></p>`);
+    flowsGrid.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">${Properties.lang.dict.sandbox.grids.accDebit}</span></p>`);
+    flowsGrid.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">${Properties.lang.dict.sandbox.grids.accCredit}</span></p>`);
+    flowsGrid.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">${Properties.lang.dict.sandbox.grids.summ}</span></p>`);
+    flowsGrid.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">${Properties.lang.dict.sandbox.grids.note}</span></p>`);
     let counter = 0;
     if (flowsObj) {
       flowsObj.forEach(element => {

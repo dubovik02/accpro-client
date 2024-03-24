@@ -1,6 +1,8 @@
 import AccDialog from "./AccDialog";
 import iconInfo from '../../../images/clipboard64.png';
 import Dialog from "./Dialog";
+import Properties from "../../properties/Properties";
+
 
 /**
  * Класс диалогового окна показа и копирования информации
@@ -46,10 +48,10 @@ import Dialog from "./Dialog";
     this._buttonCopy.addEventListener('click', () => {
       navigator.clipboard.writeText(this._props.message)
         .then(() => {
-          this._buttonCopy.textContent = 'Скопировано';
+          this._buttonCopy.textContent = `${Properties.lang.dict.popups.copied}`;
         })
         .catch(err => {
-          Dialog.ErrorDialog(`Ошибка при копировании в буфер обмена. ${err}`);
+          Dialog.ErrorDialog(`${Properties.lang.dict.errors.copyToBufferError}. ${err}`);
         });
 
     });

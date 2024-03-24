@@ -15,10 +15,11 @@ import ComponentsFactory from "./js/common/factories/ComponentsFactory";
 import SearchBuilder from './js/static/services/search/SearchBuilder';
 import SearchProvider from './js/static/services/search/SearchProvider';
 import SearchResultsPanel from './js/static/services/search/SearchResultsPanel';
-import LibraryBuilder from './js/static/services/library/LibraryBuilder';
 import RestorePopUp from './js/static/popups/RestorePopUp';
 import Dialog from './js/common/dialogs/Dialog';
 import NewPasswordPopUp from './js/static/popups/NewPasswordPopUp';
+import rusDict from './js/languages/rus';
+import engDict from './js/languages/eng';
 
 /*-------------Переменные----------------*/
 const page = document.querySelector('.page');
@@ -56,11 +57,32 @@ let popupRestore;
 /*-Восстановление пароля-*/
 let popUpNewPassword;
 
+/*-текущий словарь-*/
+let currentDictionary;
+
+/*-разделы-*/
+const MAIN_PAGE = 0;
+const SEARCH_PAGE = 1;
+const SANDBOX_PAGE = 2;
+
+/*-текущий активный раздел-*/
+let activePage = MAIN_PAGE;
+
 /*-------------Функции-------------------*/
 /**
  * Общая процедура, вызываемая при загрузки страницы
  */
 function onLoadDOM() {
+
+  let dict;
+  if (navigator.language.toLowerCase() == 'ru-ru') {
+    dict = rusDict;
+  }
+  else {
+    dict = engDict;
+  }
+  setCurrentDictionary(dict);
+
   makeHeader();
 
   const params = new URLSearchParams(document.location.search);
@@ -74,6 +96,7 @@ function onLoadDOM() {
   else {
     if (reqId) {
       makeSandBoxServiceSection(reqId);
+      activePage = SANDBOX_PAGE;
     }
     if (userKey) {
       makeBriefSection();
@@ -111,48 +134,49 @@ function makeHeader() {
   header.createDOM();
 
   if (isLoggedIn) {
-    header.getControlButton().addEventListener('click', logout);
+    header.getButtonLogin().addEventListener('click', logout);
   }
 
+  header.getLangButton().addEventListener('click', toggleDictionary);
+
   popupSignIn = new SignInPopUp({
-    title: 'Войти в систему',
-    butOpen: isLoggedIn !== null ? null : header.getControlButton(),
+    title: `${Properties.lang.dict.popups.signinTitle}`,
+    butOpen: isLoggedIn !== null ? null : header.getButtonLogin(),
     form: new FormsFactory().createSignInForm('signin'),
     submitFunction: signIn,
     signUpFunction: showSignUpPopup,
     restoreFunction: showRestorePopup,
   });
-  const validatorSignIn = new FormInputsValidator(popupSignIn.getForm(), Properties.popupErrMsg);
+  const validatorSignIn = new FormInputsValidator(popupSignIn.getForm(), Properties.lang.dict.errors);
 
   popupSignUp = new SignUpPopUp({
-    title: 'Регистрация пользователя',
+    title: `${Properties.lang.dict.popups.signupTitle}`,
     // butOpen: brief.getButtonSignUp(),
     form: new FormsFactory().createSignUpForm('signup'),
     submitFunction: signUp,
     signInFunction: showSignInPopup,
   });
-  const validatorSignUp = new FormInputsValidator(popupSignUp.getForm(), Properties.popupErrMsg);
+  const validatorSignUp = new FormInputsValidator(popupSignUp.getForm(), Properties.lang.dict.errors);
 
   popupRestore = new RestorePopUp({
-    title: 'Восстановление пароля',
+    title: `${Properties.lang.dict.popups.restorePassTitle}`,
     form: new FormsFactory().createRestoreForm('restore'),
     signUpFunction: showSignUpPopup,
     submitFunction: restorePassword,
     afterCloseDialogFunction: () => {Dialog.InfoDialog(
-      `Инструкции по восстановлению пароля направлены на электронную почту ${localStorage.getItem('userEmail')}`)},
+      `${Properties.lang.dict.promts.sendRestorePass} ${localStorage.getItem('userEmail')}`)},
   });
-  const validatorRestore = new FormInputsValidator(popupRestore.getForm(), Properties.popupErrMsg);
+  const validatorRestore = new FormInputsValidator(popupRestore.getForm(), Properties.lang.dict.errors);
 
   popUpNewPassword = new NewPasswordPopUp({
     title: 'Восстановление пароля',
     form: new FormsFactory().createNewPasswordForm('newpassword'),
     submitFunction: changeUserPassword,
     afterCloseDialogFunction: () => {
-      Dialog.InfoDialog(`Новый пароль пользователя ${localStorage.getItem('userEmail')} установлен.`);
-      // showSignInPopup();
+      Dialog.InfoDialog(`${Properties.lang.dict.promts.newPassChanged} ${localStorage.getItem('userEmail')}.`);
     },
   });
-  const validatorNewPassword = new FormInputsValidator(popUpNewPassword.getForm(), Properties.popupErrMsg);
+  const validatorNewPassword = new FormInputsValidator(popUpNewPassword.getForm(), Properties.lang.dict.errors);
 
   contentSection.insertAdjacentElement('afterbegin', header.getDOM());
 }
@@ -164,8 +188,7 @@ function makeBriefSection() {
     brief = new BriefBuilder({
       searchHTML: new ComponentsFactory().getSearchFormHTML(),
       searchFunction: searchSbDoc,
-      topTagsFunction: loadTopTags,///////////////
-      librarySection: new LibraryBuilder({}),//////////////////
+      topTagsFunction: loadTopTags,
     });
     brief.createDOM();
     contentSectionContainer.appendChild(brief.getDOM());
@@ -181,40 +204,40 @@ function makeSandBoxServiceSection(reqId) {
     });
   }
 
-  if (!sandBoxServiceSection) {
-    sandBoxServiceSection = new SandBoxBuilder({
-      calcFunction: sandBoxProvider.calcSandBox,
-      saveFunction: sandBoxProvider.saveSandBox,
-      saveCopyFunction: sandBoxProvider.saveSandBoxCopy,
-      printFunction: sandBoxProvider.printSandBox,
-      loginFunction: showSignInPopup,
-      preloader: new ComponentsFactory().createPreloader('Минуточку ...'),
-      openSBFunction: sandBoxProvider.openSandBoxDialog,
-      newSBFunction: sandBoxProvider.newSandBox,
-      fileContentFunction: sandBoxProvider.openUpdateFileContentDialog,
-      shareFunction: sandBoxProvider.createShareLink,
-      createAndShowShareLink: sandBoxProvider.createAndShowShareLink,
-      likeFunction: sandBoxProvider.like,
-      cellEditingFunction: sandBoxProvider.synchronizeModel,
-      checkModelFunction: sandBoxProvider.checkModel,
-    });
+  sandBoxServiceSection = new SandBoxBuilder({
+    calcFunction: sandBoxProvider.calcSandBox,
+    saveFunction: sandBoxProvider.saveSandBox,
+    saveCopyFunction: sandBoxProvider.saveSandBoxCopy,
+    printFunction: sandBoxProvider.printSandBox,
+    loginFunction: showSignInPopup,
+    preloader: new ComponentsFactory().createPreloader(`${Properties.lang.dict.dialogs.waitPlease}`),
+    openSBFunction: sandBoxProvider.openSandBoxDialog,
+    newSBFunction: sandBoxProvider.newSandBox,
+    fileContentFunction: sandBoxProvider.openUpdateFileContentDialog,
+    shareFunction: sandBoxProvider.createShareLink,
+    createAndShowShareLink: sandBoxProvider.createAndShowShareLink,
+    likeFunction: sandBoxProvider.like,
+    cellEditingFunction: sandBoxProvider.synchronizeModel,
+    checkModelFunction: sandBoxProvider.checkModel,
+  });
 
-    sandBoxProvider.setServiceBuilder(sandBoxServiceSection);
-    sandBoxServiceSection.createDOM();
-    contentSectionContainer.appendChild(sandBoxServiceSection.getDOM());
-    if (reqId) {//подгружаем запрашиваемый
-      const isViewed = localStorage.getItem(reqId) ? true : false;
-      if (!isViewed) {
-        localStorage.setItem(`${reqId}`, true);
-      }
-      sandBoxProvider._openShareSandBox(reqId, isViewed);
+  sandBoxProvider.setServiceBuilder(sandBoxServiceSection);
+  sandBoxServiceSection.createDOM();
+  contentSectionContainer.appendChild(sandBoxServiceSection.getDOM());
+  if (reqId) {//подгружаем запрашиваемый
+    const isViewed = localStorage.getItem(reqId) ? true : false;
+    if (!isViewed) {
+      localStorage.setItem(`${reqId}`, true);
+    }
+    sandBoxProvider._openShareSandBox(reqId, isViewed);
+  }
+  else {// если есть активный документ - подгружаем его
+    if (sandBoxProvider.getCurrentDocument()) {
+      sandBoxProvider.loadCurrentDocument();
     }
     else {//подгружаем пустой документ
       sandBoxProvider.newSandBox();
     }
-  }
-  else {
-    contentSectionContainer.appendChild(sandBoxServiceSection.getDOM());
   }
 
 }
@@ -300,6 +323,43 @@ function logout() {
 }
 
 /**
+ * установка текущего словаря
+ */
+function setCurrentDictionary(dict) {
+  currentDictionary = dict;
+  Properties.lang.dict = currentDictionary;
+}
+
+/**
+ * Переключение словаря
+ */
+function toggleDictionary() {
+  if (currentDictionary == rusDict) {
+    setCurrentDictionary(engDict);
+  }
+  else {
+    setCurrentDictionary(rusDict);
+  }
+
+  makeHeader();
+
+  switch (activePage) {
+    case MAIN_PAGE:
+      onMain();
+      break;
+    case SEARCH_PAGE:
+      onSearch();
+      break;
+    case SANDBOX_PAGE:
+      onSandBox();
+      break;
+    default:
+      onMain();
+  }
+
+}
+
+/**
  * Показывает попап входа
  */
 function showSignInPopup() {
@@ -333,14 +393,7 @@ function showNewPasswordPopup() {
  function onMain() {
   clearContentContainer();
   makeBriefSection();
-}
-
-/**
- * Обработчик меню Песочница
- */
-function onSandBox() {
-  clearContentContainer();
-  makeSandBoxServiceSection();
+  activePage = MAIN_PAGE;
 }
 
 /**
@@ -349,7 +402,16 @@ function onSandBox() {
  function onSearch() {
   clearContentContainer();
   makeSearchSection(null, null);
-  // makeSearchSection('', {});
+  activePage = SEARCH_PAGE;
+}
+
+/**
+ * Обработчик меню Песочница
+ */
+function onSandBox() {
+  clearContentContainer();
+  makeSandBoxServiceSection();
+  activePage = SANDBOX_PAGE;
 }
 
 /**

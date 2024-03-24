@@ -14,8 +14,8 @@ export default class SearchResultsPanel extends AccComponent {
 
   _idClassPrefix = 'item-';
 
-  _showTitle = 'подробнее';
-  _hideTitle = 'скрыть';
+  _showTitle = `${Properties.lang.dict.searchPanel.additional}`;
+  _hideTitle = `${Properties.lang.dict.searchPanel.hide}`;
 
   constructor(props) {
     super(props);
@@ -36,9 +36,9 @@ export default class SearchResultsPanel extends AccComponent {
       componentHTML = `
                       <div class="service-section__container">
                         <p class="service-section__description">
-                          Найдено:
-                          <span class="service-section__span">${this.getSearchResult().length} результата(ов)</span>
-                          по запросу:
+                          ${Properties.lang.dict.searchPanel.found}:
+                          <span class="service-section__span">${this.getSearchResult().length} ${Properties.lang.dict.searchPanel.results}</span>
+                          ${Properties.lang.dict.searchPanel.byquery}:
                           <span class="service-section__span">${this.getSearchString()}</span>
                         </p>
 
@@ -91,27 +91,27 @@ export default class SearchResultsPanel extends AccComponent {
     return `
             <div class="search-section__item-container">
               <p class="service-section__description">
-                Тетрадь:
+              ${Properties.lang.dict.notebook.notebook}:
                 <span class="service-section__span service-section__span_file-description file-name ${this._idClassPrefix}${item._id}">${item._id}</span>
               </p>
 
               <p class="service-section__description">
-                Создана(изменена):
+                ${Properties.lang.dict.notebook.create}:
                 <span class="service-section__span file-date">${new Date(item.lastupdate).toLocaleString()}</span>
               </p>
 
               <p class="service-section__description">
-                Название:
+                ${Properties.lang.dict.notebook.name}:
                 <span class="service-section__span">${item.properties.shortdesc}</span>
               </p>
 
               <p class="service-section__description">
-                Хэш-теги:
+                ${Properties.lang.dict.notebook.hashtags}:
                 <span class="service-section__span">${item.properties.tags}</span>
               </p>
 
               <p class="service-section__description">
-                Описание:
+                ${Properties.lang.dict.notebook.description}:
                 <span class="service-section__span service-section__span_file-description description-link${item._id}">${this._showTitle}</span>
                 <p class="service-section__description service-section__description_not-visible description-text${item._id}">${item.properties.description}</p>
               </p>

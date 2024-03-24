@@ -1,4 +1,3 @@
-import { initialiseAgGridWithWebComponents } from "ag-grid-community";
 import AccEntity from "../AccEntity";
 import AccountingEntry from "./AccountingEntry";
 

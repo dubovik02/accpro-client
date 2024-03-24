@@ -1,6 +1,6 @@
 .info-card__title {
-  font-size: 1.5em;
+  font-size: 1.8em;
   font-weight: bold;
   color: rgba(101, 121, 155);
-  margin: 1em auto;
+  /* margin: 1em auto; */
 }

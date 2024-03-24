@@ -1,7 +1,8 @@
 import AccComponent from "../common/AccComponent";
 import issueIco from '../../images/issue256.png';
 import ideaIco from '../../images/idea256.png';
-import solutionIco from '../../images/solution256.png';
+// import flowsImg from '../../images/brief_flows.png';
+// import accImg from '../../images/account_w.jpg';
 import shareIco from '../../images/paper-plane256.png';
 import Dialog from "../common/dialogs/Dialog";
 import Properties from "../properties/Properties";
@@ -58,7 +59,6 @@ export default class BriefBuilder extends AccComponent {
     this._signUpFunction = this._props.signUpFunction;
     this._searchFunction = this._props.searchFunction;
     this._topTagsFunction = this._props.topTagsFunction;
-    //this._librarySection = this._props.librarySection;
   }
 
   createDOM() {
@@ -66,8 +66,8 @@ export default class BriefBuilder extends AccComponent {
     this._componentDOM.classList.add('brief-section');
 
     const briefHtml = `<div class="brief">
-                        <h1 class="brief__title">Открытая библиотека бухгалтерских проводок</h1>
-                        <p class="brief__text">Находите, предлагайте, делитесь</p>
+                        <h1 class="brief__title">${Properties.lang.dict.main.briefTitle}</h1>
+                        <p class="brief__text">${Properties.lang.dict.main.briefSubTitle}</p>
                         ${this._props.searchHTML}
                         <!--<button class="button brief__button-registration">Регистрация</button>-->
                         <div class="brief__tags-container">
@@ -76,27 +76,80 @@ export default class BriefBuilder extends AccComponent {
 
                       </div>
 
-                      <!--div class="info-section">
-                        <p class="info-section__title">Популярные публикации</p>
+                      <div class="info-section">
+                        <p class="info-section__title">${Properties.lang.dict.main.libraryTitle}</p>
                         <div class="info-section__card-container">
                           <div class="info-card">
                             <img class="info-card__icon" src="${issueIco}" alt="вопрос">
-                            <p class="info-card__title">Дебет или кредит?</p>
+                            <p class="info-card__title">${Properties.lang.dict.main.librarySearch}</p>
+                            <p class="info-card__text">${Properties.lang.dict.main.libraryText}</p>
                           </div>
                           <div class="info-card">
-                            <img class="info-card__icon" src="${ideaIco}" alt="идея">
-                            <p class="info-card__title">Есть идея!</p>
-                          </div>
-                          <div class="info-card">
-                            <img class="info-card__icon" src="${solutionIco}" alt="решение">
-                            <p class="info-card__title">Решаем!</p>
+                            <img class="info-card__icon" src="${ideaIco}" alt="решение">
+                            <p class="info-card__title">${Properties.lang.dict.main.librarySuggest}</p>
+                            <p class="info-card__text">${Properties.lang.dict.main.librarySuggestText}</p>
                           </div>
                           <div class="info-card">
                             <img class="info-card__icon" src="${shareIco}" alt="поделиться">
-                            <p class="info-card__title">Делимся!</p>
+                            <p class="info-card__title">${Properties.lang.dict.main.libraryShare}</p>
+                            <p class="info-card__text">${Properties.lang.dict.main.libraryShareText}</p>
                           </div>
                         </div>
-                      </div--!>
+                      </div>
+
+                      <div class="info-section info-section_background-black">
+                        <p class="info-section__title info-section_title-white">${Properties.lang.dict.main.accountTitle}</p>
+                        <div class="info-section__row-container">
+                          <img class="info-section__image info-section__image_small-size" src="${Properties.lang.dict.pictures.account}" alt="счет">
+                          <div class="info-section__text-container">
+                            <p class="info-section__text info-section_text-white">
+                              ${Properties.lang.dict.main.accountP1}
+                            </p>
+                            <p class="info-section__text info-section_text-white">
+                              ${Properties.lang.dict.main.accountP2}
+                            </p>
+                            <p class="info-section__text info-section_text-white">
+                              ${Properties.lang.dict.main.accountP3}
+                            </p>
+                            <p class="info-section__text info-section_text-white">
+                              ${Properties.lang.dict.main.accountP4}
+                            </p>
+                            <p class="info-section__text info-section_text-white">
+                              ${Properties.lang.dict.main.accountP5}
+                            </p>
+                            <p class="info-section__text info-section_text-white">
+                              ${Properties.lang.dict.main.accountP6}
+                            </p>
+                            <p class="info-section__text info-section_text-white">
+                              ${Properties.lang.dict.main.accountP7}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="info-section">
+                        <p class="info-section__title">${Properties.lang.dict.main.doubleEntryTitle}</p>
+                        <div class="info-section__row-container">
+                          <img class="info-section__image info-section__image_large-size" src="${Properties.lang.dict.pictures.flows}" alt="поделиться">
+                          <div class="info-section__text-container">
+                            <p class="info-section__text">
+                              ${Properties.lang.dict.main.doubleEntryP1}
+                            </p>
+                            <p class="info-section__text">
+                              ${Properties.lang.dict.main.doubleEntryP2}
+                            </p>
+                            <p class="info-section__text">
+                              ${Properties.lang.dict.main.doubleEntryP3}
+                            </p>
+                            <p class="info-section__text">
+                              ${Properties.lang.dict.main.doubleEntryP4}
+                            </p>
+                            <p class="info-section__text">
+                              ${Properties.lang.dict.main.doubleEntryP5}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
                       `;
 
     this._componentDOM.insertAdjacentHTML('afterbegin', briefHtml);
@@ -105,15 +158,9 @@ export default class BriefBuilder extends AccComponent {
     this._searchElement = this._componentDOM.querySelector('.search-section__input-search');
     this._tagsContainer = this._componentDOM.querySelector('.brief__tags-container');
     this._loadPopularTagsList();
-    //this.createLibrarySection();
     this._setListeners();
 
   }
-
-  // createLibrarySection() {
-  //   this._librarySection.createDOM();
-  //   this._componentDOM.insertAdjacentElement('beforeend', this._librarySection.getDOM());
-  // };
 
   _setListeners() {
     this._setSignUpListener();
@@ -152,7 +199,7 @@ export default class BriefBuilder extends AccComponent {
     const minlen = Properties.search.minchar;
     const maxlen = Properties.search.maxchar;
     if ((searchString.length < minlen) || (searchString.length > maxlen)) {
-      Dialog.InfoDialog(`Поисковый запрос должен содержать от ${minlen} до ${maxlen} символов.`);
+      Dialog.InfoDialog(`${Properties.lang.dict.dialogs.searchWordLimit}: (${minlen} - ${maxlen}).`);
     }
     else {
       this._searchFunction.call(this, searchString, searchString);
@@ -172,13 +219,13 @@ export default class BriefBuilder extends AccComponent {
         this._tagsContainer.insertAdjacentHTML('beforeend', tagHtml);
         const tagElem = this._tagsContainer.querySelector(`.brief__tags-text-${item._id}`);
         tagElem.addEventListener('click', () => {
-          this._searchFunction.call(this, item._id, {'properties.tags': {$regex: `.*${item._id}.*`, $options: 'i'}, /*searchString: `${item._id}`*/ });
+          this._searchFunction.call(this, item._id, {'properties.tags': {$regex: `.*${item._id}.*`, $options: 'i'}, });
         });
       });
 
     })
     .catch((err) => {
-      Dialog.ErrorDialog(`Ошибка при получении хэштэгов: ${err}`);
+      Dialog.ErrorDialog(`${Properties.lang.dict.dialogs.hashTagsError}: ${err}`);
     })
   }
 

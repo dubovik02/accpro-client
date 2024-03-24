@@ -27,26 +27,6 @@ export function parseDateToDMYString(date) {
 }
 
 /**
- * Получение строкового представления диапозона дат новостей в формате гггг-мм-дд
- * @returns Object {nowDateStr, fromDateStr}
- */
-// export function getNewsPeriod() {
-//   const nowDate = new Date();
-//   nowDate.setHours(23,59,59,999);
-//   const nowDateStr = parseDateToYMDString(nowDate);
-
-//   const fromDate = new Date();
-//   fromDate.setDate(fromDate.getDate() - Properties.newsList.newsPeriod);
-//   fromDate.setHours(0,0,0,0);
-//   const fromDateStr = parseDateToYMDString(fromDate);
-
-//   return {
-//     nowDateStr: nowDateStr,
-//     fromDateStr: fromDateStr,
-//   }
-// }
-
-/**
  * Получение строкового представления диапозона дат новостей в формате дд-мм-гггг/гггг-мм-дд
  * @returns Object {nowDateStr, fromDateStr}
  */
@@ -54,12 +34,10 @@ export function getNewsPeriod(isYearFirst) {
 
   const nowDate = new Date();
   nowDate.setHours(23,59,59,999);
-  //const nowDateStr = parseDateToYMDString(nowDate);
 
   const fromDate = new Date();
   fromDate.setDate(fromDate.getDate() - Properties.newsList.newsPeriod);
   fromDate.setHours(0,0,0,0);
-  //const fromDateStr = parseDateToYMDString(fromDate);
 
   if (isYearFirst) {
     return {

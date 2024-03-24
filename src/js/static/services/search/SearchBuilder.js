@@ -18,8 +18,8 @@ export default class SearchBuilder extends ServiceBuilder {
   _searchField = null;
 
   constructor(props) {
-    props.serviceName = 'Поиск';
-    props.serviceDescription = 'Ищем тетрадки по запросу';
+    props.serviceName = `${Properties.lang.dict.search.searchTitle}`;
+    props.serviceDescription = `${Properties.lang.dict.search.searchSubTitle}`;
     super(props);
     this.setSearchString(this._props.searchString);
     this.setSearchTemplate(this._props.searchTemplate);
@@ -29,7 +29,6 @@ export default class SearchBuilder extends ServiceBuilder {
     super.createDOM();
     this.createSearchPanel();
     this.createSearchResultsPanel(null);
-    // this.setSearchField(Object.keys(this.getSearchTemplate())[0]);
     this.setActiveSearchListItem();
     this.setSearchButtonListener();
     this.setSearchEnterListener();
@@ -79,14 +78,14 @@ export default class SearchBuilder extends ServiceBuilder {
   _execSearch = () => {
     let searchString = this._searchTextElement.value;
     if (!this.checkSearchString(searchString)) {
-      Dialog.InfoDialog(`Уточните пожалуйста поисковый запрос.`);
+      Dialog.InfoDialog(`${Properties.lang.dict.dialogs.enterSearchQuery}`);
       return;
     }
 
     this.setSearchString(searchString);
 
     if (this.getSearchField()) {
-      this.getSearchTemplate()[this.getSearchField()] = {$regex: `.*${this.getSearchString()}.*`, $options: 'i', /*searchString: searchString*/};
+      this.getSearchTemplate()[this.getSearchField()] = {$regex: `.*${this.getSearchString()}.*`, $options: 'i', };
     }
     else {
       this.setSearchTemplate(this.getSearchString());
@@ -98,7 +97,7 @@ export default class SearchBuilder extends ServiceBuilder {
   search(searchTemplate) {
 
     this._searchResultsPanel.clearContent();
-    this._searchResultsPanel.addPreloaderDOM('Минуточку...');
+    this._searchResultsPanel.addPreloaderDOM(`${Properties.lang.dict.dialogs.waitPlease}`);
 
     this._props.searchFunction.call(this, this.getSearchTemplate())
     .then((docs) => {
@@ -108,7 +107,7 @@ export default class SearchBuilder extends ServiceBuilder {
         this.createSearchResultsPanel(docs);
       }
       else {
-        this._searchResultsPanel.addNoEntityDOM('К сожалению ничего не найдено :(');
+        this._searchResultsPanel.addNoEntityDOM(`${Properties.lang.dict.search.noSearchResult}`);
       }
     })
     .catch((err) => {
