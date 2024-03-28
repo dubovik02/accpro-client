@@ -57,10 +57,10 @@ export default class HeaderBuilder extends AccComponent {
       this._componentDOM = document.createElement('section');
       this._componentDOM.classList.add('header');
 
-      const headerHtml = `<img class="logo logo_place_header" src="${logo}" alt="логотип"></img>
+      const headerHtml = `<img class="logo logo_place_header" src="${logo}" alt="logo"></img>
                           <menu class="menu">
                             <ul class="menu-list">
-                            <li class="menu-list__item"><a class="link menu-link menu-link_font_bold menu-item-main">${Properties.lang.dict.header.mainTitle}</a></li>
+                              <li class="menu-list__item"><a class="link menu-link menu-link_font_bold menu-item-main">${Properties.lang.dict.header.mainTitle}</a></li>
                               <li class="menu-list__item"><a class="link menu-link menu-link_font_bold menu-item-search">${Properties.lang.dict.header.searchTitle}</a></li>
                               <li class="menu-list__item"><a class="link menu-link menu-link_font_bold menu-item-sandbox">${Properties.lang.dict.header.sandBoxTitle}</a></li>
                             </ul>

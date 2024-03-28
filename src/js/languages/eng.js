@@ -171,7 +171,7 @@ export default {
     code: 'Code',
     copyToBufferError: 'Error while coping to the buffer',
     SizeErrMessage: 'It must has 2-30 symbols',
-    MissingErrMessage: 'Eng Required value',
+    MissingErrMessage: 'Required value',
     LinkErrMessage: 'There should be a link here',
     EmailErrMessage: 'Please enter a valid e-mail',
     PasswordLengthErrMessage: 'Must be at least 8 characters',

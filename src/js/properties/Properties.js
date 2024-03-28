@@ -2,9 +2,9 @@ export default  {
 
   /*-Параметры текущего ресурса*/
   site: {
-    name: 'Accounting-pro',
-    url: 'www.accounting-pro.ru',
-    email: 'info@accounting-pro.ru',
+    name: 'Debit-credit.tech',
+    url: 'www.debit-credit.tech',
+    email: 'info@debit-credit.tech',
     host: new URL(document.location).host,
   },
 

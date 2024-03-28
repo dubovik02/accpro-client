@@ -8,6 +8,11 @@ export default class FormsFactory {
   constructor() {
   }
 
+
+  EMAIL_PATTERN_V1 = '^[A-Za-z0-9](-|_)?(([A-Za-z0-9_]+-?)?)+[A-Za-z0-9]?@([A-Za-z0-9\-_]+\.)+[A-Za-z]{2,}';
+  EMAIL_PATTERN_V2 = '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$';
+  EMAIL_PATTERN_V3 = '/^[A-Z0-9._%+-]+@[A-Z0-9-]+.+.[A-Z]{2,4}$/i';
+
   createSignUpForm(formName) {
 
     const form = document.createElement('form');
@@ -15,7 +20,7 @@ export default class FormsFactory {
     form.setAttribute('name', formName);
 
     const formHtml = `<label for="email-field" class="popup__label">${Properties.lang.dict.popups.email}</label>
-                    <input type="email" name="email" id="email-field" class="input popup__input" placeholder="${Properties.lang.dict.popups.enterEmail}" pattern="^[A-Za-z0-9](-|_)?(([A-Za-z0-9_]+-?)?)+[A-Za-z0-9]?@([A-Za-z0-9\-_]+\.)+[A-Za-z]{2,}" required>
+                    <input type="email" name="email" id="email-field" class="input popup__input" placeholder="${Properties.lang.dict.popups.enterEmail}" pattern="${this.EMAIL_PATTERN_V3}" required>
                     <p class="popup__error-label popup__error-label-name"></p>
 
                     <label for="password-field" class="popup__label">${Properties.lang.dict.popups.password}</label>
@@ -48,7 +53,7 @@ export default class FormsFactory {
     form.setAttribute('name', formName);
 
     const formHtml = `<label for="email-field-login" class="popup__label">${Properties.lang.dict.popups.email}</label>
-                      <input type="email" name="email" id="email-field-login" class="input popup__input" placeholder="${Properties.lang.dict.popups.enterEmail}" pattern="^[A-Za-z0-9](-|_)?(([A-Za-z0-9_]+-?)?)+[A-Za-z0-9]?@([A-Za-z0-9\-_]+\.)+[A-Za-z]{2,}" required>
+                      <input type="email" name="email" id="email-field-login" class="input popup__input" placeholder="${Properties.lang.dict.popups.enterEmail}" pattern="${this.EMAIL_PATTERN_V2}" required>
                       <p class="popup__error-label popup__error-label-name"></p>
 
                       <label for="password-field-login" class="popup__label">${Properties.lang.dict.popups.password}</label>
@@ -82,7 +87,7 @@ export default class FormsFactory {
     form.setAttribute('name', formName);
 
     const formHtml = `<label for="email-field-login" class="popup__label">${Properties.lang.dict.popups.email}</label>
-                      <input type="email" name="email" id="email-field-login" class="input popup__input" placeholder="${Properties.lang.dict.popups.enterRegEmail}" pattern="^[A-Za-z0-9](-|_)?(([A-Za-z0-9_]+-?)?)+[A-Za-z0-9]?@([A-Za-z0-9\-_]+\.)+[A-Za-z]{2,}" required>
+                      <input type="email" name="email" id="email-field-login" class="input popup__input" placeholder="${Properties.lang.dict.popups.enterRegEmail}" pattern="${this.EMAIL_PATTERN_V2}" required>
                       <p class="popup__error-label popup__error-label-name"></p>
 
                       <p class="popup__error-info"></p>
