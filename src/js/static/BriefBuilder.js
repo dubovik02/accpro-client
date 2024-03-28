@@ -1,8 +1,6 @@
 import AccComponent from "../common/AccComponent";
 import issueIco from '../../images/issue256.png';
 import ideaIco from '../../images/idea256.png';
-// import flowsImg from '../../images/brief_flows.png';
-// import accImg from '../../images/account_w.jpg';
 import shareIco from '../../images/paper-plane256.png';
 import Dialog from "../common/dialogs/Dialog";
 import Properties from "../properties/Properties";
