@@ -3,5 +3,26 @@
 .service-section__description {
   font-size: 1em;
   /* font-weight: bold; */
-  margin: 0;
+  margin: 0 1em 0 0;
+}
+
+/*---------------1024px-----------------*/
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .service-section__description {
+
+  }
+}
+
+/*---------------768px-----------------*/
+@media screen and (min-width: 540px) and (max-width: 768px) {
+  .service-section__description {
+    margin: 0 .5em 0 0;
+  }
+}
+
+/*---------------539px-----------------*/
+@media screen and (max-width: 539px) {
+  .service-section__description {
+
+  }
 }

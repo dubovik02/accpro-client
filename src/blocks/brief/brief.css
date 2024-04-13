@@ -29,3 +29,24 @@
     left: 0;
     opacity: .8;
 }
+
+/*---------------1024px-----------------*/
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .brief {
+    padding: 2.5em;
+  }
+}
+
+/*---------------768px-----------------*/
+@media screen and (min-width: 540px) and (max-width: 768px) {
+  .brief {
+    padding: 2em;
+  }
+}
+
+/*---------------539px-----------------*/
+@media screen and (max-width: 539px) {
+  .brief {
+    padding: 1em;
+  }
+}

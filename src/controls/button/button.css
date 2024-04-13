@@ -19,6 +19,8 @@
     font-size: 1.3em;
     font-weight: normal;
     color: white;
+
+    min-width: 0;
   }
 
 .button:hover {
@@ -32,4 +34,25 @@
 .button:disabled {
   background-color: grey;
   color: lightgray
+}
+
+/*---------------1024px-----------------*/
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .button {
+    font-size: 1.2em;
+  }
+}
+
+/*---------------768px-----------------*/
+@media screen and (min-width: 540px) and (max-width: 768px) {
+  .button {
+    font-size: 1.1em;
+  }
+}
+
+/*---------------539px-----------------*/
+@media screen and (max-width: 539px) {
+  .button {
+    font-size: 1em;
+  }
 }

@@ -2,13 +2,39 @@
 @import url('./__text/footer__text.css');
 @import url('./__link/footer__link.css');
 @import url('./__email/footer__email.css');
+@import url('./__ico/footer__ico.css');
 
 .footer {
     background-color: black;
     display: flex;
-    justify-content: start;
+    justify-content: space-around;
     align-items: center;
     padding: .75em;
     font-size: 1.2em;
     margin-top: auto;
+}
+
+/*---------------1024px-----------------*/
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .footer {
+
+  }
+}
+
+/*---------------768px-----------------*/
+@media screen and (min-width: 540px) and (max-width: 768px) {
+  .footer {
+    flex-direction: column;
+    justify-content: left;
+    font-size: 1em;
+  }
+}
+
+/*---------------539px-----------------*/
+@media screen and (max-width: 539px) {
+  .footer {
+    flex-direction: column;
+    justify-content: left;
+    font-size: 1em;
+  }
 }

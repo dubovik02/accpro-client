@@ -10,8 +10,11 @@
 @media screen and (max-width: 540px) {
   .popup__close {
     width: 16px;
-    top: -36px;
-    right: 20px;
-    background-color: black;
+    /* top: -36px;
+    right: 20px; */
+    top: 15px;
+    right: 15px;
+    /* background-color: black; */
+    background-color: rgb(101, 121, 155);
   }
 }

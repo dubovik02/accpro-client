@@ -110,7 +110,6 @@ import PrintFactory from "../../../common/factories/PrintFactory";
 
     let doc = this.getCurrentDocument();
     let openWindow = window.open("", "title", "attributes");
-    // openWindow.document.write(docContainer.innerHTML);
     openWindow.document.write(new PrintFactory().printSbDocToHTML(doc));
     openWindow.document.close();
     openWindow.focus();
@@ -144,8 +143,8 @@ import PrintFactory from "../../../common/factories/PrintFactory";
 
         const columnDefs = [
 
-          { headerName: `${Properties.lang.dict.notebook.notebook}`, field: 'shortdesc', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter' },
-          { headerName: `${Properties.lang.dict.notebook.name}`, field: 'id', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter' },
+          { headerName: `${Properties.lang.dict.notebook.notebook}`, field: 'shortdesc', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter', tooltipValueGetter: this.getServiceBuilder().toolTipValueGetter },
+          { headerName: `${Properties.lang.dict.notebook.name}`, field: 'id', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter', tooltipValueGetter: this.getServiceBuilder().toolTipValueGetter },
           { headerName: `${Properties.lang.dict.notebook.refresh}`, field: 'date', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter'},
 
         ];
@@ -170,7 +169,7 @@ import PrintFactory from "../../../common/factories/PrintFactory";
           form: form,
           submitFunction: this.openSandBox,
           gridObj: gridObj,
-          popupWidth: "40%",
+          popupWidth: "85vw",
         });
         popup.open();
       })

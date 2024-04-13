@@ -2,3 +2,27 @@
   width: 7em;
   height: 7em;
 }
+
+/*---------------1024px-----------------*/
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .info-card__icon{
+    width: 5.5em;
+    height: 5.5em;
+  }
+}
+
+/*---------------768px-----------------*/
+@media screen and (min-width: 540px) and (max-width: 768px) {
+  .info-card__icon {
+    width: 4.5em;
+    height: 4.5em;
+  }
+}
+
+/*---------------539px-----------------*/
+@media screen and (max-width: 539px) {
+  .info-card__icon {
+    width: 3.5em;
+    height: 3.5em;
+  }
+}

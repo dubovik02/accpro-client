@@ -3,5 +3,29 @@
   display: flex;
   justify-content: flex-start;
   margin-left: 2em;
-  /* font-size: 1.2em; */
+}
+
+/*---------------1024px-----------------*/
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .footer__container {
+
+  }
+}
+
+/*---------------768px-----------------*/
+@media screen and (min-width: 540px) and (max-width: 768px) {
+  .footer__container {
+    flex-direction: column;
+    justify-content: left;
+    margin: 0;
+  }
+}
+
+/*---------------539px-----------------*/
+@media screen and (max-width: 539px) {
+  .footer__container {
+    flex-direction: column;
+    justify-content: left;
+    margin: 0;
+  }
 }

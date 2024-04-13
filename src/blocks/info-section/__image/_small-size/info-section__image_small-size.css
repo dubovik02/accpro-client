@@ -1,3 +1,27 @@
 .info-section__image.info-section__image_small-size {
   max-width: 20%;
 }
+
+/*---------------1024px-----------------*/
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .info-section__image.info-section__image_small-size {
+    max-width: 80%;
+    margin: 1em;
+  }
+}
+
+/*---------------768px-----------------*/
+@media screen and (min-width: 540px) and (max-width: 768px) {
+  .info-section__image.info-section__image_small-size {
+    max-width: 80%;
+    margin: 1em;
+  }
+}
+
+/*---------------539px-----------------*/
+@media screen and (max-width: 539px) {
+  .info-section__image.info-section__image_small-size {
+    max-width: 80%;
+    margin: 1em;
+  }
+}

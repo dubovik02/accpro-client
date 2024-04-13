@@ -3,3 +3,30 @@
   flex-direction: row;
   justify-content: start;
 }
+
+/*---------------1024px-----------------*/
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .info-section__row-container{
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+/*---------------768px-----------------*/
+@media screen and (min-width: 540px) and (max-width: 768px) {
+  .info-section__row-container {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+/*---------------539px-----------------*/
+@media screen and (max-width: 539px) {
+  .info-section__row-container {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+}

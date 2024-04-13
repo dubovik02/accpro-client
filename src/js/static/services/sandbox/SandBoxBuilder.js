@@ -370,7 +370,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
       { headerName: `${Properties.lang.dict.sandbox.grids.account}`, field: 'accountNumber', resizable: true, editable: true, rowDrag: true, },
       { headerName: `${Properties.lang.dict.sandbox.grids.debitStock}`, field: 'debet', resizable: true, editable: true, valueFormatter: this.currencyFormatter,},
       { headerName: `${Properties.lang.dict.sandbox.grids.creditStock}`, field: 'credit', resizable: true, editable: true, valueFormatter: this.currencyFormatter,},
-      { headerName: `${Properties.lang.dict.sandbox.grids.note}`, field: 'note', resizable: true, editable: true, /*wrapText: true, autoHeight: true,*/ },
+      { headerName: `${Properties.lang.dict.sandbox.grids.note}`, field: 'note', resizable: true, editable: true, tooltipValueGetter: this.toolTipValueGetter,/*wrapText: true, autoHeight: true,*/ },
 
     ];
 
@@ -410,11 +410,11 @@ export default class SandBoxBuilder extends ServiceBuilder {
         pinned: 'left'
       },
 
-      { headerName: `${Properties.lang.dict.sandbox.grids.flowNote}`, field: 'operationDesc', resizable: true, editable: true, rowDrag: true, /*wrapText: true, autoHeight: true,*/},
+      { headerName: `${Properties.lang.dict.sandbox.grids.flowNote}`, field: 'operationDesc', resizable: true, editable: true, rowDrag: true, tooltipValueGetter: this.toolTipValueGetter,/*wrapText: true, autoHeight: true,*/},
       { headerName: `${Properties.lang.dict.sandbox.grids.accDebit}`, field: 'debet', resizable: true, editable: true, },
       { headerName: `${Properties.lang.dict.sandbox.grids.accCredit}`, field: 'credit', resizable: true, editable: true, },
       { headerName: `${Properties.lang.dict.sandbox.grids.summ}`, field: 'summ', resizable: true, editable: true, valueFormatter: this.currencyFormatter,},
-      { headerName: `${Properties.lang.dict.sandbox.grids.note}`, field: 'note', resizable: true, editable: true, /*wrapText: true, autoHeight: true,*/},
+      { headerName: `${Properties.lang.dict.sandbox.grids.note}`, field: 'note', resizable: true, editable: true, tooltipValueGetter: this.toolTipValueGetter, /*wrapText: true, autoHeight: true,*/},
 
     ];
 
@@ -851,6 +851,12 @@ export default class SandBoxBuilder extends ServiceBuilder {
     valueNumb = new Intl.NumberFormat("ru-RU", {style: "decimal", minimumFractionDigits: 2, maximumFractionDigits: 2}).format(valueNumb);
     return valueNumb;
   }
+
+  /**
+   * Всплывающая подсказка (колл-бэк)
+   */
+  toolTipValueGetter = (params) =>
+  params.value == null || params.value === "" ? "- Missing -" : params.value;
 
   /**
    * Пользовательский обработчик ошибки с сервера

@@ -37,7 +37,7 @@ import Properties from '../../properties/Properties';
     const componentDOM = document.createElement('div');
     componentDOM.classList.add('search-section__container');
 
-    const html = `<input class="input search-section__input-search" placeholder="${Properties.lang.dict.search.inputSearchObject}"></>
+    const html = `<input class="input search-section__input-search" placeholder="${Properties.lang.dict.search.inputSearchObject}">
                   <button class="button search-section__button-search">${Properties.lang.dict.search.buttonFind}</button>
                   `;
     componentDOM.insertAdjacentHTML('afterbegin', html);
@@ -50,10 +50,11 @@ import Properties from '../../properties/Properties';
    */
   getSearchFormHTML() {
     return `<div class="search-section__container">
-              <input class="input search-section__input-search" tabindex="0" autofocus size="82" placeholder="${Properties.lang.dict.search.inputSearchObject}"></>
+              <input class="input search-section__input-search" tabindex="0" autofocus placeholder="${Properties.lang.dict.search.inputSearchObject}">
               <button class="button search-section__button-search">${Properties.lang.dict.search.buttonFind}</button>
             </div>
-            `
+            `;
+            //size="82"
   }
 
   /**
@@ -62,7 +63,6 @@ import Properties from '../../properties/Properties';
    */
    getAdvancedSearchFormHTML() {
     return `
-            <div>
               ${this.getSearchFormHTML()}
               <div class="search-section__prop-container">
                 <p class="search-section__title">${Properties.lang.dict.search.searchIn}:</p>
@@ -71,7 +71,7 @@ import Properties from '../../properties/Properties';
                 <a class="link search-section__link search-section__link-description" field="properties.description">${Properties.lang.dict.search.searchDescription}</a>
                 <a class="link search-section__link search-section__link-hashtag" field="properties.tags">${Properties.lang.dict.search.searchHashTags}</a>
               </div>
-            </div>`
+            `;
   }
 
  }

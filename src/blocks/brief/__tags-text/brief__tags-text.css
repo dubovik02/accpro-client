@@ -13,3 +13,24 @@
   margin-right: 1em;
   padding: .5em;
 }
+
+/*---------------1024px-----------------*/
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .brief__tags-text {
+
+  }
+}
+
+/*---------------768px-----------------*/
+@media screen and (min-width: 540px) and (max-width: 768px) {
+  .brief__tags-text {
+
+  }
+}
+
+/*---------------539px-----------------*/
+@media screen and (max-width: 539px) {
+  .brief__tags-text {
+
+  }
+}

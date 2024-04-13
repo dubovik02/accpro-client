@@ -1,27 +1,25 @@
-.info-section__text {
-  font-size: 1.4em;
-  line-height: 1.4;
-  margin: 0;
-  margin-bottom: 1em;
+.service-section__brieftext {
+  font-size: 1em;
+  margin: 0 1em 0 0;
 }
 
 /*---------------1024px-----------------*/
 @media screen and (min-width: 769px) and (max-width: 1024px) {
-  .info-section__text{
-    font-size: 1.3em;
+  .service-section__brieftext {
+
   }
 }
 
 /*---------------768px-----------------*/
 @media screen and (min-width: 540px) and (max-width: 768px) {
-  .info-section__text {
-    font-size: 1.2em;
+  .service-section__brieftext {
+    margin: 0 .5em 0 0;
   }
 }
 
 /*---------------539px-----------------*/
 @media screen and (max-width: 539px) {
-  .info-section__text {
-    font-size: 1.1em;
+  .service-section__brieftext {
+    display: none;
   }
 }

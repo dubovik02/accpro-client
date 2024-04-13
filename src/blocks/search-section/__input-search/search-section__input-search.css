@@ -1,5 +1,27 @@
 .search-section__input-search {
-  min-width: 60%;
+  width: 60vw;
+  /* width: 800px; */
   padding: .5em;
   margin-right: .5em;
+}
+
+/*---------------1024px-----------------*/
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .search-section__input-search {
+    width: 50vw;
+  }
+}
+
+/*---------------768px-----------------*/
+@media screen and (min-width: 540px) and (max-width: 768px) {
+  .search-section__input-search {
+    width: 50vw;
+  }
+}
+
+/*---------------539px-----------------*/
+@media screen and (max-width: 539px) {
+  .search-section__input-search {
+    width: 60vw;
+  }
 }

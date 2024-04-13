@@ -9,3 +9,24 @@
     /*border-bottom: solid 2px rgb(101, 121, 155);*/
     background-color: black;
 }
+
+/*---------------1024px-----------------*/
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .header {
+
+  }
+}
+
+/*---------------768px-----------------*/
+@media screen and (min-width: 540px) and (max-width: 768px) {
+  .header {
+    padding: 1em 0 1em 0;
+  }
+}
+
+/*---------------539px-----------------*/
+@media screen and (max-width: 539px) {
+  .header {
+    padding: .5em 0 .5em 0;
+  }
+}

@@ -1,27 +1,27 @@
-.info-section__text {
-  font-size: 1.4em;
-  line-height: 1.4;
-  margin: 0;
-  margin-bottom: 1em;
+.search-section__prop-container {
+  display: flex;
+  flex-direction: row;
+  margin-top: .5em;
+  flex-wrap: wrap;
 }
 
 /*---------------1024px-----------------*/
 @media screen and (min-width: 769px) and (max-width: 1024px) {
-  .info-section__text{
-    font-size: 1.3em;
+  .search-section__prop-container {
+
   }
 }
 
 /*---------------768px-----------------*/
 @media screen and (min-width: 540px) and (max-width: 768px) {
-  .info-section__text {
-    font-size: 1.2em;
+  .search-section__prop-container {
+
   }
 }
 
 /*---------------539px-----------------*/
 @media screen and (max-width: 539px) {
-  .info-section__text {
-    font-size: 1.1em;
+  .search-section__prop-container {
+
   }
 }

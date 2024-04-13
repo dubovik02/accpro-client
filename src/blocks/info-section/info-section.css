@@ -14,3 +14,24 @@
   display: flex;
   flex-direction: column;
 }
+
+/*---------------1024px-----------------*/
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .info-section {
+    padding: 4em 2.8em;
+  }
+}
+
+/*---------------768px-----------------*/
+@media screen and (min-width: 540px) and (max-width: 768px) {
+  .info-section {
+    padding: 3em 1.8em;
+  }
+}
+
+/*---------------539px-----------------*/
+@media screen and (max-width: 539px) {
+  .info-section {
+    padding: 2em 1.2em;
+  }
+}

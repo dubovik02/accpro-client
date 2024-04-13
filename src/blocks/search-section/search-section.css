@@ -1,7 +1,7 @@
 @import url('./__container/search-section__container.css');
 @import url('./__input-search/search-section__input-search.css');
 @import url('./__item-container/search-section__item-container.css');
-@import url('./__main-container/search-section__prop-container.css');
+@import url('./__prop-container/search-section__prop-container.css');
 @import url('./__link/search-section__link.css');
 @import url('./__title/search-section__title.css');
 
@@ -10,4 +10,25 @@
   display: flex;
   flex-direction: column;
   background-color: white;
+}
+
+/*---------------1024px-----------------*/
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .search-section {
+    padding: 1.5em 0;
+  }
+}
+
+/*---------------768px-----------------*/
+@media screen and (min-width: 540px) and (max-width: 768px) {
+  .search-section {
+    padding: 1em 0;
+  }
+}
+
+/*---------------539px-----------------*/
+@media screen and (max-width: 539px) {
+  .search-section {
+    padding: 0.5em 0;
+  }
 }

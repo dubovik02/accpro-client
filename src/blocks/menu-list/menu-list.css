@@ -7,3 +7,25 @@
     margin: 0;
     padding: 0;
 }
+
+/*---------------1024px-----------------*/
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .menu-list {
+
+  }
+}
+
+/*---------------768px-----------------*/
+@media screen and (min-width: 540px) and (max-width: 768px) {
+  .menu-list {
+
+  }
+}
+
+/*---------------539px-----------------*/
+@media screen and (max-width: 539px) {
+  .menu-list {
+    flex-direction: column;
+    margin: .25em 0 .25em 0;
+  }
+}

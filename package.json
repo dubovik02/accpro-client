@@ -1,12 +1,12 @@
 {
-  "name": "accpro-client",
-  "version": "1.0.0",
+  "name": "debet-credit",
+  "version": "0.0.0",
   "description": "accounting solutions",
   "main": "index.js",
   "scripts": {
     "build": "cross-env NODE_ENV=production rimraf dist && webpack --mode production",
     "dev": "cross-env NODE_ENV=development webpack serve --mode development --watch",
-    "deploy": "cross-env NODE_ENV=production gh-pages -d dist"
+    "deploy" :"scp -r ./dist/* dubovik02@158.160.126.198:/home/dubovik02/debit-credit-client"
   },
   "repository": {
     "type": "git",
@@ -15,7 +15,7 @@
   "keywords": [
     "accounting"
   ],
-  "author": "Acc-pro",
+  "author": "Debit-credit.tech",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/dubovik02/accpro-client/issues"
