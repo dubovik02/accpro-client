@@ -1,6 +1,6 @@
 {
   "name": "debet-credit",
-  "version": "0.0.0",
+  "version": "0.0.3",
   "description": "accounting solutions",
   "main": "index.js",
   "scripts": {
