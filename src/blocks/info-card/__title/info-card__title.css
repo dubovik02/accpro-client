@@ -4,3 +4,24 @@
   color: rgba(101, 121, 155);
   /* margin: 1em auto; */
 }
+
+/*---------------1024px-----------------*/
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .info-card__title{
+    font-size: 1.6em;
+  }
+}
+
+/*---------------768px-----------------*/
+@media screen and (min-width: 540px) and (max-width: 768px) {
+  .info-card__title {
+    font-size: 1.4em;
+  }
+}
+
+/*---------------539px-----------------*/
+@media screen and (max-width: 539px) {
+  .info-card__title {
+    font-size: 1.2em;
+  }
+}

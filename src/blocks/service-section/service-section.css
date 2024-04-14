@@ -13,6 +13,7 @@
 @import url('./__icon/service-section__icon.css');
 @import url('./__icon-container/service-section__icon-container.css');
 @import url('./__container/service-section__container.css');
+@import url('./__brieftext/service-section__brieftext.css');
 
 
 
@@ -22,4 +23,26 @@
   justify-content: flex-start;
 
   padding: 3em;
+}
+
+/*---------------1024px-----------------*/
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .service-section {
+    padding: 2.5em;
+  }
+}
+
+/*---------------768px-----------------*/
+@media screen and (min-width: 540px) and (max-width: 768px) {
+  .service-section {
+    margin: 0 .5em 0 0;
+    padding: 2em;
+  }
+}
+
+/*---------------539px-----------------*/
+@media screen and (max-width: 539px) {
+  .service-section {
+    padding: 1em;
+  }
 }

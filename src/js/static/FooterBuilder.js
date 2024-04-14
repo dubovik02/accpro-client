@@ -24,14 +24,14 @@ export default class FooterBuilder extends AccComponent {
 
         const footerHtml = `<p class="footer__text">&copy;${new Date().getFullYear()} ${Properties.site.name}</p>
 
-                            <div class="footer__container">
+                            <!--div class="footer__container"--!>
 
                               <a href="./index.html" class="link footer__link">
                                 <img class="footer__ico" src="${monitorIco}"></img>
                                 <p class="footer__text">${Properties.site.url}</p>
                               </a>
 
-                              <a href="mailto:info@accounting-pro.ru" class="link footer__link">
+                              <a href="mailto:${Properties.site.email}" class="link footer__link">
                                 <img class="footer__ico" src="${mailIco}"></img>
                                 <p class="footer__text">${Properties.site.email}</p>
                               </a>
@@ -41,7 +41,7 @@ export default class FooterBuilder extends AccComponent {
                                 <p class="footer__text">Мы на GitHub</p>
                               </a--!>
 
-                            </div>`;
+                            <!--/div--!>`;
 
         this._componentDOM.insertAdjacentHTML('afterbegin', footerHtml);
     }

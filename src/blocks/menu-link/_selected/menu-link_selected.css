@@ -3,11 +3,25 @@
   padding-bottom: 10px;
   border-bottom: 2px solid white;
 
-  /* color: black; */
-  /* background-color: white; */
+}
 
-  /* background-color: rgb(101, 121, 155);
-  padding: .5em;
-  border-radius: .5em; */
+/*---------------1024px-----------------*/
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .menu-link.menu-link_selected {
 
+  }
+}
+
+/*---------------768px-----------------*/
+@media screen and (min-width: 540px) and (max-width: 768px) {
+  .menu-link.menu-link_selected {
+    padding-bottom: 1px;
+  }
+}
+
+/*---------------539px-----------------*/
+@media screen and (max-width: 539px) {
+  .menu-link.menu-link_selected {
+    padding-bottom: 1px;
+  }
 }

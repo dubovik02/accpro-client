@@ -1,19 +1,31 @@
 .header__button-login {
-    /* width: 4em; */
-    /* padding: .5em; */
-    /*margin-left: 2em;*/
     margin: 0 1em 0 auto;
     background-color: transparent;
-    /*height: 2em*/;
-    /* height: 100%;
-    font-size: 1.3em;
-    font-weight: normal;
-    display: flex;
-    justify-content: center; */
 }
 
 .header__button-login:hover {
   background-color: transparent;
   border-radius: .5em;
   border: 1px solid white;
+}
+
+/*---------------1024px-----------------*/
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .header__button-login {
+
+  }
+}
+
+/*---------------768px-----------------*/
+@media screen and (min-width: 540px) and (max-width: 768px) {
+  .header__button-login {
+
+  }
+}
+
+/*---------------539px-----------------*/
+@media screen and (max-width: 539px) {
+  .header__button-login {
+
+  }
 }

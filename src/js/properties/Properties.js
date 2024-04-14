@@ -16,7 +16,8 @@ export default  {
   /*-Настройка подключений-*/
   connection: {
     accapi: {
-      url: 'http://localhost:3000',
+      // url: 'http://localhost:3000',
+      url: 'https://api.debit-credit.tech',
     }
   },
 

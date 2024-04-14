@@ -13,3 +13,24 @@
   /* transform: translateY(-.3em); */
   /* box-shadow: 0 .2em .2em 0 rgba(101, 121, 155,.8); */
 }
+
+/*---------------1024px-----------------*/
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .search-section__item-container {
+
+  }
+}
+
+/*---------------768px-----------------*/
+@media screen and (min-width: 540px) and (max-width: 768px) {
+  .search-section__item-container  {
+    max-width: 75%;
+  }
+}
+
+/*---------------539px-----------------*/
+@media screen and (max-width: 539px) {
+  .search-section__item-container  {
+    max-width: 100%;
+  }
+}

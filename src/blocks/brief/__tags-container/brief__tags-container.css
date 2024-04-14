@@ -5,3 +5,24 @@
   z-index: 1;
   justify-content: center;
 }
+
+/*---------------1024px-----------------*/
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .brief__tags-container {
+
+  }
+}
+
+/*---------------768px-----------------*/
+@media screen and (min-width: 540px) and (max-width: 768px) {
+  .brief__tags-container {
+
+  }
+}
+
+/*---------------539px-----------------*/
+@media screen and (max-width: 539px) {
+  .brief__tags-container {
+
+  }
+}

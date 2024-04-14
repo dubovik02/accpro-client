@@ -6,7 +6,6 @@ npm-debug.log*
 # Dependency directory
 node_modules
 dist
-content
 
 # Optional npm cache directory
 .npm

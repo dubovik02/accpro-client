@@ -4,6 +4,7 @@
 
 .info-card {
   padding: 1em;
+  margin: 1em;
   display: flex;
   flex-direction: column;
   border-radius: .4em;
@@ -11,9 +12,30 @@
   border: 1px solid rgba(101, 121, 155,.8);
   /* box-shadow: 0 .5em .5em rgba(101, 121, 155,.8); */
   justify-content: right;
-  max-width: 30%;
+  /* max-width: 30%; */
 }
 
 /* .info-card:hover {
   transform: translateY(-.3em);
 } */
+
+/*---------------1024px-----------------*/
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .info-card{
+    max-width: 100%;
+  }
+}
+
+/*---------------768px-----------------*/
+@media screen and (min-width: 540px) and (max-width: 768px) {
+  .info-card {
+    max-width: 100%;
+  }
+}
+
+/*---------------539px-----------------*/
+@media screen and (max-width: 539px) {
+  .info-card {
+    max-width: 100%;
+  }
+}

@@ -9,3 +9,27 @@
     padding-bottom: 1em;
     z-index: 1;
 }
+
+/*---------------1024px-----------------*/
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .brief__title {
+    font-size: 2em;
+    text-align: center;
+  }
+}
+
+/*---------------768px-----------------*/
+@media screen and (min-width: 540px) and (max-width: 768px) {
+  .brief__title {
+    font-size: 1.8em;
+    text-align: center;
+  }
+}
+
+/*---------------539px-----------------*/
+@media screen and (max-width: 539px) {
+  .brief__title {
+    font-size: 1.5em;
+    text-align: center;
+  }
+}
