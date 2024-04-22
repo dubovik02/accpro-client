@@ -1,0 +1,5 @@
+.tabs-container__list-item {
+  display: flex;
+  /* margin-right: .5em; */
+  border-radius: .5em;
+}

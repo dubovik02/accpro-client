@@ -27,8 +27,10 @@ export default  {
     /*-Grid-*/
     grid: {
       /*-Число строк в гриде-*/
-      rowCount: 12,
-    }
+      rowCount: 21,
+    },
+
+    autoSaveInterval: 5 * 60 * 1000,
 
   },
 

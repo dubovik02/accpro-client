@@ -20,6 +20,7 @@ import Dialog from './js/common/dialogs/Dialog';
 import NewPasswordPopUp from './js/static/popups/NewPasswordPopUp';
 import rusDict from './js/languages/rus';
 import engDict from './js/languages/eng';
+import SandBoxViewFactory from './js/static/services/sandbox/SandBoxViewFactory';
 
 /*-------------Переменные----------------*/
 const page = document.querySelector('.page');
@@ -164,12 +165,13 @@ function makeHeader() {
     signUpFunction: showSignUpPopup,
     submitFunction: restorePassword,
     afterCloseDialogFunction: () => {Dialog.InfoDialog(
-      `${Properties.lang.dict.promts.sendRestorePass} ${localStorage.getItem('userEmail')}`)},
+      `${Properties.lang.dict.promts.sendRestorePass}`)},
+      // `${Properties.lang.dict.promts.sendRestorePass} ${localStorage.getItem('userEmail')}`)},
   });
   const validatorRestore = new FormInputsValidator(popupRestore.getForm(), Properties.lang.dict.errors);
 
   popUpNewPassword = new NewPasswordPopUp({
-    title: 'Восстановление пароля',
+    title: `${Properties.lang.dict.popups.restorePassTitle}`,
     form: new FormsFactory().createNewPasswordForm('newpassword'),
     submitFunction: changeUserPassword,
     afterCloseDialogFunction: () => {
@@ -219,6 +221,8 @@ function makeSandBoxServiceSection(reqId) {
     likeFunction: sandBoxProvider.like,
     cellEditingFunction: sandBoxProvider.synchronizeModel,
     checkModelFunction: sandBoxProvider.checkModel,
+    viewFactory: new SandBoxViewFactory(),
+    autoSaveFunction: sandBoxProvider.autoSaveSandBox,/////////////////////
   });
 
   sandBoxProvider.setServiceBuilder(sandBoxServiceSection);
@@ -239,7 +243,6 @@ function makeSandBoxServiceSection(reqId) {
       sandBoxProvider.newSandBox();
     }
   }
-
 }
 
 /**
@@ -319,6 +322,7 @@ function changeUserPassword(obj) {
 function logout() {
   localStorage.removeItem('jwt');
   localStorage.removeItem('username');
+  localStorage.removeItem('userEmail');
   document.location = './index.html';
 }
 

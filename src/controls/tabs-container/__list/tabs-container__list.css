@@ -1,0 +1,27 @@
+.tabs-container__list {
+  display: flex;
+  list-style: none;
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
+}
+
+/*---------------1024px-----------------*/
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .tabs-container__list {
+
+  }
+}
+
+/*---------------768px-----------------*/
+@media screen and (min-width: 540px) and (max-width: 768px) {
+  .tabs-container__list {
+
+  }
+}
+
+/*---------------539px-----------------*/
+@media screen and (max-width: 539px) {
+  .tabs-container__list {
+    flex-direction: column;
+  }
+}

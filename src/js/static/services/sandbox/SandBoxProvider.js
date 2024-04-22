@@ -44,6 +44,10 @@ import PrintFactory from "../../../common/factories/PrintFactory";
     return this._saveSandBox(income, flows, outcome)
   }
 
+  autoSaveSandBox = (income, flows, outcome) => {
+    return this._saveSandBox(income, flows, outcome);
+  }
+
   _saveSandBox(income, flows, outcome) {
 
     //собираем баланс и обороты
@@ -416,7 +420,6 @@ import PrintFactory from "../../../common/factories/PrintFactory";
 
   }
 
-
   /**
    * Метод расчета остатков и оборотов
    * @param {AccountsSet} incomeAccSet входящие остатки
@@ -494,7 +497,7 @@ import PrintFactory from "../../../common/factories/PrintFactory";
     flowsArr.forEach(entryObj => {
 
       //не берем пустые счета
-      if ((entryObj.debet != null) && (entryObj.credit != null)) {
+      //if ((entryObj.debet != null) && (entryObj.credit != null)) {
         const entry = new AccountingEntry();
         entry.setName(entryObj.operationDesc);
 
@@ -510,7 +513,7 @@ import PrintFactory from "../../../common/factories/PrintFactory";
         entry.setSum(entryObj.summ == null ? 0 : entryObj.summ);
 
         flowsSet.add(entry);
-      }
+      //}
 
     })
 
