@@ -1,6 +1,14 @@
 import Properties from '../../../properties/Properties';
 import likeIco from "../../../../images/like32.png";
 import viewIco from "../../../../images/view64.png";
+import openIco from "../../../../images/folder.png";
+import newIco from "../../../../images/new-doc.png";
+import saveIco from "../../../../images/save.png";
+import saveCopyIco from "../../../../images/savecopy.png";
+import printIco from "../../../../images/printer.png";
+import settingIco from "../../../../images/setting.png";
+import shareIco from "../../../../images/share.png";
+import calcIco from "../../../../images/calc.png";
 
 /**
  * Фабрика компонент представления сервиса Песочницы
@@ -49,56 +57,67 @@ import viewIco from "../../../../images/view64.png";
   getSandBoxMenuHTML() {
     return `<ul class="service-section__menu-list">
 
-            <li class="service-section__menu-item">
-              <a class="link service-section__link menu-item-new">${Properties.lang.dict.sandbox.menu.new}</a>
-            </li>
+              <li class="service-section__menu-item">
+                <a class="link service-section__link menu-item-new"><img class="service-section__icon" src="${newIco}">${Properties.lang.dict.sandbox.menu.new}</a>
+              </li>
 
-            <li class="service-section__menu-item">
-              <a class="link service-section__link menu-item-open">${Properties.lang.dict.sandbox.menu.open}</a>
-            </li>
-            <li class="service-section__menu-item">
-              <a class="link service-section__link  menu-item-save">${Properties.lang.dict.sandbox.menu.save}</a>
-            </li>
-            <li class="service-section__menu-item">
-              <a class="link service-section__link  menu-item-saveascopy">${Properties.lang.dict.sandbox.menu.saveCopy}</a>
-            </li>
+              <li class="service-section__menu-item">
+                <a class="link service-section__link menu-item-open"><img class="service-section__icon" src="${openIco}">${Properties.lang.dict.sandbox.menu.open}</a>
+              </li>
+              <li class="service-section__menu-item">
+                <a class="link service-section__link  menu-item-save"><img class="service-section__icon" src="${saveIco}">${Properties.lang.dict.sandbox.menu.save}</a>
+              </li>
+              <li class="service-section__menu-item">
+                <a class="link service-section__link  menu-item-saveascopy"><img class="service-section__icon" src="${saveCopyIco}">${Properties.lang.dict.sandbox.menu.saveCopy}</a>
+              </li>
 
 
-            <li class="service-section__menu-item">
-              <a class="link service-section__link  menu-item-print">${Properties.lang.dict.sandbox.menu.print}</a>
-            </li>
+              <li class="service-section__menu-item">
+                <a class="link service-section__link  menu-item-print"><img class="service-section__icon" src="${printIco}">${Properties.lang.dict.sandbox.menu.print}</a>
+              </li>
 
-            <li class="service-section__menu-item">
-              <a class="link service-section__link menu-item-properties">${Properties.lang.dict.sandbox.menu.props}</a>
-            </li>
-            <li class="service-section__menu-item">
-              <a class="link service-section__link menu-item-share">${Properties.lang.dict.sandbox.menu.share}</a>
-            </li>
+              <li class="service-section__menu-item">
+                <a class="link service-section__link menu-item-properties">
+                  <img class="service-section__icon" src="${settingIco}">${Properties.lang.dict.sandbox.menu.props}
+                </a>
+              </li>
 
-            <li class="service-section__menu-item">
-              <a class="link service-section__link menu-item-calc">
-                ${Properties.lang.dict.sandbox.menu.calc}
-              </a>
+              <li class="service-section__menu-item">
+                <a class="link service-section__link menu-item-share">
+                  <img class="service-section__icon" src="${shareIco}">${Properties.lang.dict.sandbox.menu.share}
+                </a>
+              </li>
 
-              <ul class="service-section__submenu-list">
-                <li class="service-section__submenu-item">
-                  <a class="link service-section__sublink submenu-item-calc-income">${Properties.lang.dict.sandbox.menu.calcIncome}</a>
-                </li>
-                <li class="service-section__submenu-item">
-                  <a class="link service-section__sublink submenu-item-calc-outcome">${Properties.lang.dict.sandbox.menu.calcOutcome}</a>
-                </li>
-              </ul>
+              <li class="service-section__menu-item">
+                <a class="link service-section__link menu-item-calc">
+                  <img class="service-section__icon" src="${calcIco}">${Properties.lang.dict.sandbox.menu.calc} &#9660;
+                </a>
 
-            </li>
-          </ul>`;
+                <ul class="service-section__submenu-list submenu-list-calc">
+                  <li class="service-section__submenu-item">
+                    <a class="link service-section__sublink submenu-item-calc-income">${Properties.lang.dict.sandbox.menu.calcIncome}</a>
+                  </li>
+                  <li class="service-section__submenu-item">
+                    <a class="link service-section__sublink submenu-item-calc-outcome">${Properties.lang.dict.sandbox.menu.calcOutcome}</a>
+                  </li>
+                </ul>
+              </li>
+
+            </ul>`;
   }
 
   /**
-   * Создает набор вкладок сервиса Песочница
+   * Создает набор вкладок сервиса Песочница для одной тетрадки
    * @returns HTML вкладок
    */
   getSandBoxTabsContainerHTML() {
     return  `<div class="tabs-container">
+
+              <div class="tabs-container__tabs-content">
+                <div class="tabs-container__item tabs-container__item_income" data-index="tab_1"></div>
+                <div class="tabs-container__item tabs-container__item_active tabs-container__item_flows" data-index="tab_2"></div>
+                <div class="tabs-container__item tabs-container__item_outcome" data-index="tab_3"></div>
+              </div>
 
               <ul class="tabs-container__list">
                 <li class="tabs-container__list-item">
@@ -112,13 +131,15 @@ import viewIco from "../../../../images/view64.png";
                 </li>
               </ul>
 
-              <div class="tabs-container__tabs-content">
-                <div class="tabs-container__item tabs-container__item_income" data-index="tab_1"></div>
-                <div class="tabs-container__item tabs-container__item_active tabs-container__item_flows" data-index="tab_2"></div>
-                <div class="tabs-container__item tabs-container__item_outcome" data-index="tab_3"></div>
-              </div>
-
             </div>`;
+  }
+
+  /**
+   * Создвет Набор для тетрадей
+   * @returns
+   */
+  getSandBoxPaperTabsHTML() {
+
   }
 
 }

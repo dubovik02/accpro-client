@@ -103,18 +103,20 @@ export default class PrintFactory {
     flowsGrid.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">${Properties.lang.dict.sandbox.grids.note}</span></p>`);
     let counter = 0;
     if (flowsObj) {
-      flowsObj.forEach(element => {
-        flowsGrid.insertAdjacentHTML('beforeend', `<p>${counter++}</p>`);
-        flowsGrid.insertAdjacentHTML('beforeend', `<p>${element.name}</p>`);
-        flowsGrid.insertAdjacentHTML('beforeend',
-        `<p>${element.accDebet.accNumber ? element.accDebet.accNumber : ''}</p>`);
-        flowsGrid.insertAdjacentHTML('beforeend',
-        `<p>${element.accCredit.accNumber ? element.accCredit.accNumber : ''}</p>`);
-        flowsGrid.insertAdjacentHTML('beforeend',
-        `<p>${this._getStringAsDelimeteredNumber("ru", element.summ, '')}</p>`);
-        flowsGrid.insertAdjacentHTML('beforeend',
-        `<p>${element.description ? element.description : ''}</p>`);
-      })
+        flowsObj.forEach(element => {
+
+          flowsGrid.insertAdjacentHTML('beforeend', `<p>${counter++}</p>`);
+          flowsGrid.insertAdjacentHTML('beforeend', `<p>${element.name ? element.name : ''}</p>`);
+          flowsGrid.insertAdjacentHTML('beforeend',
+          `<p>${element.accDebet.accNumber ? element.accDebet.accNumber : ''}</p>`);
+          flowsGrid.insertAdjacentHTML('beforeend',
+          `<p>${element.accCredit.accNumber ? element.accCredit.accNumber : ''}</p>`);
+          flowsGrid.insertAdjacentHTML('beforeend',
+          `<p>${this._getStringAsDelimeteredNumber("ru", element.summ, '')}</p>`);
+          flowsGrid.insertAdjacentHTML('beforeend',
+          `<p>${element.description ? element.description : ''}</p>`);
+
+        })
     }
 
     return flowsGrid.outerHTML;

@@ -462,7 +462,7 @@ import PrintFactory from "../../../common/factories/PrintFactory";
 
       stockArr.forEach(accObj => {
 
-      if (accObj.accountNumber != null) {
+      //if (accObj.accountNumber != null) {
         const acc = new Account();
         acc.setAccNumber(accObj.accountNumber);
         acc.setOpenBalance({
@@ -475,7 +475,7 @@ import PrintFactory from "../../../common/factories/PrintFactory";
         });
         acc.setDescription(accObj.note);
         accSet.add(acc);
-      }
+      //}
 
     })
 
@@ -497,7 +497,7 @@ import PrintFactory from "../../../common/factories/PrintFactory";
     flowsArr.forEach(entryObj => {
 
       //не берем пустые счета
-      //if ((entryObj.debet != null) && (entryObj.credit != null)) {
+      //if () {
         const entry = new AccountingEntry();
         entry.setName(entryObj.operationDesc);
 

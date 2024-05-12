@@ -1,7 +1,8 @@
 .tabs-container__button.tabs-container__button_active {
   opacity: 1;
-  top: 0;
+  /* top: 0; */
+  top: 4px;
   font-weight: bold;
-  border-top: 3px solid rgb(167, 173, 184);
+  border-bottom: 3px solid rgb(167, 173, 184);
   border-right: 3px solid rgb(167, 173, 184);
 }

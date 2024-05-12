@@ -1,4 +1,8 @@
 .service-section__link {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+
   font-size: 1em;
   font-weight: bold;
   /* color: rgb(101, 121, 155); */

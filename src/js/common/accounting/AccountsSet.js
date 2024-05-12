@@ -29,12 +29,21 @@ export default class AccountsSet extends AccEntity {
    * @param {Account} account счет для добавления
    */
   add(account) {
-    this._accountsSet.push(account);
+
+    //если счет есть - объединяем их
+    let setsAcc = this.isNumberExist(account.getAccNumber());
+    if (setsAcc) {
+      setsAcc.concat(account);
+    }
+    else {
+      this._accountsSet.push(account);
+    }
+    // this._accountsSet.push(account);
   }
 
   /**
    * Возвращает счет из набора по его номеру
-   * @param {String} accNumber носмер счета
+   * @param {String} accNumber номер счета
    * @returns есть счет в наборе - счет, нет счета в наборе - null
    */
   isNumberExist(accNumber) {
@@ -110,6 +119,7 @@ export default class AccountsSet extends AccEntity {
     })
     //сворачиваем счета
     this._accountsSet.forEach(stockAcc => {
+
       entriesSet.getEntriesSet().forEach(entry => {
         let debtAcc = entry.getAccDebet();
         let creditAcc = entry.getAccCredit();
@@ -122,6 +132,7 @@ export default class AccountsSet extends AccEntity {
           isIncomeStocksCalc ? stockAcc.calcOpenBalance() : stockAcc.calcCloseBalance();
         }
       })
+
     })
 
   }

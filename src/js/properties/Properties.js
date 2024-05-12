@@ -28,6 +28,8 @@ export default  {
     grid: {
       /*-Число строк в гриде-*/
       rowCount: 21,
+      /*-Заполнитель для пустых счетов-*/
+      emptyAccountNumber: '?????',
     },
 
     autoSaveInterval: 5 * 60 * 1000,

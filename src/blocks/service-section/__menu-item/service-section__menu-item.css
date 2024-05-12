@@ -3,14 +3,18 @@
   list-style: none;
   margin-left: 1em;
   position: relative;
+
+  padding: .5em;
+  border: solid 1px rgb(101,121,155);
+  border-radius: 1em;
 }
 
 .service-section__menu-item:hover {
-
 }
 
 .service-section__menu-item:hover .service-section__submenu-list {
-  display: block;
+  /* display: block; */
+
   /**border-top: 1px solid rgb(101, 121, 155);**/
   /* border-right: 1px solid rgb(101, 121, 155);
   border-left: 1px solid rgb(101, 121, 155);

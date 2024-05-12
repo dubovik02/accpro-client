@@ -55,6 +55,8 @@ export default class SandBoxBuilder extends ServiceBuilder {
 
   /**---------Пункт меню "Рассчитать"----------- */
 
+  _menuCalc;
+
   /**
    * Подпункт "Входящие остатки"
    */
@@ -415,16 +417,28 @@ export default class SandBoxBuilder extends ServiceBuilder {
    */
   _setUpMenuItemCalc() {
 
+    this._menuCalc = this._serviceMenu.querySelector('.menu-item-calc');
+    let subMenuList = this._serviceMenu.querySelector('.submenu-list-calc');
     this._menuCalcIncome = this._serviceMenu.querySelector('.submenu-item-calc-income');
     this._menuCalcOutcome = this._serviceMenu.querySelector('.submenu-item-calc-outcome');
 
+    this._menuCalc.addEventListener('click', () => {
+      this._menuCalc.nextElementSibling.classList.toggle('service-section__submenu-list_is-visible');
+    });
+
+    subMenuList.addEventListener('mouseleave', (event) => {
+      subMenuList.classList.remove('service-section__submenu-list_is-visible');
+      event.preventDefault();
+    });
+
     this._menuCalcIncome.addEventListener('click', () => {
+      this._menuCalcIncome.parentElement.parentElement.classList.remove('service-section__submenu-list_is-visible');
       const result = this._calcStock(0);
       this.setStockGridData(this._openingGridObject, result, true);
-
     })
 
     this._menuCalcOutcome.addEventListener('click', () => {
+      this._menuCalcIncome.parentElement.parentElement.classList.remove('service-section__submenu-list_is-visible');
       const result = this._calcStock(2);
       this.setStockGridData(this._closeingGridObject, result, false);
     })
@@ -663,13 +677,23 @@ export default class SandBoxBuilder extends ServiceBuilder {
   getStockGridData(stockGrid) {
     let totalObj = [];
     stockGrid.gridOptions.api.forEachNode((rowNode, index) => {
+
+      // проверяем наличие счета при наличии оборотов
+      let accNumber = rowNode.data.accountNumber ? rowNode.data.accountNumber.trim() : rowNode.data.accountNumber;
+      if ((rowNode.data.debet || rowNode.data.credit) && (!accNumber)) {
+        accNumber = Properties.sandBox.grid.emptyAccountNumber;
+      }
+
       let currentObj = {
-        accountNumber: rowNode.data.accountNumber ? rowNode.data.accountNumber.trim() : rowNode.data.accountNumber,
+        // accountNumber: rowNode.data.accountNumber ? rowNode.data.accountNumber.trim() : rowNode.data.accountNumber,
+        accountNumber: accNumber,
         debet: rowNode.data.debet,
         credit: rowNode.data.credit,
         note: rowNode.data.note,
       };
-      totalObj.push(currentObj);
+      if (this.isNotEmptyObj(currentObj)) {
+        totalObj.push(currentObj);
+      }
     })
     return totalObj;
   }
@@ -681,14 +705,29 @@ export default class SandBoxBuilder extends ServiceBuilder {
   getFlowGridData(flowGrid) {
     let totalObj = [];
     flowGrid.gridOptions.api.forEachNode((rowNode, index) => {
+
+      //проверяем все ли параметры проводки есть
+      let accDebit = rowNode.data.debet ? rowNode.data.debet.trim() : rowNode.data.debet;
+      let accCredit = rowNode.data.credit ? rowNode.data.credit.trim() : rowNode.data.credit;
+      if (accDebit && (!accCredit)) {
+        accCredit = Properties.sandBox.grid.emptyAccountNumber;
+      }
+      if (accCredit && (!accDebit)) {
+        accDebit = Properties.sandBox.grid.emptyAccountNumber;
+      }
+
       let currentObj = {
         operationDesc: rowNode.data.operationDesc,
-        debet: rowNode.data.debet,
-        credit: rowNode.data.credit,
+        // debet: rowNode.data.debet ? rowNode.data.debet.trim() : rowNode.data.debet,
+        // credit: rowNode.data.credit ? rowNode.data.credit.trim() : rowNode.data.credit,
+        debet: accDebit,
+        credit: accCredit,
         summ: rowNode.data.summ,
         note: rowNode.data.note,
       };
-      totalObj.push(currentObj);
+      if (this.isNotEmptyObj(currentObj)) {
+        totalObj.push(currentObj);
+      }
     })
     return totalObj;
   }
@@ -850,8 +889,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
     if (!valueNumb) {
       return '';
     }
-
-    valueNumb = new Intl.NumberFormat("ru-RU", {style: "decimal", minimumFractionDigits: 2, maximumFractionDigits: 2}).format(valueNumb);
+    valueNumb = new Intl.NumberFormat(/*"ru"*/navigator.language, {style: "decimal", minimumFractionDigits: 2, maximumFractionDigits: 2}).format(valueNumb);
     return valueNumb;
   }
 
@@ -859,7 +897,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
    * Всплывающая подсказка (колл-бэк)
    */
   toolTipValueGetter = (params) =>
-  params.value == null || params.value === "" ? "- Missing -" : params.value;
+  params.value == null || params.value === "" ? "-" : params.value;
 
   /**
    * Пользовательский обработчик ошибки с сервера
@@ -886,7 +924,8 @@ export default class SandBoxBuilder extends ServiceBuilder {
 
   setShareStatus(status) {
     status ? this._fileShareComponent.textContent = `(${Properties.lang.dict.notebook.share})` : this._fileShareComponent.textContent = '';
-    status ? this._menuShare.textContent = `${Properties.lang.dict.sandbox.menu.unshare}` : this._menuShare.textContent = `${Properties.lang.dict.sandbox.menu.share}`;
+    // status ? this._menuShare.textContent = `${Properties.lang.dict.sandbox.menu.unshare}` : this._menuShare.textContent = `${Properties.lang.dict.sandbox.menu.share}`;
+    status ? this._menuShare.lastChild.nodeValue = `${Properties.lang.dict.sandbox.menu.unshare}` : this._menuShare.lastChild.nodeValue = `${Properties.lang.dict.sandbox.menu.share}`;
   }
 
   setLikesCount(count) {
@@ -895,6 +934,17 @@ export default class SandBoxBuilder extends ServiceBuilder {
 
   getLikesCount() {
     return this._fileLikesCountComponent.textContent;
+  }
+
+  // проверяет, являются ли все объекты массива пустыми
+  isNotEmptyObj(obj) {
+
+    for (var key of Object.keys(obj)) {
+      if (obj[key]) {
+        return true;
+      }
+    }
+    return false;
   }
 
 }
