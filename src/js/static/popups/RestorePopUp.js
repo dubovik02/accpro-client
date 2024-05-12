@@ -18,6 +18,7 @@ import SubmitPopUp from "../../common/popups/SubmitPopUp";
   constructor(prop) {
     super(prop);
     this._signUpFunction = this._props.signUpFunction;
+    this._afterCloseDialogFunction = this._props.afterCloseDialogFunction;
   }
 
   createDOM() {

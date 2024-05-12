@@ -1,0 +1,7 @@
+@import url('./_active/tabs-container__item_active.css');
+
+.tabs-container__item {
+  display: none;
+}
+
+

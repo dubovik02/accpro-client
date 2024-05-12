@@ -27,8 +27,12 @@ export default  {
     /*-Grid-*/
     grid: {
       /*-Число строк в гриде-*/
-      rowCount: 12,
-    }
+      rowCount: 21,
+      /*-Заполнитель для пустых счетов-*/
+      emptyAccountNumber: '?????',
+    },
+
+    autoSaveInterval: 5 * 60 * 1000,
 
   },
 

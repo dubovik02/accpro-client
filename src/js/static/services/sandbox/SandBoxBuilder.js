@@ -3,13 +3,20 @@ import {Grid} from 'ag-grid-community';
 import Properties from "../../../properties/Properties";
 import { Number } from "core-js";
 import Dialog from "../../../common/dialogs/Dialog";
-import like from "../../../../images/like32.png";
-import view from "../../../../images/view64.png";
 
 /**
  * Сервис Песочницы
  */
 export default class SandBoxBuilder extends ServiceBuilder {
+
+  //фабрика представлений
+  _viewFactory;
+
+  //набор вкладок представления
+  _tabsContainer;
+  _tabIncome;
+  _tabFlow;
+  _tabOutcome;
 
   /**
    * Таблица входящих остатков
@@ -47,6 +54,8 @@ export default class SandBoxBuilder extends ServiceBuilder {
   _currentDocument;
 
   /**---------Пункт меню "Рассчитать"----------- */
+
+  _menuCalc;
 
   /**
    * Подпункт "Входящие остатки"
@@ -149,26 +158,25 @@ export default class SandBoxBuilder extends ServiceBuilder {
     */
    _checkModelFunctioin;
 
+   /**
+    * Функция автосохранения
+    */
+   _autoSaveFunction;
+
   /**
    * Компоненты характеристик файла
    */
-
   _fileNameComponent;
-
   _fileLastUpdateComponent;
-
   _fileContentComponent;
-
   _fileShareComponent;
-
   _fileLikeComponent;
   _fileLikesCountComponent;
-
   _fileViewsComponent;
 
 
   constructor(props) {
-    super(props)
+    super(props);
     this._calcFunction = this._props.calcFunction;
     this._saveFunction = this._props.saveFunction;
     this._saveCopyFunction = this._props.saveCopyFunction;
@@ -182,6 +190,9 @@ export default class SandBoxBuilder extends ServiceBuilder {
     this._likeFunction = this._props.likeFunction;
     this._cellEditingFunction = this._props.cellEditingFunction;
     this._checkModelFunctioin = this._props.checkModelFunction;
+    this._viewFactory = this._props.viewFactory;
+    this._autoSaveFunction = this._props.autoSaveFunction;
+    // setInterval(this.autoSaveDocument, Properties.sandBox.autoSaveInterval);
   }
 
   createDOM() {
@@ -191,6 +202,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
     this._createOpeningGrid();
     this._createFlowsGrid();
     this._createClosingGrid();
+    this._createTabsContainer();
   }
 
   /**
@@ -198,35 +210,8 @@ export default class SandBoxBuilder extends ServiceBuilder {
    */
   _createStatusBar() {
 
-    const centerStatusBarHtml = `
-                                <p class="service-section__description">
-                                  ${Properties.lang.dict.notebook.notebook}:
-                                  <span class="service-section__span file-name"></span>
-                                   |
-                                  <span class="service-section__span file-date"></span>
-                                </p>
-
-                                <p class="service-section__description">
-                                  ${Properties.lang.dict.notebook.name}:
-                                  <span class="service-section__span service-section__span_file-description description"></span>
-                                  <span class="service-section__span service-section__span_file-description sharestatus"></span>
-                                </p>
-
-                                <div class="service-section__icon-container">
-                                  <div class="service-section__icon-container">
-                                    <img class="service-section__icon service-section__icon_linked like" src="${like}">
-                                    <span class="service-section__span likes-counter"></span>
-                                  </div>
-                                  <div class="service-section__icon-container">
-                                    <img class="service-section__icon" src="${view}">
-                                    <span class="service-section__span views-counter"></span>
-                                  </div>
-                                </div>
-
-                                `;
-
+    const centerStatusBarHtml = this._viewFactory.getSandBoxStatusBarHTML();
     this._leftContainer.insertAdjacentHTML('afterbegin', centerStatusBarHtml);
-
     this._fileNameComponent = this._leftContainer.querySelector('.file-name');
     this._fileLastUpdateComponent = this._leftContainer.querySelector('.file-date');
     this._fileContentComponent = this._leftContainer.querySelector('.description');
@@ -242,51 +227,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
    */
   _createServiceMenu() {
 
-    const menuHtml = `<ul class="service-section__menu-list">
-
-                        <li class="service-section__menu-item">
-                          <a class="link service-section__link menu-item-new">${Properties.lang.dict.sandbox.menu.new}</a>
-                        </li>
-
-                        <li class="service-section__menu-item">
-                          <a class="link service-section__link menu-item-open">${Properties.lang.dict.sandbox.menu.open}</a>
-                        </li>
-                        <li class="service-section__menu-item">
-                          <a class="link service-section__link  menu-item-save">${Properties.lang.dict.sandbox.menu.save}</a>
-                        </li>
-                        <li class="service-section__menu-item">
-                          <a class="link service-section__link  menu-item-saveascopy">${Properties.lang.dict.sandbox.menu.saveCopy}</a>
-                        </li>
-
-
-                        <li class="service-section__menu-item">
-                          <a class="link service-section__link  menu-item-print">${Properties.lang.dict.sandbox.menu.print}</a>
-                        </li>
-
-                        <li class="service-section__menu-item">
-                          <a class="link service-section__link menu-item-properties">${Properties.lang.dict.sandbox.menu.props}</a>
-                        </li>
-                        <li class="service-section__menu-item">
-                          <a class="link service-section__link menu-item-share">${Properties.lang.dict.sandbox.menu.share}</a>
-                        </li>
-
-                        <li class="service-section__menu-item">
-                          <a class="link service-section__link menu-item-calc">
-                            ${Properties.lang.dict.sandbox.menu.calc}
-                          </a>
-
-                          <ul class="service-section__submenu-list">
-                            <li class="service-section__submenu-item">
-                              <a class="link service-section__sublink submenu-item-calc-income">${Properties.lang.dict.sandbox.menu.calcIncome}</a>
-                            </li>
-                            <li class="service-section__submenu-item">
-                              <a class="link service-section__sublink submenu-item-calc-outcome">${Properties.lang.dict.sandbox.menu.calcOutcome}</a>
-                            </li>
-                          </ul>
-
-                        </li>
-                      </ul>`;
-
+    const menuHtml = this._viewFactory.getSandBoxMenuHTML();
     this._serviceMenu.insertAdjacentHTML(`afterbegin`, menuHtml);
     this._setUpMenuItems();
 
@@ -320,16 +261,38 @@ export default class SandBoxBuilder extends ServiceBuilder {
   }
 
   /**
+  * Создает набор вкладок
+  */
+  _createTabsContainer() {
+    const tabHtml = this._viewFactory.getSandBoxTabsContainerHTML();
+    this._serviceView.insertAdjacentHTML('beforeend', tabHtml);
+
+    this._tabsContainer = this._serviceView.querySelector('.tabs-container');
+    this._tabIncome = this._serviceView.querySelector('.tabs-container__item_income');
+    this._tabFlow = this._serviceView.querySelector('.tabs-container__item_flows');
+    this._tabOutcome = this._serviceView.querySelector('.tabs-container__item_outcome');
+
+    this._tabIncome.insertAdjacentElement('beforeend', this._openingGridElement);
+    this._tabFlow.insertAdjacentElement('beforeend', this._flowGridElement);
+    this._tabOutcome.insertAdjacentElement('beforeend', this._closeingGridElement);
+
+    this._setUpTabsEvent();
+
+  }
+
+  /**
    * Создает элемент Grid с заданным заголовком и классом
    * @param {string} title заголовок Grid
    * @param {string} className имя класса элемента
    * @return {Element} элемент Grid
    */
   _createGridElement(title, className) {
-    const gridHtml = `<p class="grid__title grid__title-${className}">${title}</p>
-                      <div style="height: 270px; max-width: 100%;" class="${className} ag-theme-alpine"></div>`;
-    this._serviceView.insertAdjacentHTML('beforeend', gridHtml);
-    return this._serviceView.querySelector(`.${className}`);
+    const el = document.createElement('div');
+    el.classList.add(`${className}`);
+    el.classList.add(`ag-theme-alpine`);
+    el.style.height = '50vh';
+    el.style.width = '100%';
+    return el;
   }
 
   /**
@@ -367,31 +330,14 @@ export default class SandBoxBuilder extends ServiceBuilder {
         pinned: 'left',
       },
 
-      { headerName: `${Properties.lang.dict.sandbox.grids.account}`, field: 'accountNumber', resizable: true, editable: true, rowDrag: true, },
+      { headerName: `${Properties.lang.dict.sandbox.grids.account}`, field: 'accountNumber', minWidth: 200, resizable: true, editable: true, rowDrag: true,},
       { headerName: `${Properties.lang.dict.sandbox.grids.debitStock}`, field: 'debet', resizable: true, editable: true, valueFormatter: this.currencyFormatter,},
       { headerName: `${Properties.lang.dict.sandbox.grids.creditStock}`, field: 'credit', resizable: true, editable: true, valueFormatter: this.currencyFormatter,},
-      { headerName: `${Properties.lang.dict.sandbox.grids.note}`, field: 'note', resizable: true, editable: true, tooltipValueGetter: this.toolTipValueGetter,/*wrapText: true, autoHeight: true,*/ },
+      { headerName: `${Properties.lang.dict.sandbox.grids.note}`, field: 'note', resizable: true, editable: true, tooltipValueGetter: this.toolTipValueGetter, wrapText: true, autoHeight: true,},
 
     ];
 
-    // specify the default row data count
-    const rowData = [];
-
-    for (let i = 0; i < Properties.sandBox.grid.rowCount - 1; i++) {
-      rowData.push({});
-    }
-
-    // let the grid know which columns and what data to use
-    const gridOptions = {
-      columnDefs: columnDefs,
-      rowData: rowData,
-      rowDragManaged: true,
-      animateRows: true,
-      undoRedoCellEditing: true,
-      undoRedoCellEditingLimit: 20,
-    };
-
-    return gridOptions;
+    return this.getGridOptions(columnDefs);
   }
 
   /**
@@ -410,13 +356,23 @@ export default class SandBoxBuilder extends ServiceBuilder {
         pinned: 'left'
       },
 
-      { headerName: `${Properties.lang.dict.sandbox.grids.flowNote}`, field: 'operationDesc', resizable: true, editable: true, rowDrag: true, tooltipValueGetter: this.toolTipValueGetter,/*wrapText: true, autoHeight: true,*/},
+      { headerName: `${Properties.lang.dict.sandbox.grids.flowNote}`, field: 'operationDesc', minWidth: 200, resizable: true, editable: true, rowDrag: true, tooltipValueGetter: this.toolTipValueGetter, wrapText: true, autoHeight: true,},
       { headerName: `${Properties.lang.dict.sandbox.grids.accDebit}`, field: 'debet', resizable: true, editable: true, },
       { headerName: `${Properties.lang.dict.sandbox.grids.accCredit}`, field: 'credit', resizable: true, editable: true, },
       { headerName: `${Properties.lang.dict.sandbox.grids.summ}`, field: 'summ', resizable: true, editable: true, valueFormatter: this.currencyFormatter,},
-      { headerName: `${Properties.lang.dict.sandbox.grids.note}`, field: 'note', resizable: true, editable: true, tooltipValueGetter: this.toolTipValueGetter, /*wrapText: true, autoHeight: true,*/},
+      { headerName: `${Properties.lang.dict.sandbox.grids.note}`, field: 'note', resizable: true, editable: true, tooltipValueGetter: this.toolTipValueGetter, wrapText: true, autoHeight: true,},
 
     ];
+
+    return this.getGridOptions(columnDefs);
+  }
+
+  /**
+   * Возвращает объект настроек грида по описанию
+   * @param {Object} columnDefs
+   * @returns gridOptions
+   */
+  getGridOptions(columnDefs) {
 
     // specify the default row data count
     const rowData = [
@@ -461,16 +417,28 @@ export default class SandBoxBuilder extends ServiceBuilder {
    */
   _setUpMenuItemCalc() {
 
+    this._menuCalc = this._serviceMenu.querySelector('.menu-item-calc');
+    let subMenuList = this._serviceMenu.querySelector('.submenu-list-calc');
     this._menuCalcIncome = this._serviceMenu.querySelector('.submenu-item-calc-income');
     this._menuCalcOutcome = this._serviceMenu.querySelector('.submenu-item-calc-outcome');
 
+    this._menuCalc.addEventListener('click', () => {
+      this._menuCalc.nextElementSibling.classList.toggle('service-section__submenu-list_is-visible');
+    });
+
+    subMenuList.addEventListener('mouseleave', (event) => {
+      subMenuList.classList.remove('service-section__submenu-list_is-visible');
+      event.preventDefault();
+    });
+
     this._menuCalcIncome.addEventListener('click', () => {
+      this._menuCalcIncome.parentElement.parentElement.classList.remove('service-section__submenu-list_is-visible');
       const result = this._calcStock(0);
       this.setStockGridData(this._openingGridObject, result, true);
-
     })
 
     this._menuCalcOutcome.addEventListener('click', () => {
+      this._menuCalcIncome.parentElement.parentElement.classList.remove('service-section__submenu-list_is-visible');
       const result = this._calcStock(2);
       this.setStockGridData(this._closeingGridObject, result, false);
     })
@@ -654,6 +622,54 @@ export default class SandBoxBuilder extends ServiceBuilder {
     });
   }
 
+  // обработчик панели вкладок
+  _setUpTabsEvent() {
+
+    const tabLinks = this._serviceView.querySelectorAll(".tabs-container__button");
+    const tabPanels = this._serviceView.querySelectorAll(".tabs-container__item");
+
+    for(let el of tabLinks) {
+
+      el.addEventListener("click", e => {
+        e.preventDefault();
+        this._serviceView.querySelector('.tabs-container__button.tabs-container__button_active').classList.remove("tabs-container__button_active");
+        this._serviceView.querySelector('.tabs-container__item.tabs-container__item_active').classList.remove("tabs-container__item_active");
+        el.classList.add("tabs-container__button_active");
+        // ищем связанную панель
+        const index = el.getAttribute('id');
+        const panel = [...tabPanels].filter(el => el.getAttribute("data-index") == index);
+        panel[0].classList.add("tabs-container__item_active");
+        //ровняем таблицу
+        this._openingGridObject.gridOptions.api.sizeColumnsToFit();
+        this._flowGridObject.gridOptions.api.sizeColumnsToFit();
+        this._closeingGridObject.gridOptions.api.sizeColumnsToFit();
+      });
+    }
+  }
+
+  /**
+   * Автосохранение документа
+   */
+  autoSaveDocument = () => {
+    let preloader = this.getProps().preloader;
+    this._componentDOM.appendChild(preloader);
+
+    const income = this.getStockGridData(this._openingGridObject);
+    const outcome = this.getStockGridData(this._closeingGridObject);
+    const flows = this.getFlowGridData(this._flowGridObject);
+
+    if (this._autoSaveFunction instanceof Function) {
+      this._autoSaveFunction.call(this, income, flows, outcome)
+      .then((res) => {
+        preloader.remove();
+      })
+      .catch((err) => {
+        preloader.remove();
+        this.handleError(err);
+      });
+    }
+  }
+
   /**
    * Возвращает данные из таблицы остатков
    * @param {Object} stockGrid - объект таблицы остатков
@@ -661,13 +677,23 @@ export default class SandBoxBuilder extends ServiceBuilder {
   getStockGridData(stockGrid) {
     let totalObj = [];
     stockGrid.gridOptions.api.forEachNode((rowNode, index) => {
+
+      // проверяем наличие счета при наличии оборотов
+      let accNumber = rowNode.data.accountNumber ? rowNode.data.accountNumber.trim() : rowNode.data.accountNumber;
+      if ((rowNode.data.debet || rowNode.data.credit) && (!accNumber)) {
+        accNumber = Properties.sandBox.grid.emptyAccountNumber;
+      }
+
       let currentObj = {
-        accountNumber: rowNode.data.accountNumber ? rowNode.data.accountNumber.trim() : rowNode.data.accountNumber,
+        // accountNumber: rowNode.data.accountNumber ? rowNode.data.accountNumber.trim() : rowNode.data.accountNumber,
+        accountNumber: accNumber,
         debet: rowNode.data.debet,
         credit: rowNode.data.credit,
         note: rowNode.data.note,
       };
-      totalObj.push(currentObj);
+      if (this.isNotEmptyObj(currentObj)) {
+        totalObj.push(currentObj);
+      }
     })
     return totalObj;
   }
@@ -679,14 +705,29 @@ export default class SandBoxBuilder extends ServiceBuilder {
   getFlowGridData(flowGrid) {
     let totalObj = [];
     flowGrid.gridOptions.api.forEachNode((rowNode, index) => {
+
+      //проверяем все ли параметры проводки есть
+      let accDebit = rowNode.data.debet ? rowNode.data.debet.trim() : rowNode.data.debet;
+      let accCredit = rowNode.data.credit ? rowNode.data.credit.trim() : rowNode.data.credit;
+      if (accDebit && (!accCredit)) {
+        accCredit = Properties.sandBox.grid.emptyAccountNumber;
+      }
+      if (accCredit && (!accDebit)) {
+        accDebit = Properties.sandBox.grid.emptyAccountNumber;
+      }
+
       let currentObj = {
         operationDesc: rowNode.data.operationDesc,
-        debet: rowNode.data.debet,
-        credit: rowNode.data.credit,
+        // debet: rowNode.data.debet ? rowNode.data.debet.trim() : rowNode.data.debet,
+        // credit: rowNode.data.credit ? rowNode.data.credit.trim() : rowNode.data.credit,
+        debet: accDebit,
+        credit: accCredit,
         summ: rowNode.data.summ,
         note: rowNode.data.note,
       };
-      totalObj.push(currentObj);
+      if (this.isNotEmptyObj(currentObj)) {
+        totalObj.push(currentObj);
+      }
     })
     return totalObj;
   }
@@ -821,19 +862,20 @@ export default class SandBoxBuilder extends ServiceBuilder {
    * @param {Object} checkResult объект результатов проверки
    */
   _renderCheckList = (checkResult) => {
+    const errorStyle = 'tabs-container__button_error';
     //проверяем входящий
     if (checkResult.incomeBalanced) {
-      document.querySelector('.grid__title-opening-grid').classList.add('grid__title_color-red');
+      document.querySelector('.tabs-container__button_income').classList.add(`${errorStyle}`);
     }
     else {
-      document.querySelector('.grid__title-opening-grid').classList.remove('grid__title_color-red');
+      document.querySelector('.tabs-container__button_income').classList.remove(`${errorStyle}`);
     }
     //проверяем исходящий
     if (checkResult.outcomeBalanced) {
-      document.querySelector('.grid__title-closeing-grid').classList.add('grid__title_color-red');
+      document.querySelector('.tabs-container__button_outcome').classList.add(`${errorStyle}`);
     }
     else {
-      document.querySelector('.grid__title-closeing-grid').classList.remove('grid__title_color-red');
+      document.querySelector('.tabs-container__button_outcome').classList.remove(`${errorStyle}`);
     }
   }
 
@@ -847,8 +889,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
     if (!valueNumb) {
       return '';
     }
-
-    valueNumb = new Intl.NumberFormat("ru-RU", {style: "decimal", minimumFractionDigits: 2, maximumFractionDigits: 2}).format(valueNumb);
+    valueNumb = new Intl.NumberFormat(/*"ru"*/navigator.language, {style: "decimal", minimumFractionDigits: 2, maximumFractionDigits: 2}).format(valueNumb);
     return valueNumb;
   }
 
@@ -856,7 +897,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
    * Всплывающая подсказка (колл-бэк)
    */
   toolTipValueGetter = (params) =>
-  params.value == null || params.value === "" ? "- Missing -" : params.value;
+  params.value == null || params.value === "" ? "-" : params.value;
 
   /**
    * Пользовательский обработчик ошибки с сервера
@@ -883,7 +924,8 @@ export default class SandBoxBuilder extends ServiceBuilder {
 
   setShareStatus(status) {
     status ? this._fileShareComponent.textContent = `(${Properties.lang.dict.notebook.share})` : this._fileShareComponent.textContent = '';
-    status ? this._menuShare.textContent = `${Properties.lang.dict.sandbox.menu.unshare}` : this._menuShare.textContent = `${Properties.lang.dict.sandbox.menu.share}`;
+    // status ? this._menuShare.textContent = `${Properties.lang.dict.sandbox.menu.unshare}` : this._menuShare.textContent = `${Properties.lang.dict.sandbox.menu.share}`;
+    status ? this._menuShare.lastChild.nodeValue = `${Properties.lang.dict.sandbox.menu.unshare}` : this._menuShare.lastChild.nodeValue = `${Properties.lang.dict.sandbox.menu.share}`;
   }
 
   setLikesCount(count) {
@@ -892,6 +934,17 @@ export default class SandBoxBuilder extends ServiceBuilder {
 
   getLikesCount() {
     return this._fileLikesCountComponent.textContent;
+  }
+
+  // проверяет, являются ли все объекты массива пустыми
+  isNotEmptyObj(obj) {
+
+    for (var key of Object.keys(obj)) {
+      if (obj[key]) {
+        return true;
+      }
+    }
+    return false;
   }
 
 }
