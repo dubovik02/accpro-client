@@ -75,13 +75,14 @@ export default {
 
   // описание полей тетради
   notebook: {
+    id: 'ID',
     notebook: 'Notebook',
     create: 'Created(changed)',
     name: 'Name',
     hashtags: 'Hashtags',
     description: 'Description',
     share: 'General access',
-    noname: 'Noname',
+    noname: 'New notebook',
     myNotebook: 'My notebook',
     myDescription: 'Set of transactions',
     myTags: '#MyTag',
@@ -126,6 +127,8 @@ export default {
     hashTagsError: 'Error while getting hashtags',
     enterSearchQuery: 'Please, specify your search query',
     waitPlease: 'Wait a minute please...',
+    close: 'Close',
+    copy: 'Copy',
 
   },
 

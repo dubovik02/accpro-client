@@ -1,5 +1,6 @@
 import AccDialog from "./AccDialog";
 import iconError from '../../../images/error64.png';
+import Properties from "../../properties/Properties";
 
 /**
  * Класс диалогового окна ошибки
@@ -21,7 +22,7 @@ import iconError from '../../../images/error64.png';
     super.createDOM();
 
     const closeHtml = `
-                      <button type="button" id="close" class="button dialog__button">Закрыть</button>
+                      <button type="button" id="close" class="button dialog__button">${Properties.lang.dict.dialogs.close}</button>
                       `;
     this._buttonsSection.insertAdjacentHTML('afterbegin', closeHtml);
 
