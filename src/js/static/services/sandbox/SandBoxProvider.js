@@ -147,8 +147,8 @@ import PrintFactory from "../../../common/factories/PrintFactory";
 
         const columnDefs = [
 
-          { headerName: `${Properties.lang.dict.notebook.notebook}`, field: 'shortdesc', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter', tooltipValueGetter: this.getServiceBuilder().toolTipValueGetter },
-          { headerName: `${Properties.lang.dict.notebook.name}`, field: 'id', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter', tooltipValueGetter: this.getServiceBuilder().toolTipValueGetter },
+          { headerName: `${Properties.lang.dict.notebook.name}`, field: 'shortdesc', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter', tooltipValueGetter: this.getServiceBuilder().toolTipValueGetter },
+          { headerName: `${Properties.lang.dict.notebook.id}`, field: 'id', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter', tooltipValueGetter: this.getServiceBuilder().toolTipValueGetter },
           { headerName: `${Properties.lang.dict.notebook.refresh}`, field: 'date', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter'},
 
         ];

@@ -76,13 +76,14 @@ export default {
 
   // описание полей тетради
   notebook: {
+    id: 'Код',
     notebook: 'Тетрадь',
     create: 'Создана(изменена)',
     name: 'Название',
     hashtags: 'Хэш-теги',
     description: 'Описание',
     share: 'Общий доступ',
-    noname: 'Без имени',
+    noname: 'Новая тетрадь',
     myNotebook: 'Моя тетрадь',
     myDescription: 'Набор проводок по операции',
     myTags: '#МойТэг',
@@ -127,6 +128,8 @@ export default {
     hashTagsError: 'Ошибка при получении хэштэгов',
     enterSearchQuery: 'Уточните пожалуйста поисковый запрос',
     waitPlease: 'Минуточку...',
+    close: 'Закрыть',
+    copy: 'Копировать',
   },
 
   // попапы

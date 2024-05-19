@@ -12,11 +12,15 @@ export default class SandBoxBuilder extends ServiceBuilder {
   //фабрика представлений
   _viewFactory;
 
-  //набор вкладок представления
+  //набор вкладок представления тетради
   _tabsContainer;
   _tabIncome;
   _tabFlow;
   _tabOutcome;
+
+
+  // набор вкладок представления набора тетрадей
+  _noteBooksTabs = [];
 
   /**
    * Таблица входящих остатков
@@ -191,7 +195,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
     this._cellEditingFunction = this._props.cellEditingFunction;
     this._checkModelFunctioin = this._props.checkModelFunction;
     this._viewFactory = this._props.viewFactory;
-    this._autoSaveFunction = this._props.autoSaveFunction;
+    // this._autoSaveFunction = this._props.autoSaveFunction;
     // setInterval(this.autoSaveDocument, Properties.sandBox.autoSaveInterval);
   }
 
@@ -203,6 +207,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
     this._createFlowsGrid();
     this._createClosingGrid();
     this._createTabsContainer();
+    // this._createNotebooksContainer();
   }
 
   /**
@@ -216,9 +221,9 @@ export default class SandBoxBuilder extends ServiceBuilder {
     this._fileLastUpdateComponent = this._leftContainer.querySelector('.file-date');
     this._fileContentComponent = this._leftContainer.querySelector('.description');
     this._fileShareComponent = this._leftContainer.querySelector('.sharestatus');
-    this._fileLikeComponent = this._leftContainer.querySelector('.like');
-    this._fileLikesCountComponent = this._leftContainer.querySelector('.likes-counter');
-    this._fileViewsComponent = this._leftContainer.querySelector('.views-counter');
+    // this._fileLikeComponent = this._leftContainer.querySelector('.like');
+    // this._fileLikesCountComponent = this._leftContainer.querySelector('.likes-counter');
+    //this._fileViewsComponent = this._leftContainer.querySelector('.views-counter');
 
   }
 
@@ -229,6 +234,9 @@ export default class SandBoxBuilder extends ServiceBuilder {
 
     const menuHtml = this._viewFactory.getSandBoxMenuHTML();
     this._serviceMenu.insertAdjacentHTML(`afterbegin`, menuHtml);
+    this._fileLikeComponent = this._serviceMenu.querySelector('.like');
+    this._fileLikesCountComponent = this._serviceMenu.querySelector('.likes-counter');
+    this._fileViewsComponent = this._serviceMenu.querySelector('.views-counter');
     this._setUpMenuItems();
 
   }
@@ -281,6 +289,14 @@ export default class SandBoxBuilder extends ServiceBuilder {
   }
 
   /**
+   * Создает набор вкладок для тетрадей
+   */
+  _createNotebooksContainer() {
+    const tabsHtml = this._viewFactory.getNotebookTabsHTML('Вкладка 1', this._tabsContainer);
+    this._serviceView.insertAdjacentHTML('beforeend', tabsHtml);
+  }
+
+  /**
    * Создает элемент Grid с заданным заголовком и классом
    * @param {string} title заголовок Grid
    * @param {string} className имя класса элемента
@@ -330,10 +346,10 @@ export default class SandBoxBuilder extends ServiceBuilder {
         pinned: 'left',
       },
 
-      { headerName: `${Properties.lang.dict.sandbox.grids.account}`, field: 'accountNumber', minWidth: 200, resizable: true, editable: true, rowDrag: true,},
-      { headerName: `${Properties.lang.dict.sandbox.grids.debitStock}`, field: 'debet', resizable: true, editable: true, valueFormatter: this.currencyFormatter,},
-      { headerName: `${Properties.lang.dict.sandbox.grids.creditStock}`, field: 'credit', resizable: true, editable: true, valueFormatter: this.currencyFormatter,},
-      { headerName: `${Properties.lang.dict.sandbox.grids.note}`, field: 'note', resizable: true, editable: true, tooltipValueGetter: this.toolTipValueGetter, wrapText: true, autoHeight: true,},
+      { headerName: `${Properties.lang.dict.sandbox.grids.account}`, field: 'accountNumber', resizable: true, editable: true, rowDrag: true, width: Properties.sandBox.grid.accColWidth,},
+      { headerName: `${Properties.lang.dict.sandbox.grids.debitStock}`, field: 'debet', resizable: true, editable: true, valueFormatter: this.currencyFormatter, width: Properties.sandBox.grid.numberColWidth, },
+      { headerName: `${Properties.lang.dict.sandbox.grids.creditStock}`, field: 'credit', resizable: true, editable: true, valueFormatter: this.currencyFormatter, width: Properties.sandBox.grid.numberColWidth, },
+      { headerName: `${Properties.lang.dict.sandbox.grids.note}`, field: 'note', resizable: true, editable: true, tooltipValueGetter: this.toolTipValueGetter, minWidth: Properties.sandBox.grid.minTextColWidth,/*wrapText: true, autoHeight: true,*/},
 
     ];
 
@@ -356,11 +372,11 @@ export default class SandBoxBuilder extends ServiceBuilder {
         pinned: 'left'
       },
 
-      { headerName: `${Properties.lang.dict.sandbox.grids.flowNote}`, field: 'operationDesc', minWidth: 200, resizable: true, editable: true, rowDrag: true, tooltipValueGetter: this.toolTipValueGetter, wrapText: true, autoHeight: true,},
-      { headerName: `${Properties.lang.dict.sandbox.grids.accDebit}`, field: 'debet', resizable: true, editable: true, },
-      { headerName: `${Properties.lang.dict.sandbox.grids.accCredit}`, field: 'credit', resizable: true, editable: true, },
-      { headerName: `${Properties.lang.dict.sandbox.grids.summ}`, field: 'summ', resizable: true, editable: true, valueFormatter: this.currencyFormatter,},
-      { headerName: `${Properties.lang.dict.sandbox.grids.note}`, field: 'note', resizable: true, editable: true, tooltipValueGetter: this.toolTipValueGetter, wrapText: true, autoHeight: true,},
+      { headerName: `${Properties.lang.dict.sandbox.grids.flowNote}`, field: 'operationDesc', resizable: true, editable: true, rowDrag: true, tooltipValueGetter: this.toolTipValueGetter, minWidth: Properties.sandBox.grid.minTextColWidth, /*wrapText: true, autoHeight: true,*/},
+      { headerName: `${Properties.lang.dict.sandbox.grids.accDebit}`, field: 'debet', resizable: true, editable: true, width: Properties.sandBox.grid.accColWidth,},
+      { headerName: `${Properties.lang.dict.sandbox.grids.accCredit}`, field: 'credit', resizable: true, editable: true, width: Properties.sandBox.grid.accColWidth,},
+      { headerName: `${Properties.lang.dict.sandbox.grids.summ}`, field: 'summ', resizable: true, editable: true, valueFormatter: this.currencyFormatter, width: Properties.sandBox.grid.numberColWidth,},
+      { headerName: `${Properties.lang.dict.sandbox.grids.note}`, field: 'note', resizable: true, editable: true, tooltipValueGetter: this.toolTipValueGetter, minWidth: Properties.sandBox.grid.minTextColWidth, /*wrapText: true, autoHeight: true,*/},
 
     ];
 

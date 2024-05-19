@@ -37,7 +37,7 @@ import calcIco from "../../../../images/calc.png";
               <span class="service-section__span service-section__span_file-description sharestatus"></span>
             </p>
 
-            <div class="service-section__icon-container">
+            <!--div class="service-section__icon-container">
               <div class="service-section__icon-container">
                 <img class="service-section__icon service-section__icon_linked like" src="${likeIco}">
                 <span class="service-section__span likes-counter"></span>
@@ -46,7 +46,7 @@ import calcIco from "../../../../images/calc.png";
                 <img class="service-section__icon" src="${viewIco}">
                 <span class="service-section__span views-counter"></span>
               </div>
-            </div>
+            </div--!>
             `;
   }
 
@@ -56,6 +56,20 @@ import calcIco from "../../../../images/calc.png";
    */
   getSandBoxMenuHTML() {
     return `<ul class="service-section__menu-list">
+
+              <li class="service-section__menu-item">
+                <a class="link service-section__link menu-item-like">
+                  <img class="service-section__icon service-section__icon_linked like" src="${likeIco}">
+                  <span class="service-section__span likes-counter"></span>
+                </a>
+              </li>
+
+              <li class="service-section__menu-item">
+                <a class="link service-section__link menu-item-view">
+                  <img class="service-section__icon" src="${viewIco}">
+                  <span class="service-section__span views-counter"></span>
+                </a>
+              </li>
 
               <li class="service-section__menu-item">
                 <a class="link service-section__link menu-item-new"><img class="service-section__icon" src="${newIco}">${Properties.lang.dict.sandbox.menu.new}</a>
@@ -135,11 +149,23 @@ import calcIco from "../../../../images/calc.png";
   }
 
   /**
-   * Создвет Набор для тетрадей
+   * Создает набор вклвадок для тетрадей
    * @returns
    */
-  getSandBoxPaperTabsHTML() {
+  getNotebookTabsHTML(tabName, tabElementHTML) {
+    return  `<div class="tabs-container">
 
+              <div class="tabs-container__tabs-content">
+                <div class="tabs-container__item tabs-container__item_income" data-index="tab_1">${tabElementHTML}</div>
+              </div>
+
+              <ul class="tabs-container__list">
+                <li class="tabs-container__list-item">
+                  <a class="tabs-container__button tabs-container__button_income" id="tab_1">${tabName}</a>
+                </li>
+              </ul>
+
+            </div>`;
   }
 
 }

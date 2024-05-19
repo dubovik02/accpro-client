@@ -26,13 +26,13 @@ import Properties from "../../properties/Properties";
     super.createDOM();
 
     const closeHtml = `
-                      <button type="button" id="ok" class="button dialog__button dialog__button-ok">Закрыть</button>
+                      <button type="button" id="ok" class="button dialog__button dialog__button-ok">${Properties.lang.dict.dialogs.close}</button>
                       `;
     this._buttonsSection.insertAdjacentHTML('afterbegin', closeHtml);
     this._buttonClose = this._buttonsSection.querySelector('.dialog__button-ok');
 
     const copyHtml = `
-                      <button type="button" id="copy" class="button dialog__button dialog__button-copy">Копировать</button>
+                      <button type="button" id="copy" class="button dialog__button dialog__button-copy">${Properties.lang.dict.dialogs.copy}</button>
                       `;
     this._buttonsSection.insertAdjacentHTML('afterbegin', copyHtml);
     this._buttonCopy = this._buttonsSection.querySelector('.dialog__button-copy');
