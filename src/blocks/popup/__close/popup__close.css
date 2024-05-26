@@ -6,6 +6,30 @@
   cursor: pointer;
 }
 
+/*---------------1024px-----------------*/
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .popup__close {
+    width: 20px;
+    top: 15px;
+    right: 15px;
+    background-color: rgb(101, 121, 155);
+    border: solid 2px rgb(101, 121, 155);
+    border-radius: 20px;
+  }
+}
+
+/*---------------768px-----------------*/
+@media screen and (min-width: 541px) and (max-width: 768px) {
+  .popup__close {
+    width: 20px;
+    top: 15px;
+    right: 15px;
+    background-color: rgb(101, 121, 155);
+    border: solid 2px rgb(101, 121, 155);
+    border-radius: 20px;
+  }
+}
+
 /*---------------540px-----------------*/
 @media screen and (max-width: 540px) {
   .popup__close {

@@ -9,11 +9,23 @@
   padding: 34px 36px;
 }
 
+/*---------------1024px-----------------*/
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .popup__content {
+    height: 100vh;
+    max-height: -webkit-fill-available;
+    overflow: scroll;
+  }
+}
+
 /*---------------768px-----------------*/
 @media screen and (min-width: 541px) and (max-width: 768px) {
   .popup__content {
     padding: 34px 36px 28px 36px;
     border-radius: 16px;
+    height: 100vh;
+    max-height: -webkit-fill-available;
+    overflow: scroll;
   }
 }
 
@@ -23,8 +35,9 @@
     width: 100vw;
     /* width: 100%; */
     height: 100vh;
-    height: --webkit-fill-available;
+    max-height: -webkit-fill-available;
     padding: 16px;
     border-radius: 16px;
+    overflow: scroll;
   }
 }

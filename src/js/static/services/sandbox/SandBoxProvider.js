@@ -160,7 +160,8 @@ import PrintFactory from "../../../common/factories/PrintFactory";
         };
 
         const options = {
-          height: '270px',
+          // height: '270px',
+          height: '50vh',
           maxWidth: '100%',
         }
 
