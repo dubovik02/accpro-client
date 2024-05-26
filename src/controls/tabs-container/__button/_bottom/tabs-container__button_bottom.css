@@ -1,0 +1,9 @@
+.tabs-container__button.tabs-container__button_bottom {
+  top: 0px;
+  border-bottom: 2px solid rgb(186, 191, 199);
+  border-radius: 0 0 .5em .5em;
+}
+
+.tabs-container__button.tabs-container__button_bottom:hover {
+  top: 0px;
+}

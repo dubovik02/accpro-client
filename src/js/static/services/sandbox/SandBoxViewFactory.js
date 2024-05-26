@@ -9,6 +9,7 @@ import printIco from "../../../../images/printer.png";
 import settingIco from "../../../../images/setting.png";
 import shareIco from "../../../../images/share.png";
 import calcIco from "../../../../images/calc.png";
+import planeIco from "../../../../images/paper-plane.png";
 
 /**
  * Фабрика компонент представления сервиса Песочницы
@@ -24,18 +25,18 @@ import calcIco from "../../../../images/calc.png";
    */
   getSandBoxStatusBarHTML() {
     return `
-            <p class="service-section__description">
+            <!--p class="service-section__description">
               ${Properties.lang.dict.notebook.notebook}:
               <span class="service-section__span file-name"></span>
                 |
               <span class="service-section__span file-date"></span>
-            </p>
+            </p--!>
 
-            <p class="service-section__description">
+            <!--p class="service-section__description">
               ${Properties.lang.dict.notebook.name}:
               <span class="service-section__span service-section__span_file-description description"></span>
               <span class="service-section__span service-section__span_file-description sharestatus"></span>
-            </p>
+            </p--!>
 
             <!--div class="service-section__icon-container">
               <div class="service-section__icon-container">
@@ -56,20 +57,6 @@ import calcIco from "../../../../images/calc.png";
    */
   getSandBoxMenuHTML() {
     return `<ul class="service-section__menu-list">
-
-              <li class="service-section__menu-item">
-                <a class="link service-section__link menu-item-like">
-                  <img class="service-section__icon service-section__icon_linked like" src="${likeIco}">
-                  <span class="service-section__span likes-counter"></span>
-                </a>
-              </li>
-
-              <li class="service-section__menu-item">
-                <a class="link service-section__link menu-item-view">
-                  <img class="service-section__icon" src="${viewIco}">
-                  <span class="service-section__span views-counter"></span>
-                </a>
-              </li>
 
               <li class="service-section__menu-item">
                 <a class="link service-section__link menu-item-new"><img class="service-section__icon" src="${newIco}">${Properties.lang.dict.sandbox.menu.new}</a>
@@ -102,6 +89,13 @@ import calcIco from "../../../../images/calc.png";
                 </a>
               </li>
 
+              <li class="service-section__menu-item sharestatus">
+                  <a class="link service-section__link menu-item-share">
+                    <img class="service-section__icon" src="${planeIco}">
+                    <!--span class="service-section__span service-section__span_file-description sharestatus"></span--!>
+                  </a>
+              </li>
+
               <li class="service-section__menu-item">
                 <a class="link service-section__link menu-item-calc">
                   <img class="service-section__icon" src="${calcIco}">${Properties.lang.dict.sandbox.menu.calc} &#9660;
@@ -115,7 +109,22 @@ import calcIco from "../../../../images/calc.png";
                     <a class="link service-section__sublink submenu-item-calc-outcome">${Properties.lang.dict.sandbox.menu.calcOutcome}</a>
                   </li>
                 </ul>
+
               </li>
+
+                <li class="service-section__menu-item">
+                  <a class="link service-section__link menu-item-like">
+                    <img class="service-section__icon service-section__icon_linked like" src="${likeIco}">
+                    <span class="service-section__span likes-counter"></span>
+                  </a>
+                </li>
+
+                <li class="service-section__menu-item">
+                  <a class="link service-section__link menu-item-view">
+                    <img class="service-section__icon" src="${viewIco}">
+                    <span class="service-section__span views-counter"></span>
+                  </a>
+                </li>
 
             </ul>`;
   }
@@ -124,8 +133,8 @@ import calcIco from "../../../../images/calc.png";
    * Создает набор вкладок сервиса Песочница для одной тетрадки
    * @returns HTML вкладок
    */
-  getSandBoxTabsContainerHTML() {
-    return  `<div class="tabs-container">
+  getSandBoxTabsContainerHTML(notebookId) {
+    return  `<div class="tabs-container tabs-container-notebook-items">
 
               <div class="tabs-container__tabs-content">
                 <div class="tabs-container__item tabs-container__item_income" data-index="tab_1"></div>
@@ -135,13 +144,13 @@ import calcIco from "../../../../images/calc.png";
 
               <ul class="tabs-container__list">
                 <li class="tabs-container__list-item">
-                  <a class="tabs-container__button tabs-container__button_income" id="tab_1">${Properties.lang.dict.sandbox.grids.incomeTitle}</a>
+                  <a class="tabs-container__button tabs-container__button_bottom tabs-container__button_income" id="tab_1">${Properties.lang.dict.sandbox.grids.incomeTitle}</a>
                 </li>
                 <li class="tabs-container__list-item">
-                  <a class="tabs-container__button tabs-container__button_flows tabs-container__button_active" id="tab_2">${Properties.lang.dict.sandbox.grids.flowTitle}</a>
+                  <a class="tabs-container__button tabs-container__button_bottom tabs-container__button_active-bottom tabs-container__button_active tabs-container__button_flows" id="tab_2">${Properties.lang.dict.sandbox.grids.flowTitle}</a>
                 </li>
                 <li class="tabs-container__list-item">
-                  <a class="tabs-container__button tabs-container__button_outcome" id="tab_3">${Properties.lang.dict.sandbox.grids.outcomeTitle}</a>
+                  <a class="tabs-container__button tabs-container__button_bottom tabs-container__button_outcome" id="tab_3">${Properties.lang.dict.sandbox.grids.outcomeTitle}</a>
                 </li>
               </ul>
 
@@ -149,21 +158,30 @@ import calcIco from "../../../../images/calc.png";
   }
 
   /**
-   * Создает набор вклвадок для тетрадей
+   * Создает набор вкладок для тетрадей
    * @returns
    */
-  getNotebookTabsHTML(tabName, tabElementHTML) {
-    return  `<div class="tabs-container">
-
-              <div class="tabs-container__tabs-content">
-                <div class="tabs-container__item tabs-container__item_income" data-index="tab_1">${tabElementHTML}</div>
-              </div>
+  getNotebookTabsHTML() {
+    return  `<div class="tabs-container tabs-container-notebooks">
 
               <ul class="tabs-container__list">
                 <li class="tabs-container__list-item">
-                  <a class="tabs-container__button tabs-container__button_income" id="tab_1">${tabName}</a>
+                  <a class="tabs-container__button tabs-container__button_top tabs-container__button_active-top tabs-container__button_active tabs-container__button_notebook" id="tab_4">
+                    <span class="service-section__span file-name"></span>
+                    |
+                    <span class="service-section__span file-date"></span>
+                    |
+                    <span class="service-section__span service-section__span_file-description description"></span>
+                    <!--span class="service-section__span service-section__span_file-description sharestatus"></span--!>
+                  </a>
                 </li>
               </ul>
+
+              <div class="tabs-container__tabs-content">
+                <div class="tabs-container__item tabs-container__item_active tabs-container__item_notebook" data-index="tab_4">
+
+                </div>
+              </div>
 
             </div>`;
   }

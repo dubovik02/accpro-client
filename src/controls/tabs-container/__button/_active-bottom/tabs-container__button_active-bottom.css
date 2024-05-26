@@ -1,0 +1,4 @@
+.tabs-container__button.tabs-container__button_bottom.tabs-container__button_active-bottom {
+  top: 4px;
+  border-bottom: 3px solid rgb(167, 173, 184);
+}

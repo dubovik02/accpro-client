@@ -13,14 +13,17 @@ export default class SandBoxBuilder extends ServiceBuilder {
   _viewFactory;
 
   //набор вкладок представления тетради
-  _tabsContainer;
+  _noteBookWindow;
   _tabIncome;
   _tabFlow;
   _tabOutcome;
 
 
   // набор вкладок представления набора тетрадей
-  _noteBooksTabs = [];
+  _noteBooksContainer;
+
+  // Текущая активная тетрадь
+  _curentNotebookWindow;
 
   /**
    * Таблица входящих остатков
@@ -174,6 +177,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
   _fileLastUpdateComponent;
   _fileContentComponent;
   _fileShareComponent;
+
   _fileLikeComponent;
   _fileLikesCountComponent;
   _fileViewsComponent;
@@ -201,44 +205,30 @@ export default class SandBoxBuilder extends ServiceBuilder {
 
   createDOM() {
     super.createDOM();
-    this._createStatusBar();
+
     this._createServiceMenu();
+    this._setUpMenuItems();
+
     this._createOpeningGrid();
     this._createFlowsGrid();
     this._createClosingGrid();
-    this._createTabsContainer();
-    // this._createNotebooksContainer();
-  }
 
-  /**
-   * Создает статусную панель (имя файла, автор, создан, сохранен и т.п.)
-   */
-  _createStatusBar() {
-
-    const centerStatusBarHtml = this._viewFactory.getSandBoxStatusBarHTML();
-    this._leftContainer.insertAdjacentHTML('afterbegin', centerStatusBarHtml);
-    this._fileNameComponent = this._leftContainer.querySelector('.file-name');
-    this._fileLastUpdateComponent = this._leftContainer.querySelector('.file-date');
-    this._fileContentComponent = this._leftContainer.querySelector('.description');
-    this._fileShareComponent = this._leftContainer.querySelector('.sharestatus');
-    // this._fileLikeComponent = this._leftContainer.querySelector('.like');
-    // this._fileLikesCountComponent = this._leftContainer.querySelector('.likes-counter');
-    //this._fileViewsComponent = this._leftContainer.querySelector('.views-counter');
-
+    this._createNotebooksContainer();
+    this._setUpNoteBookTabsEvent();
+    this._setUpFileContentItem();
+    this._setUpFileShareComponent();
   }
 
   /**
    * Создает меню сервиса
    */
   _createServiceMenu() {
-
     const menuHtml = this._viewFactory.getSandBoxMenuHTML();
     this._serviceMenu.insertAdjacentHTML(`afterbegin`, menuHtml);
     this._fileLikeComponent = this._serviceMenu.querySelector('.like');
     this._fileLikesCountComponent = this._serviceMenu.querySelector('.likes-counter');
     this._fileViewsComponent = this._serviceMenu.querySelector('.views-counter');
-    this._setUpMenuItems();
-
+    this._fileShareComponent = this._serviceMenu.querySelector('.sharestatus');
   }
 
   /**
@@ -269,31 +259,41 @@ export default class SandBoxBuilder extends ServiceBuilder {
   }
 
   /**
-  * Создает набор вкладок
-  */
-  _createTabsContainer() {
-    const tabHtml = this._viewFactory.getSandBoxTabsContainerHTML();
-    this._serviceView.insertAdjacentHTML('beforeend', tabHtml);
+   * Создает набор вкладок для тетрадей
+   */
+  _createNotebooksContainer() {
+    const tabsHtml = this._viewFactory.getNotebookTabsHTML();
+    this._serviceView.insertAdjacentHTML('beforeend', tabsHtml);
+    this._noteBooksContainer = this._serviceView.querySelector('.tabs-container.tabs-container-notebooks');
 
-    this._tabsContainer = this._serviceView.querySelector('.tabs-container');
-    this._tabIncome = this._serviceView.querySelector('.tabs-container__item_income');
-    this._tabFlow = this._serviceView.querySelector('.tabs-container__item_flows');
-    this._tabOutcome = this._serviceView.querySelector('.tabs-container__item_outcome');
+    this._addNotebook(null); //первоночально - пустой документ
+  }
+
+  _addNotebook(doc) {
+
+    let docHtml = this._viewFactory.getSandBoxTabsContainerHTML();
+    this._noteBooksContainer.insertAdjacentHTML('beforeend', docHtml);
+
+    this._noteBookWindow = this._noteBooksContainer.querySelector('.tabs-container-notebook-items');
+    this._tabIncome = this._noteBookWindow.querySelector('.tabs-container__item_income');
+    this._tabFlow = this._noteBookWindow.querySelector('.tabs-container__item_flows');
+    this._tabOutcome = this._noteBookWindow.querySelector('.tabs-container__item_outcome');
 
     this._tabIncome.insertAdjacentElement('beforeend', this._openingGridElement);
     this._tabFlow.insertAdjacentElement('beforeend', this._flowGridElement);
     this._tabOutcome.insertAdjacentElement('beforeend', this._closeingGridElement);
 
-    this._setUpTabsEvent();
+    this._setUpNoteBookTabsEvent();
 
-  }
+    this._fileNameComponent = this._noteBooksContainer.querySelector('.file-name');
+    this._fileLastUpdateComponent = this._noteBooksContainer.querySelector('.file-date');
 
-  /**
-   * Создает набор вкладок для тетрадей
-   */
-  _createNotebooksContainer() {
-    const tabsHtml = this._viewFactory.getNotebookTabsHTML('Вкладка 1', this._tabsContainer);
-    this._serviceView.insertAdjacentHTML('beforeend', tabsHtml);
+    this._fileContentComponent = this._noteBooksContainer.querySelector('.description');
+    // this._fileShareComponent = this._noteBooksContainer.querySelector('.sharestatus');
+
+    if (!doc) {
+      this.getProps().newSBFunction.call(this);
+    }
   }
 
   /**
@@ -421,9 +421,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
     this._setUpMenuItemPrint();
     this._setUpMenuItemOpen();
     this._setUpMenuItemNew();
-    this._setUpFileContentItem();
     this._setUpMenuItemShare();
-    this._setUpFileShareComponent();
     this._setUpMenuItemProperties();
     this._setUpLikeComponent();
   }
@@ -451,18 +449,20 @@ export default class SandBoxBuilder extends ServiceBuilder {
       this._menuCalcIncome.parentElement.parentElement.classList.remove('service-section__submenu-list_is-visible');
       const result = this._calcStock(0);
       this.setStockGridData(this._openingGridObject, result, true);
+      this.getDataCheckModelAndRender() ;
     })
 
     this._menuCalcOutcome.addEventListener('click', () => {
       this._menuCalcIncome.parentElement.parentElement.classList.remove('service-section__submenu-list_is-visible');
       const result = this._calcStock(2);
       this.setStockGridData(this._closeingGridObject, result, false);
+      this.getDataCheckModelAndRender();
     })
 
   }
 
   /**
-   * @param {Number} calcMode режим расчета (0 - входящие, 2 исходящие)
+   * @param {Number} calcMode режим расчета (0 - входящие, 2 - исходящие)
    * @returns перерасчитанные остатки
    */
   _calcStock(calcMode) {
@@ -639,18 +639,17 @@ export default class SandBoxBuilder extends ServiceBuilder {
   }
 
   // обработчик панели вкладок
-  _setUpTabsEvent() {
-
-    const tabLinks = this._serviceView.querySelectorAll(".tabs-container__button");
-    const tabPanels = this._serviceView.querySelectorAll(".tabs-container__item");
+  _setUpNoteBookTabsEvent() {
+    const tabLinks = this._noteBookWindow.querySelectorAll(".tabs-container__button");
+    const tabPanels = this._noteBookWindow.querySelectorAll(".tabs-container__item");
 
     for(let el of tabLinks) {
 
       el.addEventListener("click", e => {
         e.preventDefault();
-        this._serviceView.querySelector('.tabs-container__button.tabs-container__button_active').classList.remove("tabs-container__button_active");
-        this._serviceView.querySelector('.tabs-container__item.tabs-container__item_active').classList.remove("tabs-container__item_active");
-        el.classList.add("tabs-container__button_active");
+        this._noteBookWindow.querySelector('.tabs-container__button.tabs-container__button_active.tabs-container__button_active-bottom').classList.remove("tabs-container__button_active", "tabs-container__button_active-bottom");
+        this._noteBookWindow.querySelector('.tabs-container__item.tabs-container__item_active').classList.remove("tabs-container__item_active");
+        el.classList.add("tabs-container__button_active", "tabs-container__button_active-bottom");
         // ищем связанную панель
         const index = el.getAttribute('id');
         const panel = [...tabPanels].filter(el => el.getAttribute("data-index") == index);
@@ -861,6 +860,13 @@ export default class SandBoxBuilder extends ServiceBuilder {
     }
   }
 
+  getDataCheckModelAndRender() {
+    const incomeArr = this.getStockGridData(this._openingGridObject);
+    const outcomeArr = this.getStockGridData(this._closeingGridObject);
+    const flowsArr = this.getFlowGridData(this._flowGridObject);
+    this.checkModelAndRender(incomeArr, outcomeArr, flowsArr);
+  }
+
   checkModelAndRender = (incomeArr, outcomeArr, flowsArr) => {
     let checkResult = this._checkModel(incomeArr, outcomeArr, flowsArr);
     this._renderCheckList(checkResult);
@@ -881,17 +887,17 @@ export default class SandBoxBuilder extends ServiceBuilder {
     const errorStyle = 'tabs-container__button_error';
     //проверяем входящий
     if (checkResult.incomeBalanced) {
-      document.querySelector('.tabs-container__button_income').classList.add(`${errorStyle}`);
+      this._serviceView.querySelector('.tabs-container__button_income').classList.add(`${errorStyle}`);
     }
     else {
-      document.querySelector('.tabs-container__button_income').classList.remove(`${errorStyle}`);
+      this._serviceView.querySelector('.tabs-container__button_income').classList.remove(`${errorStyle}`);
     }
     //проверяем исходящий
     if (checkResult.outcomeBalanced) {
-      document.querySelector('.tabs-container__button_outcome').classList.add(`${errorStyle}`);
+      this._serviceView.querySelector('.tabs-container__button_outcome').classList.add(`${errorStyle}`);
     }
     else {
-      document.querySelector('.tabs-container__button_outcome').classList.remove(`${errorStyle}`);
+      this._serviceView.querySelector('.tabs-container__button_outcome').classList.remove(`${errorStyle}`);
     }
   }
 
@@ -939,8 +945,8 @@ export default class SandBoxBuilder extends ServiceBuilder {
   }
 
   setShareStatus(status) {
-    status ? this._fileShareComponent.textContent = `(${Properties.lang.dict.notebook.share})` : this._fileShareComponent.textContent = '';
-    // status ? this._menuShare.textContent = `${Properties.lang.dict.sandbox.menu.unshare}` : this._menuShare.textContent = `${Properties.lang.dict.sandbox.menu.share}`;
+    // status ? this._fileShareComponent.textContent = `(${Properties.lang.dict.notebook.share})` : this._fileShareComponent.textContent = '';
+    status ? this._fileShareComponent.classList.remove('service-section__menu-item_not-visible') : this._fileShareComponent.classList.add('service-section__menu-item_not-visible');
     status ? this._menuShare.lastChild.nodeValue = `${Properties.lang.dict.sandbox.menu.unshare}` : this._menuShare.lastChild.nodeValue = `${Properties.lang.dict.sandbox.menu.share}`;
   }
 
