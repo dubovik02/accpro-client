@@ -1,7 +1,7 @@
 @import url(./_file-description/service-section__span_file-description.css);
 
 .service-section__span {
-  font-weight: bold;
+  /* font-weight: bold; */
   font-size: 1em;
   color: black;
 }

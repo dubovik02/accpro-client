@@ -83,7 +83,7 @@ export default {
     hashtags: 'Хэш-теги',
     description: 'Описание',
     share: 'Общий доступ',
-    noname: 'Новая тетрадь',
+    noname: 'Не сохранено',
     myNotebook: 'Моя тетрадь',
     myDescription: 'Набор проводок по операции',
     myTags: '#МойТэг',

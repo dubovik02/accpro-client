@@ -166,13 +166,13 @@ import planeIco from "../../../../images/paper-plane.png";
 
               <ul class="tabs-container__list">
                 <li class="tabs-container__list-item">
-                  <a class="tabs-container__button tabs-container__button_top tabs-container__button_active-top tabs-container__button_active tabs-container__button_notebook" id="tab_4">
-                    <span class="service-section__span file-name"></span>
-                    |
-                    <span class="service-section__span file-date"></span>
-                    |
+                  <a class="tabs-container__button tabs-container__button_top tabs-container__button_active-top tabs-container__button_active tabs-container__button_notebook" id="tab_4" title="">
                     <span class="service-section__span service-section__span_file-description description"></span>
-                    <!--span class="service-section__span service-section__span_file-description sharestatus"></span--!>
+                    (
+                    <span class="service-section__span file-name"></span>
+                    ,
+                    <span class="service-section__span file-date"></span>
+                    )
                   </a>
                 </li>
               </ul>

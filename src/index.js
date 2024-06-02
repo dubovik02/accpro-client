@@ -21,6 +21,7 @@ import NewPasswordPopUp from './js/static/popups/NewPasswordPopUp';
 import rusDict from './js/languages/rus';
 import engDict from './js/languages/eng';
 import SandBoxViewFactory from './js/static/services/sandbox/SandBoxViewFactory';
+import SandBoxGrid from './js/static/services/sandbox/SandBoxGrid';
 
 /*-------------Переменные----------------*/
 const page = document.querySelector('.page');
@@ -222,6 +223,7 @@ function makeSandBoxServiceSection(reqId) {
     cellEditingFunction: sandBoxProvider.synchronizeModel,
     checkModelFunction: sandBoxProvider.checkModel,
     viewFactory: new SandBoxViewFactory(),
+    gridBuilder: new SandBoxGrid(),
     autoSaveFunction: sandBoxProvider.autoSaveSandBox,/////////////////////
   });
 
