@@ -2,7 +2,6 @@
 
   padding-bottom: 10px;
   border-bottom: 2px solid white;
-
 }
 
 /*---------------1024px-----------------*/
@@ -15,13 +14,15 @@
 /*---------------768px-----------------*/
 @media screen and (min-width: 540px) and (max-width: 768px) {
   .menu-link.menu-link_selected {
-    padding-bottom: 1px;
+    padding-bottom: .5px;
+    border-bottom: 1.5px solid white;
   }
 }
 
 /*---------------539px-----------------*/
 @media screen and (max-width: 539px) {
   .menu-link.menu-link_selected {
-    padding-bottom: 1px;
+    padding-bottom: .3px;
+    border-bottom: 1px solid white;
   }
 }

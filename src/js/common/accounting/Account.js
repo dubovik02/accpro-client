@@ -151,9 +151,14 @@ import AccEntity from '../AccEntity';
    */
   calcDebetFlows() {
     let summ = 0;
-    this._debetFlow.values().forEach(value => {
+    // this._debetFlow.values().forEach(value => {
+    //   summ = summ + value;
+    // });
+
+    for (let value of this._debetFlow.values()) {
       summ = summ + value;
-    })
+    }
+
     return summ;
   }
 
@@ -162,9 +167,12 @@ import AccEntity from '../AccEntity';
    */
    calcCreditFlows() {
     let summ = 0;
-    this._creditFlow.values().forEach(value => {
+    // this._creditFlow.values().forEach(value => {
+    //   summ = summ + value;
+    // });
+    for (let value of this._creditFlow.values()) {
       summ = summ + value;
-    })
+    }
     return summ;
   }
 

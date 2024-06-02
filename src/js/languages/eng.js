@@ -82,7 +82,7 @@ export default {
     hashtags: 'Hashtags',
     description: 'Description',
     share: 'General access',
-    noname: 'New notebook',
+    noname: 'Unsaved',
     myNotebook: 'My notebook',
     myDescription: 'Set of transactions',
     myTags: '#MyTag',

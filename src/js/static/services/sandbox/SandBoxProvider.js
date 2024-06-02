@@ -553,9 +553,9 @@ import PrintFactory from "../../../common/factories/PrintFactory";
     if (this.getCurrentDocument()) {
       this.getServiceBuilder().loadData(this.getCurrentDocument());
 
-      const incomeArr = this.getServiceBuilder().getStockGridData(this.getServiceBuilder()._openingGridObject);
-      const outcomeArr = this.getServiceBuilder().getStockGridData(this.getServiceBuilder()._closeingGridObject);
-      const flowsArr = this.getServiceBuilder().getFlowGridData(this.getServiceBuilder()._flowGridObject);
+      const incomeArr = this.getServiceBuilder()._gridBuilder.getStockGridData(this.getServiceBuilder()._incomeGridObject);
+      const outcomeArr = this.getServiceBuilder()._gridBuilder.getStockGridData(this.getServiceBuilder()._outcomeGridObject);
+      const flowsArr = this.getServiceBuilder()._gridBuilder.getFlowGridData(this.getServiceBuilder()._flowGridObject);
       this.getServiceBuilder().checkModelAndRender(incomeArr, outcomeArr, flowsArr);
 
     }

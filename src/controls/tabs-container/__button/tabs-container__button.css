@@ -19,6 +19,9 @@
   opacity: 0.7;
   transition: all 0.1s ease-in-out;
   font-size: 1em;
+  /* max-width: 50%; */
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .tabs-container__button:hover {

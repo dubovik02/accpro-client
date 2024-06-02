@@ -1,6 +1,7 @@
 .tabs-container__button.tabs-container__button_top {
   top: 0px;
   border-top: 2px solid rgb(186, 191, 199);
+  border-left: 2px solid rgb(186, 191, 199);
   border-radius: .5em .5em 0 0;
 }
 

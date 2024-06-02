@@ -4,8 +4,9 @@
   font-size: 1em;
   color: white;
 
-  max-width: 25%;
+  max-width: 22em;
   overflow: hidden;
+  text-overflow: ellipsis;
 
   background-color:rgb(101, 121, 155);
   border-radius: 1em;
