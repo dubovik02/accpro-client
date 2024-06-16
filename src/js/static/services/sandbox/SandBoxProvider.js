@@ -12,10 +12,17 @@ import Dialog from "../../../common/dialogs/Dialog";
 import InputMultiValuesPopUp from "../../../static/popups/InputMultiValuesPopUp";
 import PrintFactory from "../../../common/factories/PrintFactory";
 
+const lodash = require('lodash');
+
 /**
  * Провайдер сервиса Песочницы
  */
  export default class SandBoxProvider extends ServiceProvider {
+
+  /**
+   * Базовый загруженный документ
+   */
+  _originDocument;
 
   constructor(props) {
     super(props);
@@ -42,10 +49,6 @@ import PrintFactory from "../../../common/factories/PrintFactory";
    */
   saveSandBox = (income, flows, outcome) => {
     return this._saveSandBox(income, flows, outcome)
-  }
-
-  autoSaveSandBox = (income, flows, outcome) => {
-    return this._saveSandBox(income, flows, outcome);
   }
 
   _saveSandBox(income, flows, outcome) {
@@ -104,6 +107,29 @@ import PrintFactory from "../../../common/factories/PrintFactory";
   }
 
   /**
+   * Функция автосохранения тетрадки
+   */
+  autoSaveSandBox = (income, flows, outcome) => {
+    return this._autoSaveSandBox(income, flows, outcome)
+  }
+
+  _autoSaveSandBox(income, flows, outcome) {
+
+    if (this.isDocumentChanged()) {
+       if (!this.getCurrentDocument()._id) {//новый документ - запрос на сохранение
+        const funcYes = () => {
+          return this._saveSandBox(income, flows, outcome);
+        };
+        Dialog.YesNoDialog(Properties.lang.dict.dialogs.confirm, Properties.lang.dict.dialogs.saveOrNo, funcYes, null).open();
+       }
+       else {
+        return this._saveSandBox(income, flows, outcome);
+       }
+    }
+    return Promise.resolve();
+  }
+
+  /**
    * Функция печати документа из Песочницы
    */
    printSandBox = () => {
@@ -140,16 +166,37 @@ import PrintFactory from "../../../common/factories/PrintFactory";
           rowData.push({
             id: item._id,
             shortdesc: item.properties.shortdesc,
-            //share: item.share,
-            date: new Date(item.lastupdate).toLocaleString(),
+            share: item.share ? Properties.lang.dict.notebook.share : Properties.lang.dict.notebook.unshare,
+            // date: new Date(item.lastupdate).toLocaleString(),
+            date: new Date(item.lastupdate).toISOString(),
           });
         });
+
+        const comparatorFunc = (sDate1, sDate2) => {
+          let date1Number = new Date(sDate1).getTime();
+          let date2Number = new Date(sDate2).getTime();
+
+          if (date1Number === null && date2Number === null) {
+            return 0;
+          }
+          if (date1Number === null) {
+            return -1;
+          }
+          if (date2Number === null) {
+            return 1;
+          }
+          if (date1Number === date2Number) {
+            return 0;
+          }
+          return date1Number - date2Number;
+        }
 
         const columnDefs = [
 
           { headerName: `${Properties.lang.dict.notebook.name}`, field: 'shortdesc', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter', tooltipValueGetter: this.getServiceBuilder().toolTipValueGetter },
           { headerName: `${Properties.lang.dict.notebook.id}`, field: 'id', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter', tooltipValueGetter: this.getServiceBuilder().toolTipValueGetter },
-          { headerName: `${Properties.lang.dict.notebook.refresh}`, field: 'date', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter'},
+          { headerName: `${Properties.lang.dict.notebook.refresh}`, field: 'date', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter', comparator: comparatorFunc},
+          { headerName: `${Properties.lang.dict.notebook.share}`, field: 'share', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter',},
 
         ];
 
@@ -552,13 +599,15 @@ import PrintFactory from "../../../common/factories/PrintFactory";
   loadCurrentDocument() {
     if (this.getCurrentDocument()) {
       this.getServiceBuilder().loadData(this.getCurrentDocument());
-
-      const incomeArr = this.getServiceBuilder()._gridBuilder.getStockGridData(this.getServiceBuilder()._incomeGridObject);
-      const outcomeArr = this.getServiceBuilder()._gridBuilder.getStockGridData(this.getServiceBuilder()._outcomeGridObject);
-      const flowsArr = this.getServiceBuilder()._gridBuilder.getFlowGridData(this.getServiceBuilder()._flowGridObject);
-      this.getServiceBuilder().checkModelAndRender(incomeArr, outcomeArr, flowsArr);
-
+      this._originDocument = JSON.parse(JSON.stringify(this.getCurrentDocument()));
     }
+  }
+
+  /**
+   * Отличается ли документ от базового
+   */
+  isDocumentChanged() {
+    return !(lodash.isEqual(this._originDocument, this.getCurrentDocument()));
   }
 
 }

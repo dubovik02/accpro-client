@@ -83,6 +83,7 @@ export default {
     hashtags: 'Хэш-теги',
     description: 'Описание',
     share: 'Общий доступ',
+    unshare: 'Нет общего доступа',
     noname: 'Не сохранено',
     myNotebook: 'Моя тетрадь',
     myDescription: 'Набор проводок по операции',
@@ -130,6 +131,10 @@ export default {
     waitPlease: 'Минуточку...',
     close: 'Закрыть',
     copy: 'Копировать',
+    yes: 'Да',
+    no: 'Нет',
+    confirm: 'Подтверждение',
+    saveOrNo: 'Тетрадь была изменена. Хотите сохранить?',
   },
 
   // попапы

@@ -1,6 +1,7 @@
 import AccCopyValueDialog from "./AccCopyValueDialog";
 import AccErrorDialog from "./AccErrorDialog";
 import AccInfoDialog from "./AccInfoDialog";
+import AccYesNoDialog from "./AccYesNoDialog";
 
 export default class Dialog {
 
@@ -14,6 +15,10 @@ export default class Dialog {
 
   static CopyValueDialog(title, valueToCopy) {
     new AccCopyValueDialog(title, valueToCopy).open();
+  }
+
+  static YesNoDialog(title, question, YesFunc, NoFunc) {
+    return new AccYesNoDialog(title, question, YesFunc, NoFunc);
   }
 
 }

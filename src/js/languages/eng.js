@@ -82,6 +82,7 @@ export default {
     hashtags: 'Hashtags',
     description: 'Description',
     share: 'General access',
+    unshare: 'Hide',
     noname: 'Unsaved',
     myNotebook: 'My notebook',
     myDescription: 'Set of transactions',
@@ -129,6 +130,10 @@ export default {
     waitPlease: 'Wait a minute please...',
     close: 'Close',
     copy: 'Copy',
+    yes: 'Yes',
+    no: 'No',
+    confirm: 'Confirmation',
+    saveOrNo: 'The notebook has been changed. Do you want to save it?',
 
   },
 

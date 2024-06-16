@@ -77,7 +77,8 @@ let activePage = MAIN_PAGE;
 function onLoadDOM() {
 
   let dict;
-  if (navigator.language.toLowerCase() == 'ru-ru') {
+  // if (navigator.language.toLowerCase() == 'ru-ru') {
+  if (navigator.language.toLowerCase().includes('ru')) {
     dict = rusDict;
   }
   else {
@@ -167,7 +168,6 @@ function makeHeader() {
     submitFunction: restorePassword,
     afterCloseDialogFunction: () => {Dialog.InfoDialog(
       `${Properties.lang.dict.promts.sendRestorePass}`)},
-      // `${Properties.lang.dict.promts.sendRestorePass} ${localStorage.getItem('userEmail')}`)},
   });
   const validatorRestore = new FormInputsValidator(popupRestore.getForm(), Properties.lang.dict.errors);
 
@@ -207,26 +207,27 @@ function makeSandBoxServiceSection(reqId) {
     });
   }
 
-  sandBoxServiceSection = new SandBoxBuilder({
-    calcFunction: sandBoxProvider.calcSandBox,
-    saveFunction: sandBoxProvider.saveSandBox,
-    saveCopyFunction: sandBoxProvider.saveSandBoxCopy,
-    printFunction: sandBoxProvider.printSandBox,
-    loginFunction: showSignInPopup,
-    preloader: new ComponentsFactory().createPreloader(`${Properties.lang.dict.dialogs.waitPlease}`),
-    openSBFunction: sandBoxProvider.openSandBoxDialog,
-    newSBFunction: sandBoxProvider.newSandBox,
-    fileContentFunction: sandBoxProvider.openUpdateFileContentDialog,
-    shareFunction: sandBoxProvider.createShareLink,
-    createAndShowShareLink: sandBoxProvider.createAndShowShareLink,
-    likeFunction: sandBoxProvider.like,
-    cellEditingFunction: sandBoxProvider.synchronizeModel,
-    checkModelFunction: sandBoxProvider.checkModel,
-    viewFactory: new SandBoxViewFactory(),
-    gridBuilder: new SandBoxGrid(),
-    autoSaveFunction: sandBoxProvider.autoSaveSandBox,/////////////////////
-  });
-
+  if (!sandBoxServiceSection) {
+    sandBoxServiceSection = new SandBoxBuilder({
+      calcFunction: sandBoxProvider.calcSandBox,
+      saveFunction: sandBoxProvider.saveSandBox,
+      saveCopyFunction: sandBoxProvider.saveSandBoxCopy,
+      printFunction: sandBoxProvider.printSandBox,
+      loginFunction: showSignInPopup,
+      preloader: new ComponentsFactory().createPreloader(`${Properties.lang.dict.dialogs.waitPlease}`),
+      openSBFunction: sandBoxProvider.openSandBoxDialog,
+      newSBFunction: sandBoxProvider.newSandBox,
+      fileContentFunction: sandBoxProvider.openUpdateFileContentDialog,
+      shareFunction: sandBoxProvider.createShareLink,
+      createAndShowShareLink: sandBoxProvider.createAndShowShareLink,
+      likeFunction: sandBoxProvider.like,
+      cellEditingFunction: sandBoxProvider.synchronizeModel,
+      checkModelFunction: sandBoxProvider.checkModel,
+      viewFactory: new SandBoxViewFactory(),
+      gridBuilder: new SandBoxGrid(),
+      autoSaveFunction: sandBoxProvider.autoSaveSandBox,
+    });
+  }
   sandBoxProvider.setServiceBuilder(sandBoxServiceSection);
   sandBoxServiceSection.createDOM();
   contentSectionContainer.appendChild(sandBoxServiceSection.getDOM());
@@ -397,6 +398,7 @@ function showNewPasswordPopup() {
  * Обработчик меню Главная
  */
  function onMain() {
+  onLeaveSandBox();
   clearContentContainer();
   makeBriefSection();
   activePage = MAIN_PAGE;
@@ -406,6 +408,7 @@ function showNewPasswordPopup() {
  * Обработчик меню Поиск
  */
  function onSearch() {
+  onLeaveSandBox();
   clearContentContainer();
   makeSearchSection(null, null);
   activePage = SEARCH_PAGE;
@@ -418,6 +421,15 @@ function onSandBox() {
   clearContentContainer();
   makeSandBoxServiceSection();
   activePage = SANDBOX_PAGE;
+}
+
+/**
+ * Обработчик переключения с тетрадки на иные разделы
+ */
+function onLeaveSandBox() {
+  if ( (activePage == SANDBOX_PAGE) && (sandBoxProvider) ) {
+    sandBoxServiceSection.onLeave();
+  }
 }
 
 /**
