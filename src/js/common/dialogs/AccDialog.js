@@ -47,7 +47,10 @@ export default class AccDialog extends AccComponent {
                          <img src="${iconClose}" alt="" class="dialog__close">
                          <div class="dialog__header-section">
                           <img src="${this._props.icon}" class="dialog__icon">
-                          <p class="dialog__text">${this._dialogTitle} ${this._dialogMessage}</p>
+                          <div class="dilog__header-section dilog__header-section_column">
+                            <p class="dialog__title">${this._dialogTitle}</p>
+                            <p class="dialog__text">${this._dialogMessage}</p>
+                          </div>
                          </div>
                          <div class="dialog__form-section"></div>
                          <div class="dialog__button-section"></div>

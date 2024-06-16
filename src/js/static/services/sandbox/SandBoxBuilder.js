@@ -47,12 +47,12 @@ export default class SandBoxBuilder extends ServiceBuilder {
   /**
    * Таблица оборотов
    */
-  _flowGridObject;
+  _flowsGridObject;
 
   /**
    * Элемент таблицы оборотов
    */
-  _flowGridElement;
+  _flowsGridElement;
 
   /**
    * Текущий документ
@@ -92,7 +92,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
    /**
    * Пункт меню "печать"
    */
-    _menuPrint;
+  _menuPrint;
 
   /**
    * Меню Свойства
@@ -199,8 +199,8 @@ export default class SandBoxBuilder extends ServiceBuilder {
     this._checkModelFunctioin = this._props.checkModelFunction;
     this._viewFactory = this._props.viewFactory;
     this._gridBuilder = this._props.gridBuilder;
-    // this._autoSaveFunction = this._props.autoSaveFunction;
-    // setInterval(this.autoSaveDocument, Properties.sandBox.autoSaveInterval);
+    this._autoSaveFunction = this._props.autoSaveFunction;
+    setInterval(this.autoSaveDocument, Properties.sandBox.autoSaveInterval);
   }
 
   createDOM() {
@@ -244,9 +244,10 @@ export default class SandBoxBuilder extends ServiceBuilder {
    * Создает таблицу оборотов
    */
   _createFlowsGrid() {
-    this._flowGridElement = this._gridBuilder.createGridElement('flow-grid');
+    this._flowsGridElement = this._gridBuilder.createGridElement('flow-grid');
     const gridOptions = this._gridBuilder.getFlowGridOptions();
-    this._flowGridObject = this._gridBuilder.createGridObject(this._flowGridElement, gridOptions);
+    this._flowsGridObject = this._gridBuilder.createGridObject(this._flowsGridElement, gridOptions);
+    this._setUpCellEditingFunction(this._flowsGridObject);
   }
 
   /**
@@ -267,10 +268,10 @@ export default class SandBoxBuilder extends ServiceBuilder {
     this._serviceView.insertAdjacentHTML('beforeend', tabsHtml);
     this._noteBooksContainer = this._serviceView.querySelector('.tabs-container.tabs-container-notebooks');
 
-    this._addNotebook(null); //первоночально - пустой документ
+    this._addNotebook(); //первоночально - пустой документ
   }
 
-  _addNotebook(doc) {
+  _addNotebook() {
 
     let docHtml = this._viewFactory.getSandBoxTabsContainerHTML();
     this._noteBooksContainer.insertAdjacentHTML('beforeend', docHtml);
@@ -281,7 +282,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
     this._tabOutcome = this._noteBookWindow.querySelector('.tabs-container__item_outcome');
 
     this._tabIncome.insertAdjacentElement('beforeend', this._incomeGridElement);
-    this._tabFlow.insertAdjacentElement('beforeend', this._flowGridElement);
+    this._tabFlow.insertAdjacentElement('beforeend', this._flowsGridElement);
     this._tabOutcome.insertAdjacentElement('beforeend', this._outcomeGridElement);
 
     this._setUpNoteBookTabsEvent();
@@ -290,10 +291,6 @@ export default class SandBoxBuilder extends ServiceBuilder {
     this._fileLastUpdateComponent = this._noteBooksContainer.querySelector('.file-date');
 
     this._fileContentComponent = this._noteBooksContainer.querySelector('.description');
-
-    if (!doc) {
-      this.getProps().newSBFunction.call(this);
-    }
   }
 
   /**
@@ -351,13 +348,8 @@ export default class SandBoxBuilder extends ServiceBuilder {
    * @returns перерасчитанные остатки
    */
   _calcStock(calcMode) {
-
-    const income = this._gridBuilder.getStockGridData(this._incomeGridObject);
-    const outcome = this._gridBuilder.getStockGridData(this._outcomeGridObject);
-    const flows = this._gridBuilder.getFlowGridData(this._flowGridObject);
-
-    // const { income, outcome, flows } =
-    //   this._gridBuilder.getData(this._incomeGridObject, this._flowGridObject, this._outcomeGridObject);
+    const { income, outcome, flows } =
+      this._gridBuilder.getData(this._incomeGridObject, this._flowGridObject, this._outcomeGridObject);
     return this._calcFunction.call(this, income, flows, outcome, calcMode);
   }
 
@@ -371,7 +363,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
       let preloader = this.getProps().preloader;
       this._componentDOM.appendChild(preloader);
 
-      const { income, outcome, flows } = this._gridBuilder.getData(this._incomeGridObject, this._flowGridObject, this._outcomeGridObject);
+      const { income, outcome, flows } = this._gridBuilder.getData(this._incomeGridObject, this._flowsGridObject, this._outcomeGridObject);
 
       this._saveFunction.call(this, income, flows, outcome)
       .then((res) => {
@@ -394,7 +386,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
        let preloader = this.getProps().preloader;
        this._componentDOM.appendChild(preloader);
 
-       const { income, outcome, flows } = this._gridBuilder.getData(this._incomeGridObject, this._flowGridObject, this._outcomeGridObject);
+       const { income, outcome, flows } = this._gridBuilder.getData(this._incomeGridObject, this._flowsGridObject, this._outcomeGridObject);
 
        this._saveCopyFunction.call(this, income, flows, outcome)
        .then((res) => {
@@ -541,29 +533,8 @@ export default class SandBoxBuilder extends ServiceBuilder {
         panel[0].classList.add("tabs-container__item_active");
         //ровняем таблицу
         this._incomeGridObject.gridOptions.api.sizeColumnsToFit();
-        this._flowGridObject.gridOptions.api.sizeColumnsToFit();
+        this._flowsGridObject.gridOptions.api.sizeColumnsToFit();
         this._outcomeGridObject.gridOptions.api.sizeColumnsToFit();
-      });
-    }
-  }
-
-  /**
-   * Автосохранение документа
-   */
-  autoSaveDocument = () => {
-    let preloader = this.getProps().preloader;
-    this._componentDOM.appendChild(preloader);
-
-    const { income, outcome, flows } = this._gridBuilder.getData(this._incomeGridObject, this._flowGridObject, this._outcomeGridObject);
-
-    if (this._autoSaveFunction instanceof Function) {
-      this._autoSaveFunction.call(this, income, flows, outcome)
-      .then((res) => {
-        preloader.remove();
-      })
-      .catch((err) => {
-        preloader.remove();
-        this.handleError(err);
       });
     }
   }
@@ -574,15 +545,50 @@ export default class SandBoxBuilder extends ServiceBuilder {
    */
   _setUpCellEditingFunction(gridObject) {
     gridObject.gridOptions.api.addEventListener('cellEditingStopped', () => {
-      const { income, outcome, flows } = this._gridBuilder.getData(this._incomeGridObject, this._flowGridObject, this._outcomeGridObject);
+      const { income, outcome, flows } = this._gridBuilder.getData(this._incomeGridObject, this._flowsGridObject, this._outcomeGridObject);
       this._cellEditingFunction.call(this, income, outcome, flows);
       this.checkModelAndRender(income, outcome, flows);
     });
   }
 
+/**
+ * Автосохранение документа
+ */
+  autoSaveDocument = () => {
+    let preloader = this.getProps().preloader;
+    this._componentDOM.appendChild(preloader);
+
+    const { income, outcome, flows } = this._gridBuilder.getData(this._incomeGridObject, this._flowsGridObject, this._outcomeGridObject);
+
+    if (this._saveFunction instanceof Function) {
+      this._saveFunction.call(this, income, flows, outcome)
+      .then((res) => {
+        preloader.remove();
+      })
+      .catch((err) => {
+        preloader.remove();
+      });
+    }
+  }
+
+  /**
+   * Обоработчик переключения с текущего представления
+   */
+  onLeave = () => {
+    const { income, outcome, flows }
+      = this._gridBuilder.getData(this._incomeGridObject, this._flowsGridObject, this._outcomeGridObject);
+
+    this._autoSaveFunction.call(this, income, flows, outcome)
+    .then((res) => {
+    })
+    .catch((err) => {
+      this.handleError(err);
+    });
+  }
+
   loadData(doc) {
     this._gridBuilder.setStockGridData(this._incomeGridObject, doc.text.income, true);
-    this._gridBuilder.setFlowGridData(this._flowGridObject, doc.text.flows);
+    this._gridBuilder.setFlowGridData(this._flowsGridObject, doc.text.flows);
     this._gridBuilder.setStockGridData(this._outcomeGridObject, doc.text.outcome, false);
 
     this._fileNameComponent.textContent = doc._id ? doc._id : `${Properties.lang.dict.notebook.noname}`;
@@ -592,6 +598,9 @@ export default class SandBoxBuilder extends ServiceBuilder {
 
     this._fileLastUpdateComponent.textContent = new Date(doc.lastupdate).toLocaleString();
     this.setShareStatus(doc.share == null ? false : doc.share);
+    //проверяем балансы остатков
+    const { income, outcome, flows } = this._gridBuilder.getData(this._incomeGridObject, this._flowsGridObject, this._outcomeGridObject);
+    this.checkModelAndRender(income, outcome, flows);
   }
 
   getData() {
@@ -600,14 +609,14 @@ export default class SandBoxBuilder extends ServiceBuilder {
       docDescription: this._fileContentComponent.textContent,
       lustUpdate: this._fileLastUpdateComponent.textContent,
       income: this._gridBuilder.getStockGridData(this._incomeGridObject),
-      flows: this._gridBuilder.getFlowGridData(this._flowGridObject),
+      flows: this._gridBuilder.getFlowGridData(this._flowsGridObject),
       outcome: this._gridBuilder.getStockGridData(this._outcomeGridObject),
       share: this.getShareStatus(),
     }
   }
 
   getDataCheckModelAndRender() {
-    const { income, outcome, flows } = this._gridBuilder.getData(this._incomeGridObject, this._flowGridObject, this._outcomeGridObject);
+    const { income, outcome, flows } = this._gridBuilder.getData(this._incomeGridObject, this._flowsGridObject, this._outcomeGridObject);
     this.checkModelAndRender(income, outcome, flows);
   }
 
