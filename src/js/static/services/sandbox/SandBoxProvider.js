@@ -41,6 +41,12 @@ const lodash = require('lodash');
     const flowsSet = this.transformFlows(flows);
     const outcomeSet = this.transformStocks(outcome);
 
+    const share = this.getCurrentDocument().share;
+    const properties = this.getCurrentDocument().properties;
+    const doc = this.createDocument(incomeSet, flowsSet, outcomeSet, share, properties);
+
+    this.setCurrentDocument(doc);
+
     return this.calcStocksAndFlows(incomeSet, flowsSet, outcomeSet, calcMode);
   }
 
@@ -110,23 +116,16 @@ const lodash = require('lodash');
    * Функция автосохранения тетрадки
    */
   autoSaveSandBox = (income, flows, outcome) => {
-    return this._autoSaveSandBox(income, flows, outcome)
+    return this._autoSaveSandBox(income, flows, outcome);
   }
 
   _autoSaveSandBox(income, flows, outcome) {
-
     if (this.isDocumentChanged()) {
-       if (!this.getCurrentDocument()._id) {//новый документ - запрос на сохранение
-        const funcYes = () => {
-          return this._saveSandBox(income, flows, outcome);
-        };
-        Dialog.YesNoDialog(Properties.lang.dict.dialogs.confirm, Properties.lang.dict.dialogs.saveOrNo, funcYes, null).open();
-       }
-       else {
-        return this._saveSandBox(income, flows, outcome);
-       }
+      return confirm(Properties.lang.dict.dialogs.saveOrNo);
     }
-    return Promise.resolve();
+    else {
+      return false;
+    }
   }
 
   /**

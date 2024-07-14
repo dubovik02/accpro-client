@@ -24,22 +24,20 @@ export default class FooterBuilder extends AccComponent {
 
         const footerHtml = `<p class="footer__text">&copy;${new Date().getFullYear()} ${Properties.site.name}</p>
 
-                            <!--div class="footer__container"--!>
+                            <a href="./index.html" class="link footer__link">
+                              <img class="footer__ico" src="${monitorIco}"></img>
+                              <p class="footer__text">${Properties.site.url}</p>
+                            </a>
 
-                              <a href="./index.html" class="link footer__link">
-                                <img class="footer__ico" src="${monitorIco}"></img>
-                                <p class="footer__text">${Properties.site.url}</p>
-                              </a>
+                            <a href="mailto:${Properties.site.email}" class="link footer__link">
+                              <img class="footer__ico" src="${mailIco}"></img>
+                              <p class="footer__text">${Properties.site.email}</p>
+                            </a>
 
-                              <a href="mailto:${Properties.site.email}" class="link footer__link">
-                                <img class="footer__ico" src="${mailIco}"></img>
-                                <p class="footer__text">${Properties.site.email}</p>
-                              </a>
-
-                              <!--a href="https://github.com" class="link footer__link" target="_blank">
-                                <img class="footer__ico" src="${gitIco}"></img>
-                                <p class="footer__text">Мы на GitHub</p>
-                              </a--!>
+                            <!--a href="https://github.com" class="link footer__link" target="_blank">
+                              <img class="footer__ico" src="${gitIco}"></img>
+                              <p class="footer__text">Мы на GitHub</p>
+                            </a--!>
 
                             <!--/div--!>`;
 

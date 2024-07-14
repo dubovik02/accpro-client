@@ -17,8 +17,8 @@ export default class Dialog {
     new AccCopyValueDialog(title, valueToCopy).open();
   }
 
-  static YesNoDialog(title, question, YesFunc, NoFunc) {
-    return new AccYesNoDialog(title, question, YesFunc, NoFunc);
+  static YesNoDialog(title, question, YesFunc, NoFunc, ErrFunc) {
+    new AccYesNoDialog(title, question, YesFunc, NoFunc, ErrFunc).open();
   }
 
 }

@@ -331,15 +331,15 @@ export default class SandBoxBuilder extends ServiceBuilder {
       this._menuCalcIncome.parentElement.parentElement.classList.remove('service-section__submenu-list_is-visible');
       const result = this._calcStock(0);
       this._gridBuilder.setStockGridData(this._incomeGridObject, result, true);
-      this.getDataCheckModelAndRender() ;
-    })
+      this.getDataCheckModelAndRender();
+    });
 
     this._menuCalcOutcome.addEventListener('click', () => {
       this._menuCalcIncome.parentElement.parentElement.classList.remove('service-section__submenu-list_is-visible');
       const result = this._calcStock(2);
       this._gridBuilder.setStockGridData(this._outcomeGridObject, result, false);
       this.getDataCheckModelAndRender();
-    })
+    });
 
   }
 
@@ -349,7 +349,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
    */
   _calcStock(calcMode) {
     const { income, outcome, flows } =
-      this._gridBuilder.getData(this._incomeGridObject, this._flowGridObject, this._outcomeGridObject);
+      this._gridBuilder.getData(this._incomeGridObject, this._flowsGridObject, this._outcomeGridObject);
     return this._calcFunction.call(this, income, flows, outcome, calcMode);
   }
 
@@ -578,12 +578,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
     const { income, outcome, flows }
       = this._gridBuilder.getData(this._incomeGridObject, this._flowsGridObject, this._outcomeGridObject);
 
-    this._autoSaveFunction.call(this, income, flows, outcome)
-    .then((res) => {
-    })
-    .catch((err) => {
-      this.handleError(err);
-    });
+    return this._autoSaveFunction.call(this, income, flows, outcome);
   }
 
   loadData(doc) {
