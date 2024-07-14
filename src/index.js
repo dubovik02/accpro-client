@@ -77,7 +77,7 @@ let activePage = MAIN_PAGE;
 function onLoadDOM() {
 
   let dict;
-  // if (navigator.language.toLowerCase() == 'ru-ru') {
+
   if (navigator.language.toLowerCase().includes('ru')) {
     dict = rusDict;
   }
@@ -398,20 +398,22 @@ function showNewPasswordPopup() {
  * Обработчик меню Главная
  */
  function onMain() {
-  onLeaveSandBox();
-  clearContentContainer();
-  makeBriefSection();
-  activePage = MAIN_PAGE;
+  if (!onLeaveSandBox()) {
+    clearContentContainer();
+    makeBriefSection();
+    activePage = MAIN_PAGE;
+  }
 }
 
 /**
  * Обработчик меню Поиск
  */
  function onSearch() {
-  onLeaveSandBox();
-  clearContentContainer();
-  makeSearchSection(null, null);
-  activePage = SEARCH_PAGE;
+  if (!onLeaveSandBox()) {
+    clearContentContainer();
+    makeSearchSection(null, null);
+    activePage = SEARCH_PAGE;
+  }
 }
 
 /**
@@ -428,8 +430,9 @@ function onSandBox() {
  */
 function onLeaveSandBox() {
   if ( (activePage == SANDBOX_PAGE) && (sandBoxProvider) ) {
-    sandBoxServiceSection.onLeave();
+    return sandBoxServiceSection.onLeave();
   }
+  return false;
 }
 
 /**
@@ -488,3 +491,10 @@ function loadTopTags() {
  * загрузкa DOM
  * */
 document.addEventListener('DOMContentLoaded', onLoadDOM);
+
+/**
+ * обработка ухода со страницы
+ */
+// window.onbeforeunload = function() {
+//   return false;
+// };

@@ -10,7 +10,7 @@ import iconQuestion from '../../../images/question64.png';
   _buttonYes;
   _buttonNo;
 
-  constructor(title, question, onYesEvent, onNoEvent) {
+  constructor(title, question, onYesEvent, onNoEvent, onErrorEvent) {
 
     const props = {
       form: null,
@@ -19,6 +19,7 @@ import iconQuestion from '../../../images/question64.png';
       icon: iconQuestion,
       onYesEvent: onYesEvent,
       onNoEvent: onNoEvent,
+      onErrorEvent: onErrorEvent,
     };
     super(props);
   }
@@ -45,10 +46,11 @@ import iconQuestion from '../../../images/question64.png';
     this._buttonYes.addEventListener('click', () => {
       this.close();
       if (this._props.onYesEvent instanceof Function) {
-        this._props.onYesEvent.call(this)
+        return this._props.onYesEvent.call(this)
         .then((res) => {
         })
         .catch((err) => {
+          this._handleError(err);
         })
       }
     });
@@ -56,13 +58,26 @@ import iconQuestion from '../../../images/question64.png';
     this._buttonNo.addEventListener('click', () => {
       this.close();
       if (this._props.onNoEvent instanceof Function) {
-        this._props.onNoEvent.call(this)
+        return this._props.onNoEvent.call(this)
         .then((res) => {
         })
         .catch((err) => {
+          this._handleError(err);
         });
       }
     });
   }
 
- }
+  _handleError(err) {
+    if (this._props.onErrorEvent instanceof Function) {
+      this._props.onErrorEvent.call(this, err)
+      .then((res) => {
+
+      })
+      .catch((err) => {
+
+      });
+    }
+  }
+
+}
