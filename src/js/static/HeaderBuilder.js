@@ -154,8 +154,9 @@ export default class HeaderBuilder extends AccComponent {
    */
   _setMenuItemListener(item, handler) {
     item.addEventListener('click', () => {
-      handler.call(this, []);
-      this.setActiveMenuItem(item);
+      if (handler.call(this, [])) {
+        this.setActiveMenuItem(item);
+      };
     })
   }
 
