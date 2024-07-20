@@ -402,7 +402,9 @@ function showNewPasswordPopup() {
     clearContentContainer();
     makeBriefSection();
     activePage = MAIN_PAGE;
+    return true;
   }
+  return false;
 }
 
 /**
@@ -413,7 +415,9 @@ function showNewPasswordPopup() {
     clearContentContainer();
     makeSearchSection(null, null);
     activePage = SEARCH_PAGE;
+    return true;
   }
+  return false;
 }
 
 /**
@@ -423,6 +427,7 @@ function onSandBox() {
   clearContentContainer();
   makeSandBoxServiceSection();
   activePage = SANDBOX_PAGE;
+  return true;
 }
 
 /**

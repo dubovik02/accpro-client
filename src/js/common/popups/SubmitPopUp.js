@@ -55,11 +55,6 @@ export default class SubmitPopUp extends AccPopup {
       this.close();
       if (this._afterCloseDialogFunction instanceof Function) {
         this._afterCloseDialogFunction.call(this, [])
-        .then((_res) => {
-        })
-        .catch((err) => {
-          return Promise.reject(err);
-        });
       }
     })
     .catch((err) => {
