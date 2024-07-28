@@ -169,6 +169,11 @@ export default class SandBoxBuilder extends ServiceBuilder {
     */
    _autoSaveFunction;
 
+   /**
+    * Устанавливает параметры страницы при открытии документа
+    */
+   _setPagePropsFunction;
+
   /**
    * Компоненты характеристик файла
    */
@@ -200,6 +205,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
     this._viewFactory = this._props.viewFactory;
     this._gridBuilder = this._props.gridBuilder;
     this._autoSaveFunction = this._props.autoSaveFunction;
+    this._setPagePropsFunction = this._props.setPagePropsFunction;
     setInterval(this.autoSaveDocument, Properties.sandBox.autoSaveInterval);
   }
 
@@ -291,6 +297,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
     this._fileLastUpdateComponent = this._noteBooksContainer.querySelector('.file-date');
 
     this._fileContentComponent = this._noteBooksContainer.querySelector('.description');
+
   }
 
   /**
@@ -596,6 +603,8 @@ export default class SandBoxBuilder extends ServiceBuilder {
     //проверяем балансы остатков
     const { income, outcome, flows } = this._gridBuilder.getData(this._incomeGridObject, this._flowsGridObject, this._outcomeGridObject);
     this.checkModelAndRender(income, outcome, flows);
+
+    this._setPagePropsFunction.call(this, {title: doc.properties.shortdesc, description: doc.properties.description});
   }
 
   getData() {
