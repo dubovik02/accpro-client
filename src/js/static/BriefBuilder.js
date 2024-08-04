@@ -75,7 +75,7 @@ export default class BriefBuilder extends AccComponent {
                       </div>
 
                       <div class="info-section">
-                        <p class="info-section__title">${Properties.lang.dict.main.libraryTitle}</p>
+                        <h2 class="info-section__title">${Properties.lang.dict.main.libraryTitle}</h2>
                         <div class="info-section__card-container">
                           <div class="info-card">
                             <img class="info-card__icon" src="${issueIco}" alt="вопрос">
@@ -96,7 +96,7 @@ export default class BriefBuilder extends AccComponent {
                       </div>
 
                       <div class="info-section info-section_background-black">
-                        <p class="info-section__title info-section_title-white">${Properties.lang.dict.main.accountTitle}</p>
+                        <h2 class="info-section__title info-section_title-white">${Properties.lang.dict.main.accountTitle}</h2>
                         <div class="info-section__row-container">
                           <img class="info-section__image info-section__image_small-size" src="${Properties.lang.dict.pictures.account}" alt="счет">
                           <div class="info-section__text-container">
@@ -126,7 +126,7 @@ export default class BriefBuilder extends AccComponent {
                       </div>
 
                       <div class="info-section">
-                        <p class="info-section__title">${Properties.lang.dict.main.doubleEntryTitle}</p>
+                        <h2 class="info-section__title">${Properties.lang.dict.main.doubleEntryTitle}</h2>
                         <div class="info-section__row-container">
                           <img class="info-section__image info-section__image_large-size" src="${Properties.lang.dict.pictures.flows}" alt="поделиться">
                           <div class="info-section__text-container">

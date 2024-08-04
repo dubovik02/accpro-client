@@ -3,6 +3,14 @@ import account_en from '../../images/account_en.png';
 
 export default {
 
+  // Свойства страницы
+  page: {
+    baseTitle: 'Debit-Credit - Main',
+    baseDescription: 'Open library of accounting entries. Debit, credit and double entry. Find. Suggest. Share.',
+    searchTitle: 'Debit-Credit - Search',
+    searchDescription: 'Looking for double-entries',
+  },
+
   // общие
   general: {
     copy: 'copy',

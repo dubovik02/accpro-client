@@ -110,6 +110,9 @@ function onLoadDOM() {
   }
 
   makeFooter();
+
+  setDefaultPageProperties();
+
 }
 
 /**
@@ -226,6 +229,7 @@ function makeSandBoxServiceSection(reqId) {
       viewFactory: new SandBoxViewFactory(),
       gridBuilder: new SandBoxGrid(),
       autoSaveFunction: sandBoxProvider.autoSaveSandBox,
+      setPagePropsFunction: setPageProprties,
     });
   }
   sandBoxProvider.setServiceBuilder(sandBoxServiceSection);
@@ -349,6 +353,7 @@ function toggleDictionary() {
   }
 
   makeHeader();
+  setDefaultPageProperties();
 
   switch (activePage) {
     case MAIN_PAGE:
@@ -402,6 +407,7 @@ function showNewPasswordPopup() {
     clearContentContainer();
     makeBriefSection();
     activePage = MAIN_PAGE;
+    setDefaultPageProperties();
     return true;
   }
   return false;
@@ -415,6 +421,7 @@ function showNewPasswordPopup() {
     clearContentContainer();
     makeSearchSection(null, null);
     activePage = SEARCH_PAGE;
+    setSearchPageProperties();
     return true;
   }
   return false;
@@ -488,6 +495,29 @@ function makeSearchSection(searchString, searchTemplate) {
 
 function loadTopTags() {
   return api.getTopTags(topTagsCount);
+}
+
+function setDefaultPageProperties() {
+  setPageProprties(
+    {
+      title: Properties.lang.dict.page.baseTitle,
+      description: Properties.lang.dict.page.baseDescription,
+    }
+  );
+}
+
+function setPageProprties(props) {
+  document.querySelector('meta[name="description"]').content = props.description;
+  document.title = props.title;
+}
+
+function setSearchPageProperties() {
+  setPageProprties(
+    {
+      title: Properties.lang.dict.page.searchTitle,
+      description: Properties.lang.dict.page.searchDescription,
+    }
+  );
 }
 
 /*----------------------------Обработчики событий--------------------------------*/

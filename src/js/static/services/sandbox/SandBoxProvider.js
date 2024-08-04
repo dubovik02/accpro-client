@@ -413,7 +413,7 @@ const lodash = require('lodash');
 
   //создает и показывает ссылку на расшаренный документ
   createAndShowShareLink = () => {
-    Dialog.CopyValueDialog(`${Properties.lang.dict.promts.notebookLink}`, `${Properties.site.host}/?id=${this.getCurrentDocument()._id}`);
+    Dialog.CopyValueDialog(`${Properties.lang.dict.promts.notebookLink}`, `https://${Properties.site.host}/?id=${this.getCurrentDocument()._id}`);
   }
 
   //рейтинг документа

@@ -3,6 +3,14 @@ import account_ru from '../../images/account_ru.png';
 
 export default {
 
+  // Свойства страницы
+  page: {
+    baseTitle: 'Дебет-Кредит - Главная',
+    baseDescription: 'Открытая библиотека бухгалтерских провоодок. Весь дебит, кредит и двойная запись. Находите. Предлагайте. Делитесь.',
+    searchTitle: 'Дебет-Кредит - Поиск',
+    searchDescription: 'Ищем проводки по запросу',
+  },
+
   // общие
   general: {
     copy: 'копия',
@@ -78,7 +86,7 @@ export default {
   notebook: {
     id: 'Код',
     notebook: 'Тетрадь',
-    create: 'Создана(изменена)',
+    create: 'Создан(изменен)',
     name: 'Название',
     hashtags: 'Хэш-теги',
     description: 'Описание',
