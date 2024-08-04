@@ -44,7 +44,7 @@ const lodash = require('lodash');
     const share = this.getCurrentDocument().share;
     const properties = this.getCurrentDocument().properties;
     const doc = this.createDocument(incomeSet, flowsSet, outcomeSet, share, properties);
-
+    doc._id = this.getCurrentDocument()._id;
     this.setCurrentDocument(doc);
 
     return this.calcStocksAndFlows(incomeSet, flowsSet, outcomeSet, calcMode);
