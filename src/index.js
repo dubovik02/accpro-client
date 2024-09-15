@@ -522,6 +522,10 @@ function setSearchPageProperties() {
 
 /*----------------------------Обработчики событий--------------------------------*/
 
+
+// запрещаем стандартное меню
+document.oncontextmenu = () => {return false;};
+
 /**
  * загрузкa DOM
  * */
@@ -533,3 +537,21 @@ document.addEventListener('DOMContentLoaded', onLoadDOM);
 // window.onbeforeunload = function() {
 //   return false;
 // };
+
+// const db = connect("localhost:27020/accdb");
+
+// const exampleObj = {
+// 	share: true,
+// }
+// //printjson( db.sbdocs.find(exampleObj) );
+// db.sbdocs.find(exampleObj)
+// .then((res) => {
+// 		res.forEach((item) => {
+//       let docId = item._id;
+//       let lastUpd = item.lastupdate;
+//       console.log(docId);
+//     })
+// })
+// .catch((err) => {
+
+// });

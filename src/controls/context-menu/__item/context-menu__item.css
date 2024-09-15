@@ -1,0 +1,7 @@
+/* стиль отдельных элементов */
+.context-menu__item {
+  /* margin: 3px;
+  padding: 5px; */
+  background-color: #fff;
+  display: block;
+}

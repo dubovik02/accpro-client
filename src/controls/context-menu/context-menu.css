@@ -1,0 +1,19 @@
+@import url('./_is-visible/context-menu_is-visible.css');
+@import url('./__item/context-menu__item.css');
+@import url('./__link/context-menu__link.css');
+@import url('./__icon/context-menu__icon.css');
+
+.context-menu {
+  position: absolute;
+  display: none;
+  background-color: #fff;
+  border: 1px solid #333;
+  padding: .3em;
+  list-style: none;
+  font-size: 1em;
+
+  /* Добавим тени */
+  -moz-box-shadow: 5px 2px 10px rgba(0,0,0,0.5);
+  -webkit-box-shadow: 5px 2px 10px rgba(0,0,0,0.5);
+  box-shadow: 5px 2px 10px rgba(0,0,0,0.5);
+}

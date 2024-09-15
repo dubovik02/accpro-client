@@ -126,6 +126,11 @@ export default {
       summ: 'Summ',
       flowNote: 'Flow description',
       note: 'Notes',
+      contextMenu: {
+        addRowUp: 'Add row up',
+        addRowDown: 'Add row down',
+        removeRow: 'Delete row',
+      },
     }
 
   },

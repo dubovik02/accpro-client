@@ -127,6 +127,11 @@ export default {
       summ: 'Сумма',
       flowNote: 'Содержание операции',
       note: 'Пояснения',
+      contextMenu: {
+        addRowUp: 'Добавить строку сверху',
+        addRowDown: 'Добавить строку снизу',
+        removeRow: 'Удалить строку',
+      },
     }
 
   },

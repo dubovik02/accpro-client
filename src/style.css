@@ -37,6 +37,7 @@
 @import url('./blocks/grid/grid.css');
 @import url('./controls/input-textarea/input-textarea.css');
 @import url('./controls/tabs-container/tabs-container.css');
+@import url('./controls/context-menu/context-menu.css');
 
 /*----Попапы--------------------*/
 @import url('./blocks/popup/popup.css');

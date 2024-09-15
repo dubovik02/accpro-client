@@ -1,0 +1,13 @@
+.context-menu__link {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  cursor: pointer;
+  margin: .4em;
+  padding: .4em;
+}
+
+/* меняем фон в пункте меню при наведении мыши */
+.context-menu__link:hover {
+  background-color: #eee;
+}

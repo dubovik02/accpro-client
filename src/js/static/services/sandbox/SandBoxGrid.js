@@ -1,10 +1,16 @@
 import Properties from "../../../properties/Properties";
 import {Grid} from 'ag-grid-community';
 
+import addRowUpIco from "../../../../images/grid/above.png";
+import addRowDownIco from "../../../../images/grid/below.png";
+import removeRowIco from "../../../../images/grid/delete.png";
+
 /**
  * Класс гридов сервиса Песочницы
  */
 export default class SandBoxGrid {
+
+  _contextMenu;
 
   SandBoxGrid() {
   }
@@ -32,6 +38,14 @@ export default class SandBoxGrid {
   createGridObject(gridElement, gridOptions) {
     const grid = new Grid(gridElement, gridOptions);
     grid.gridOptions.api.sizeColumnsToFit();
+
+    gridElement.onmousedown = (event) => {this._showContextMenu(gridElement, grid, event)};
+    gridElement.addEventListener('mouseleave', (event) => {
+      this._removeContextMenu();
+      event.preventDefault();
+    });
+
+
     return grid;
   }
 
@@ -42,7 +56,10 @@ export default class SandBoxGrid {
    * @return {Grid} объект Grid
    */
   createFlowGridObject(className) {
-    return this.createGridObject(this.createGridElement(className), this.getFlowGridOptions());
+    const elem = this.createGridElement(className);
+    const options = this.getFlowGridOptions();
+    const obj = this.createGridObject(elem, options);
+    return obj;
   }
 
   /**
@@ -78,6 +95,7 @@ export default class SandBoxGrid {
       animateRows: true,
       undoRedoCellEditing: true,
       undoRedoCellEditingLimit: 20,
+      rowSelection: 'single',
     };
 
     return gridOptions;
@@ -334,4 +352,146 @@ export default class SandBoxGrid {
         flows: flows,
       }
     }
+
+    _showContextMenu (elem, gridObj, event) {
+      this._createContextMenuHTML(elem, gridObj, event);
+    }
+
+    _createContextMenuHTML (elem, gridObj, event) {
+
+      if (!this._contextMenu) {
+
+        if (event.which === 3) {
+          this._contextMenu = document.createElement('div');
+          this._contextMenu.classList.add('context-menu');
+
+          let itemsHtml = `
+                          <li class="context-menu-item">
+                            <a class="context-menu__link menu-addRowUp">
+                              <img class="context-menu__icon" src=${addRowUpIco}>
+                              ${Properties.lang.dict.sandbox.grids.contextMenu.addRowUp}
+                            </a>
+                          </li>
+
+                          <li class="context-menu-item">
+                            <a class="context-menu__link menu-addRowDown">
+                              <img class="context-menu__icon" src=${addRowDownIco}>
+                              ${Properties.lang.dict.sandbox.grids.contextMenu.addRowDown}
+                            </a>
+                          </li>
+
+                          <li class="context-menu-item">
+                            <a class="context-menu__link menu-removeRow">
+                              <img class="context-menu__icon" src=${removeRowIco}>
+                              ${Properties.lang.dict.sandbox.grids.contextMenu.removeRow}
+                            </a>
+                          </li>
+                          `;
+          this._contextMenu.insertAdjacentHTML('beforeend', itemsHtml);
+
+          elem.insertAdjacentElement('beforeend', this._contextMenu);
+
+          let menuAddUp = this._contextMenu.querySelector('.menu-addRowUp');
+          menuAddUp.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this._addRow(gridObj, true);
+            this._removeContextMenu();
+          });
+
+          let menuAddDown = this._contextMenu.querySelector('.menu-addRowDown');
+          menuAddDown.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this._addRow(gridObj, false);
+            this._removeContextMenu();
+          });
+
+          let menuDelete = this._contextMenu.querySelector('.menu-removeRow');
+          menuDelete.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this._deleteRow(gridObj);
+            this._removeContextMenu();
+          });
+
+          let target = elem.getBoundingClientRect();
+          this._contextMenu.style.left = event.clientX - target.left  + 'px';
+          this._contextMenu.style.top = event.clientY - target.top + 'px';
+          this._contextMenu.classList.add('context-menu_is-visible');
+        }
+      }
+      // смотрим где был клик - вне меню - удаляем меню
+      let menuClicked = (event.target.classList.contains('context-menu__link') || event.target.classList.contains('context-menu__icon'));
+      if ( (event.which != 3) && (this._contextMenu) && (!menuClicked) ) {
+        this._removeContextMenu();
+      }
+    }
+
+    _removeContextMenu() {
+      if (document.querySelector('.context-menu')) {
+        document.querySelector('.context-menu').remove();
+        this._contextMenu = null;
+      }
+    }
+
+    _addRow(gridObj, isUp) {
+      const rowNode = gridObj.gridOptions.api.getSelectedNodes()[0];
+      const rowId = Number(rowNode.id);
+      let currentData = [];
+      let newData = [];
+
+      gridObj.gridOptions.api.forEachNode((rowNode, index) => {
+        currentData.push(rowNode.data);
+      });
+
+      if (isUp) {//вверх
+        if (rowId == 0) {
+          newData.push({});
+          newData = newData.concat(currentData);
+        }
+        else {
+          newData = currentData.slice(0, rowId);
+          newData.push({});
+          newData = newData.concat(currentData.slice(rowId, currentData.length + 1));
+        }
+      }
+
+      if (!isUp) {//вниз
+        if (rowId == currentData.length - 1) {
+          newData = newData.concat(currentData);
+          newData.push({});
+        }
+        else {
+          newData = currentData.slice(0, rowId + 1);
+          newData.push({});
+          newData = newData.concat(currentData.slice(rowId + 1, currentData.length + 1));
+        }
+      }
+
+      gridObj.gridOptions.api.setRowData(newData);
+
+      const selectedRowIdx = isUp ? rowId : rowId + 1;
+      gridObj.gridOptions.api.selectIndex (selectedRowIdx, true, false);
+      gridObj.gridOptions.api.ensureIndexVisible(selectedRowIdx);
+
+    }
+
+    _deleteRow(gridObj) {
+      const rowNode = gridObj.gridOptions.api.getSelectedNodes()[0];
+      const rowId = Number(rowNode.id);
+      let currentData = [];
+      let newData = [];
+
+      gridObj.gridOptions.api.forEachNode((rowNode, index) => {
+        currentData.push(rowNode.data);
+      });
+
+      newData = currentData.slice(0, rowId);
+      newData = newData.concat(currentData.slice(rowId + 1, currentData.length + 1));
+
+      gridObj.gridOptions.api.setRowData(newData);
+
+      const selectedRowIdx = (rowId == currentData.length - 1) ? rowId - 1 : rowId;
+      gridObj.gridOptions.api.selectIndex (selectedRowIdx, true, false);
+      gridObj.gridOptions.api.ensureIndexVisible(selectedRowIdx);
+    }
+
 }
