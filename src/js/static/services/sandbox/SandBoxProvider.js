@@ -11,6 +11,7 @@ import Properties from "../../../properties/Properties";
 import Dialog from "../../../common/dialogs/Dialog";
 import InputMultiValuesPopUp from "../../../static/popups/InputMultiValuesPopUp";
 import PrintFactory from "../../../common/factories/PrintFactory";
+import SandBoxDocument from "./SandBoxDocument";
 
 const lodash = require('lodash');
 
@@ -26,6 +27,7 @@ const lodash = require('lodash');
 
   constructor(props) {
     super(props);
+    this.setCurrentDocument(new SandBoxDocument().getDocumentAsJSON());
   }
 
   /**
@@ -36,18 +38,21 @@ const lodash = require('lodash');
   }
 
   _calcSandBox(income, flows, outcome, calcMode) {
+
     //собираем баланс и обороты
     const incomeSet = this.transformStocks(income);
     const flowsSet = this.transformFlows(flows);
     const outcomeSet = this.transformStocks(outcome);
 
-    const share = this.getCurrentDocument().share;
-    const properties = this.getCurrentDocument().properties;
-    const doc = this.createDocument(incomeSet, flowsSet, outcomeSet, share, properties);
-    doc._id = this.getCurrentDocument()._id;
-    this.setCurrentDocument(doc);
+    let result = this.calcStocksAndFlows(incomeSet, flowsSet, outcomeSet, calcMode);
 
-    return this.calcStocksAndFlows(incomeSet, flowsSet, outcomeSet, calcMode);
+    this.getCurrentDocument().text = {
+      income: calcMode == 0 ? result: incomeSet.toJSON(),
+      flows: flowsSet.toJSON(),
+      outcome: calcMode == 2 ? result : outcomeSet.toJSON(),
+    };
+
+    return result;
   }
 
   /**
@@ -64,13 +69,21 @@ const lodash = require('lodash');
     const flowsSet = this.transformFlows(flows);
     const outcomeSet = this.transformStocks(outcome);
 
-    let sbdoc = this.createDocument(incomeSet, flowsSet, outcomeSet, this.getCurrentDocument().share, this.getCurrentDocument().properties);
+    this.getCurrentDocument().text = {
+      income: incomeSet.toJSON(),
+      flows: flowsSet.toJSON(),
+      outcome: outcomeSet.toJSON(),
+    };
+
+    this.getCurrentDocument().lastupdate = new Date().getTime();
+    this.getCurrentDocument().__v = undefined;
+
     //смотрим есть ли ID
     const _id = this.getCurrentDocument()._id;
 
     if (_id) {//документ существует
-      sbdoc._id = _id;
-      return this.getApi().updateSandBoxDocument(sbdoc)
+      this.getCurrentDocument()._id = _id;
+      return this.getApi().updateSandBoxDocument(this.getCurrentDocument())
       .then((res) => {
         if (res.data.ok) {
           //загружаем обновленный
@@ -82,7 +95,7 @@ const lodash = require('lodash');
       });
     }
     else {//новый документ
-      return this.getApi().saveSandBoxDocument(sbdoc)
+      return this.getApi().saveSandBoxDocument(this.getCurrentDocument())
       .then((res) => {
         this.setCurrentDocument(res.data);
         this.loadCurrentDocument();
@@ -104,7 +117,8 @@ const lodash = require('lodash');
 
   _saveSandBoxCopy(income, flows, outcome) {
 
-    this.getCurrentDocument()._id = null;
+    this.getCurrentDocument()._id = undefined;
+    this.getCurrentDocument().owner = undefined;
     this.getCurrentDocument().properties.shortdesc = this.getCurrentDocument().properties.shortdesc
       + ` (${Properties.lang.dict.general.copy})`;
     this.getCurrentDocument().share = false;
@@ -115,11 +129,11 @@ const lodash = require('lodash');
   /**
    * Функция автосохранения тетрадки
    */
-  autoSaveSandBox = (income, flows, outcome) => {
-    return this._autoSaveSandBox(income, flows, outcome);
+  autoSaveSandBox = () => {
+    return this._autoSaveSandBox();
   }
 
-  _autoSaveSandBox(income, flows, outcome) {
+  _autoSaveSandBox() {
     if (this.isDocumentChanged()) {
       return confirm(Properties.lang.dict.dialogs.saveOrNo);
     }
@@ -287,23 +301,8 @@ const lodash = require('lodash');
   }
 
   _newSandBox() {
-    this.setCurrentDocument({
-      _id: null,
-      text: {
-        income: {},
-        flows: {},
-        outcome: {},
-      },
-      lastupdate: new Date().getTime(),
-      share: false,
-      properties: {
-        shortdesc: `${Properties.lang.dict.notebook.myNotebook}`,
-        description: `${Properties.lang.dict.notebook.myDescription}`,
-        tags: `${Properties.lang.dict.notebook.myTags}`,
-      },
-      likes: [],
-      views: 0,
-    });
+    let doc = new SandBoxDocument();
+    this.setCurrentDocument(doc.getDocumentAsJSON());
     this.loadCurrentDocument();
   }
 
@@ -437,6 +436,21 @@ const lodash = require('lodash');
     });
   }
 
+  //перезагрузить документ
+  refresh = () => {
+    return this._refresh();
+  }
+
+  _refresh() {
+    const docId = this.getCurrentDocument()._id;
+    if (docId) {
+      return this._openSandBox(docId);
+    }
+    else {
+      return Promise.resolve();
+    }
+  }
+
   /**
    * Синхранизация модели и представления
    */
@@ -444,11 +458,14 @@ const lodash = require('lodash');
     const income = this.transformStocks(incomeArr);
     const outcome = this.transformStocks(outcomeArr);
     const flows = this.transformFlows(flowsArr);
-    let sbdoc = this.createDocument(income, flows, outcome,
-      this.getCurrentDocument().share, this.getCurrentDocument().properties);
-    sbdoc._id = this.getCurrentDocument()._id;
 
-    this.setCurrentDocument(sbdoc);
+    const text = {
+      income: income.toJSON(),
+      flows: flows.toJSON(),
+      outcome: outcome.toJSON(),
+    }
+
+    this.getCurrentDocument().text = text;
   }
 
   /**
@@ -509,20 +526,18 @@ const lodash = require('lodash');
 
       stockArr.forEach(accObj => {
 
-      //if (accObj.accountNumber != null) {
-        const acc = new Account();
-        acc.setAccNumber(accObj.accountNumber);
-        acc.setOpenBalance({
-          debet: Number(accObj.debet == null ? 0 : accObj.debet),
-          credit: Number(accObj.credit == null ? 0 : accObj.credit),
-        });
-        acc.setCloseBalance({
-          debet: Number(accObj.debet == null ? 0 : accObj.debet),
-          credit: Number(accObj.credit == null ? 0 : accObj.credit),
-        });
-        acc.setDescription(accObj.note);
-        accSet.add(acc);
-      //}
+      const acc = new Account();
+      acc.setAccNumber(accObj.accountNumber);
+      acc.setOpenBalance({
+        debet: Number(accObj.debet == null ? 0 : accObj.debet),
+        credit: Number(accObj.credit == null ? 0 : accObj.credit),
+      });
+      acc.setCloseBalance({
+        debet: Number(accObj.debet == null ? 0 : accObj.debet),
+        credit: Number(accObj.credit == null ? 0 : accObj.credit),
+      });
+      acc.setDescription(accObj.note);
+      accSet.add(acc);
 
     })
 
@@ -544,52 +559,25 @@ const lodash = require('lodash');
     flowsArr.forEach(entryObj => {
 
       //не берем пустые счета
-      //if () {
-        const entry = new AccountingEntry();
-        entry.setName(entryObj.operationDesc);
 
-        const accDebet = new Account();
-        accDebet.setAccNumber(entryObj.debet)
-        entry.setAccDebet(accDebet);
+      const entry = new AccountingEntry();
+      entry.setName(entryObj.operationDesc);
 
-        const accCredit = new Account();
-        accCredit.setAccNumber(entryObj.credit);
-        entry.setAccCredit(accCredit);
+      const accDebet = new Account();
+      accDebet.setAccNumber(entryObj.debet)
+      entry.setAccDebet(accDebet);
 
-        entry.setDescription(entryObj.note);
-        entry.setSum(entryObj.summ == null ? 0 : entryObj.summ);
+      const accCredit = new Account();
+      accCredit.setAccNumber(entryObj.credit);
+      entry.setAccCredit(accCredit);
 
-        flowsSet.add(entry);
-      //}
+      entry.setDescription(entryObj.note);
+      entry.setSum(entryObj.summ == null ? 0 : entryObj.summ);
 
+      flowsSet.add(entry);
     })
 
     return flowsSet;
-  }
-
-  /**
-   * Получение текущей версии документа
-   * @param {AccountsSet} incomeSet входящие остатки
-   * @param {AccountingEntriesSet} flowsSet оборооты
-   * @param {AccountsSet} outcomeSet исходящие остатки
-   * @param {Boolean} share признак доступности тетради
-   * @param {String} properties свойства тетради
-   * @returns {Object} документ
-   */
-  createDocument(incomeSet, flowsSet, outcomeSet, share, properties) {
-
-    return  {
-      text: {
-        income: incomeSet.toJSON(),
-        flows: flowsSet.toJSON(),
-        outcome: outcomeSet.toJSON(),
-      },
-      lastupdate: new Date().getTime(),
-      share: share,
-      properties: properties,
-      likes: [],
-      views: 0,
-    }
   }
 
   /**
@@ -606,7 +594,12 @@ const lodash = require('lodash');
    * Отличается ли документ от базового
    */
   isDocumentChanged() {
-    return !(lodash.isEqual(this._originDocument, this.getCurrentDocument()));
+    //перепарсиваем из-за потери undefined свойств
+    const protoDoc = JSON.parse(JSON.stringify(this.getCurrentDocument()));
+    delete protoDoc._id;
+    delete protoDoc.owner;
+    return !(lodash.isEqual(this._originDocument, protoDoc));
+    // return !(lodash.isEqual(this._originDocument, this.getCurrentDocument()));
   }
 
 }

@@ -10,6 +10,7 @@ import settingIco from "../../../../images/setting.png";
 import shareIco from "../../../../images/share.png";
 import calcIco from "../../../../images/calc.png";
 import planeIco from "../../../../images/paper-plane.png";
+import refreshIco from "../../../../images/reload.png";
 
 /**
  * Фабрика компонент представления сервиса Песочницы
@@ -57,6 +58,10 @@ import planeIco from "../../../../images/paper-plane.png";
    */
   getSandBoxMenuHTML() {
     return `<ul class="service-section__menu-list">
+
+              <li class="service-section__menu-item">
+                <a class="link service-section__link menu-item-refresh"><img class="service-section__icon" title="${Properties.lang.dict.sandbox.menu.refresh}" src="${refreshIco}"></a>
+              </li>
 
               <li class="service-section__menu-item">
                 <a class="link service-section__link menu-item-new"><img class="service-section__icon" src="${newIco}">${Properties.lang.dict.sandbox.menu.new}</a>
@@ -114,14 +119,14 @@ import planeIco from "../../../../images/paper-plane.png";
 
                 <li class="service-section__menu-item">
                   <a class="link service-section__link menu-item-like">
-                    <img class="service-section__icon service-section__icon_linked like" src="${likeIco}">
+                    <img class="service-section__icon service-section__icon_linked like" title="${Properties.lang.dict.sandbox.menu.like}" src="${likeIco}">
                     <span class="service-section__span likes-counter"></span>
                   </a>
                 </li>
 
                 <li class="service-section__menu-item">
                   <a class="link service-section__link menu-item-view">
-                    <img class="service-section__icon" src="${viewIco}">
+                    <img class="service-section__icon" title="${Properties.lang.dict.sandbox.menu.view}" src="${viewIco}">
                     <span class="service-section__span views-counter"></span>
                   </a>
                 </li>

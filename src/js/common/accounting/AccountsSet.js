@@ -72,7 +72,8 @@ export default class AccountsSet extends AccEntity {
       accSet.push(acc.toJSON());
     })
 
-    result.accounts = accSet;
+    // result.accounts = accSet;
+    result._accountsSet = accSet;
     return result;
 
   }

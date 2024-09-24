@@ -44,8 +44,6 @@ export default class SandBoxGrid {
       this._removeContextMenu();
       event.preventDefault();
     });
-
-
     return grid;
   }
 
@@ -202,8 +200,6 @@ export default class SandBoxGrid {
 
       let currentObj = {
         operationDesc: rowNode.data.operationDesc,
-        // debet: rowNode.data.debet ? rowNode.data.debet.trim() : rowNode.data.debet,
-        // credit: rowNode.data.credit ? rowNode.data.credit.trim() : rowNode.data.credit,
         debet: accDebit,
         credit: accCredit,
         summ: rowNode.data.summ,
@@ -229,7 +225,7 @@ export default class SandBoxGrid {
 
     //заполняем новые данные
     const rowData = [];
-    const dataArr = stockData.accounts;
+    const dataArr = stockData._accountsSet;
 
     //если данные есть
     if (dataArr && dataArr.length) {
@@ -271,7 +267,6 @@ export default class SandBoxGrid {
     //если данные есть
     if (dataArr && dataArr.length) {
       for (let i = 0; i < dataArr.length; i++) {
-
         let entryObj =
         {
           operationDesc: dataArr[i].name,

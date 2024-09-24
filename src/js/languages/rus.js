@@ -113,6 +113,9 @@ export default {
       calc: 'Рассчитать',
       calcIncome: 'Входящие остатки',
       calcOutcome: 'Исходящие остатки',
+      refresh: 'Обновить документ',
+      like: 'Отметки',
+      view: 'Просмотры',
     },
 
     grids: {
