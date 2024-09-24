@@ -115,6 +115,11 @@ export default class SandBoxBuilder extends ServiceBuilder {
   _menuNew;
 
   /**
+   * Меню обновить документ
+   */
+  _menuRefresh;
+
+  /**
    * Функция пересчета ячеек документа
    */
   _calcFunction;
@@ -174,6 +179,9 @@ export default class SandBoxBuilder extends ServiceBuilder {
     */
    _setPagePropsFunction;
 
+   //коллбэк обновления документа
+   _refreshFunction;
+
   /**
    * Компоненты характеристик файла
    */
@@ -200,6 +208,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
     this._shareFunction = this._props.shareFunction;
     this._createAndShowShareLink = this._props.createAndShowShareLink;
     this._likeFunction = this._props.likeFunction;
+    this._refreshFunction = this._props.refreshFunction;
     this._cellEditingFunction = this._props.cellEditingFunction;
     this._checkModelFunctioin = this._props.checkModelFunction;
     this._viewFactory = this._props.viewFactory;
@@ -313,6 +322,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
     this._setUpMenuItemShare();
     this._setUpMenuItemProperties();
     this._setUpLikeComponent();
+    this._setUpMenuItemRefresh();
   }
 
   /**
@@ -423,7 +433,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
     this._menuOpen = this._serviceMenu.querySelector('.menu-item-open');
     this._menuOpen.addEventListener('click', () => {
       this._openEvent();
-    })
+    });
   }
 
   _openEvent() {
@@ -520,6 +530,14 @@ export default class SandBoxBuilder extends ServiceBuilder {
       });
 
     });
+  }
+
+  //обновление документа
+  _setUpMenuItemRefresh() {
+    this._menuRefresh = this._serviceMenu.querySelector('.menu-item-refresh');
+    this._menuRefresh.addEventListener('click', () => {
+      return this._refreshFunction.call(this);
+    })
   }
 
   // обработчик панели вкладок
@@ -672,7 +690,8 @@ export default class SandBoxBuilder extends ServiceBuilder {
         this.getProps().loginFunction.call(this);
       }
       else {
-        Dialog.ErrorDialog(`${Properties.lang.dict.errors.error}: ${err.message}`);
+        let msg = err.message ? err.message : err.statusText;
+        Dialog.ErrorDialog(`${Properties.lang.dict.errors.error}: ${msg}`);
       }
     }
   }

@@ -68,8 +68,8 @@ export default class PrintFactory {
       stocksGrid.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">${Properties.lang.dict.sandbox.grids.debitStock}</span></p>`);
       stocksGrid.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">${Properties.lang.dict.sandbox.grids.creditStock}</span></p>`);
       stocksGrid.insertAdjacentHTML('beforeend', `<p><span style="font-weight: bold">${Properties.lang.dict.sandbox.grids.note}</span></p>`);
-      if (stocksObj.accounts) {
-        stocksObj.accounts.forEach(element => {
+      if (stocksObj._accountsSet) {
+        stocksObj._accountsSet.forEach(element => {
           stocksGrid.insertAdjacentHTML('beforeend', `<p>${counter++}</p>`);
           stocksGrid.insertAdjacentHTML('beforeend', `<p>${element.accNumber}</p>`);
           stocksGrid.insertAdjacentHTML('beforeend',

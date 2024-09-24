@@ -112,6 +112,9 @@ export default {
       calc: 'Calc',
       calcIncome: 'Incomes',
       calcOutcome: 'Outcomes',
+      refresh: 'Reload document',
+      like: 'Likes',
+      view: 'Views',
     },
 
     grids: {

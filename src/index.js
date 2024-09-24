@@ -224,6 +224,7 @@ function makeSandBoxServiceSection(reqId) {
       shareFunction: sandBoxProvider.createShareLink,
       createAndShowShareLink: sandBoxProvider.createAndShowShareLink,
       likeFunction: sandBoxProvider.like,
+      refreshFunction: sandBoxProvider.refresh,
       cellEditingFunction: sandBoxProvider.synchronizeModel,
       checkModelFunction: sandBoxProvider.checkModel,
       viewFactory: new SandBoxViewFactory(),
