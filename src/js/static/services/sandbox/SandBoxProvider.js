@@ -598,7 +598,13 @@ const lodash = require('lodash');
     const protoDoc = JSON.parse(JSON.stringify(this.getCurrentDocument()));
     delete protoDoc._id;
     delete protoDoc.owner;
-    return !(lodash.isEqual(this._originDocument, protoDoc));
+
+    const originDoc = JSON.parse(JSON.stringify(this._originDocument));
+    delete originDoc._id;
+    delete originDoc.owner;
+
+    return !(lodash.isEqual(originDoc, protoDoc));
+    // return !(lodash.isEqual(this._originDocument, protoDoc));
     // return !(lodash.isEqual(this._originDocument, this.getCurrentDocument()));
   }
 
