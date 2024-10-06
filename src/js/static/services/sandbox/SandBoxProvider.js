@@ -444,7 +444,8 @@ const lodash = require('lodash');
   _refresh() {
     const docId = this.getCurrentDocument()._id;
     if (docId) {
-      return this._openSandBox(docId);
+      return this._openShareSandBox(docId, true);
+      // return this._openSandBox(docId);
     }
     else {
       return Promise.resolve();
