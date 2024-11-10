@@ -8,16 +8,23 @@ const isDev = process.env.NODE_ENV === 'development';
 
 module.exports = {
 
-  entry: { main: './src/index.js' },
+  entry: { main: './src/index.ts' },
   output: {
       path: path.resolve(__dirname, 'dist'),
       filename: '[name].[chunkhash].js',
       publicPath: ''
   },
 
+  devtool: 'inline-source-map',
+
+  watch: true,
+
   //открываем в Firefox
   devServer: {
-    open: 'Firefox'
+    open: true,
+    static: {
+      directory: path.join(__dirname, 'public'),
+    },
   },
 
   //Полифилы
@@ -36,11 +43,20 @@ module.exports = {
       fs: false,
       child_process: false,
       worker_threads: false,
-    }
+    },
+
+    extensions: ['.js', '.ts'],
   },
 
   module: {
     rules: [
+      {
+        test: /\.tsx?$/,
+        loader: 'ts-loader',
+        exclude: /node_modules/,
+        options: { transpileOnly: true }
+      },
+
       { // тут описываются правила
         test: /\.js$/, // регулярное выражение, которое ищет все js файлы
         use: { loader: "babel-loader" }, // весь JS обрабатывается пакетом babel-loader
