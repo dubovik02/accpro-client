@@ -2,7 +2,8 @@ const webpack = require('webpack');
 const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+//const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const isDev = process.env.NODE_ENV === 'development';
 
 
@@ -91,7 +92,16 @@ module.exports = {
         },
       }
 
-    ]
+    ],
+    /////////////////////////////////
+    // optimization: {
+    //   minimizer: [
+    //     // For webpack@5 you can use the `...` syntax to extend existing minimizers (i.e. `terser-webpack-plugin`), uncomment the next line
+    //     // `...`,
+    //     new CssMinimizerPlugin(),
+    //   ],
+    // },
+    ////////////////////////////////
   },
 
   plugins: [
@@ -104,14 +114,16 @@ module.exports = {
       filename: 'index.html', // имя выходного файла, то есть того, что окажется в папке dist после сборки
     }),
 
-    new OptimizeCssAssetsPlugin({
-      assetNameRegExp: /\.css$/g,
-      cssProcessor: require('cssnano'),
-      cssProcessorPluginOptions: {
-        preset: ['default'],
-      },
-      canPrint: true
-    }),
+    new CssMinimizerPlugin(),
+
+    // new OptimizeCssAssetsPlugin({
+    //   assetNameRegExp: /\.css$/g,
+    //   cssProcessor: require('cssnano'),
+    //   cssProcessorPluginOptions: {
+    //     preset: ['default'],
+    //   },
+    //   canPrint: true
+    // }),
 
     new webpack.DefinePlugin({
       'NODE_ENV': JSON.stringify(process.env.NODE_ENV)

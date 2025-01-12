@@ -134,6 +134,7 @@ export default {
         addRowUp: 'Добавить строку сверху',
         addRowDown: 'Добавить строку снизу',
         removeRow: 'Удалить строку',
+        markSameValues: 'Пометить значения',
       },
     }
 

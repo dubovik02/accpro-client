@@ -1,6 +1,6 @@
 {
   "name": "debet-credit",
-  "version": "0.2.2",
+  "version": "1.0.0",
   "description": "accounting solutions",
   "main": "index.js",
   "scripts": {
@@ -31,13 +31,13 @@
     "babel-loader": "^8.1.0",
     "cross-env": "^7.0.2",
     "css-loader": "^5.0.0",
+    "css-minimizer-webpack-plugin": "^7.0.0",
     "cssnano": "^7.0.6",
     "file-loader": "^6.2.0",
     "gh-pages": "^6.2.0",
     "html-webpack-plugin": "^4.5.2",
     "image-webpack-loader": "^8.1.0",
     "mini-css-extract-plugin": "^1.2.1",
-    "optimize-css-assets-webpack-plugin": "^6.0.1",
     "postcss-loader": "^4.0.4",
     "style-loader": "^2.0.0",
     "ts-loader": "^9.5.1",

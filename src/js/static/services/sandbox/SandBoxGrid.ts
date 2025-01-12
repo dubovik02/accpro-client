@@ -3,6 +3,7 @@ import {createGrid, GridApi} from 'ag-grid-community';
 import addRowUpIco from "../../../../images/grid/above.png";
 import addRowDownIco from "../../../../images/grid/below.png";
 import removeRowIco from "../../../../images/grid/delete.png";
+import markCellsIco from "../../../../images/grid/marker.png"
 import { FlowGridObject, NotebookGridObject, StockGridObject } from "./SandBoxGridObjects";
 import { AccountingEntriesSetObject, AccountsSetObject } from "../../../common/accounting/AccObjects";
 
@@ -381,6 +382,18 @@ export default class SandBoxGrid {
                               ${Properties.lang.dict.sandbox.grids.contextMenu.removeRow}
                             </a>
                           </li>
+
+                          <li class="context-menu-item">
+                            <a class="context-menu__line">
+                            </a>
+                          </li>
+
+                          <li class="context-menu-item">
+                            <a class="context-menu__link menu-markSameValues">
+                              <img class="context-menu__icon" src=${markCellsIco}>
+                              ${Properties.lang.dict.sandbox.grids.contextMenu.markSameValues}
+                            </a>
+                          </li>
                           `;
           this._contextMenu.insertAdjacentHTML('beforeend', itemsHtml);
 
@@ -404,6 +417,13 @@ export default class SandBoxGrid {
           menuDelete.addEventListener('click', (e) => {
             e.stopPropagation();
             this._deleteRow(gridObj);
+            this._removeContextMenu();
+          });
+
+          let menuMarkSameValues = this._contextMenu.querySelector('.menu-markSameValues');
+          menuMarkSameValues.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this._markSameValues(gridObj);
             this._removeContextMenu();
           });
 
@@ -462,10 +482,7 @@ export default class SandBoxGrid {
         }
       }
 
-      gridObj.setGridOption('rowData', newData);;
-
-      // const selectedRowIdx = isUp ? rowId : rowId + 1;
-      // gridObj.gridOptions.api.selectIndex (selectedRowIdx, true, false);
+      gridObj.setGridOption('rowData', newData);
 
       const selectedRowIdx = ((rowId == currentData.length - 1) ? rowId - 1 : rowId).toString();
       const row = gridObj.getRowNode(selectedRowIdx);
@@ -489,13 +506,32 @@ export default class SandBoxGrid {
 
       gridObj.setGridOption('rowData', newData);;
 
-      // const selectedRowIdx = (rowId == currentData.length - 1) ? rowId - 1 : rowId;
-      // gridObj.gridOptions.api.selectIndex (selectedRowIdx, true, false);
-
       const selectedRowIdx = ((rowId == currentData.length - 1) ? rowId - 1 : rowId).toString();
       const row = gridObj.getRowNode(selectedRowIdx);
       row.setSelected(true);
       gridObj.ensureIndexVisible(Number(selectedRowIdx));
+
+    }
+
+    //помечает цветом ячейки значение которой соответствует заданной
+    _markSameValues(gridObj : GridApi) {
+      const curRowNode = gridObj.getSelectedNodes()[0];
+      const colId = gridObj.getFocusedCell().column.getColId();
+      const val = curRowNode.data[colId];
+
+      gridObj.forEachNode((rowNode : { [key: string]: any }, index : number) => {
+        let curIndex = Object.values(rowNode.data).indexOf(val);
+        if (curIndex > -1) {
+          let colId =  Object.keys(rowNode.data)[curIndex];
+          const rowId = gridObj.getDisplayedRowAtIndex(index);
+          gridObj.flashCells({ rowNodes: [rowId], columns: [colId], flashDuration: 5000 });
+        }
+        // let curVal = rowNode.data[colId];
+        // if (curVal === val) {
+        //   const rowId = gridObj.getDisplayedRowAtIndex(index);
+        //   gridObj.flashCells({ rowNodes: [rowId], columns: [colId], flashDuration: 5000 });
+        // }
+      });
     }
 
 }

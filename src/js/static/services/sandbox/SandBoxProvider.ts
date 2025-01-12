@@ -3,17 +3,12 @@ import AccountingEntry from "../../../common/accounting/AccountingEntry";
 import AccountsSet from "../../../common/accounting/AccountsSet";
 import Account from "../../../common/accounting/Account";
 import ServiceProvider from "../ServiceProvider";
-import SelectFromGridPopUp from "../../popups/SelectFromGridPopUp";
-import FormsFactory from "../../../common/factories/FormsFactory";
-import GridFactory from "../../../common/factories/GridFactory";
-import FormInputsValidator from "../../../validators/FormInputsValidator";
 import Properties from "../../../properties/Properties";
-import Dialog from "../../../common/dialogs/Dialog";
-import InputMultiValuesPopUp from "../../popups/InputMultiValuesPopUp";
 import PrintFactory from "../../../common/factories/PrintFactory";
 import SandBoxDocument from "../../../common/documents/SandBoxDocument";
 import { FlowGridObject, NotebookGridObject, NotebookPropertiesObject, StockGridObject } from "./SandBoxGridObjects";
 import { CalcTypes } from "./SandBoxEnum";
+import { SandBoxDocumentObject } from "../../../common/documents/DocumentsObjects";
 
 const lodash = require('lodash');
 
@@ -47,9 +42,8 @@ const lodash = require('lodash');
     const outcomeSet = this.transformStocks(notebookData.outcome);
 
     let result = this.calcStocksAndFlows(incomeSet, flowsSet, outcomeSet, calcMode);
-
     this.getCurrentDocument().text = {
-      income: calcMode == CalcTypes.INCOME ? result: incomeSet.toJSON(),
+      income: calcMode == CalcTypes.INCOME ? result : incomeSet.toJSON(),
       flows: flowsSet.toJSON(),
       outcome: calcMode == CalcTypes.OUTCOME ? result : outcomeSet.toJSON(),
     };
@@ -152,30 +146,26 @@ const lodash = require('lodash');
   }
 
   _printSandBox() {
-
-    let doc = this.getCurrentDocument() as SandBoxDocument;
+    let doc = this.getCurrentDocument() as SandBoxDocumentObject;
     let openWindow = window.open("", "title", "attributes");
-    openWindow.document.write(new PrintFactory().printSbDocToHTML(doc.getDocumentAsJSON()));
+    openWindow.document.write(new PrintFactory().printSbDocToHTML(doc));
     openWindow.document.close();
     openWindow.focus();
     openWindow.print();
     openWindow.close();
-
   }
 
   /**
    * Возвращает ИД выбранного документа или Null
    * @returns id документа
    */
-  openSandBoxDialog = () => {
-    return this._openSandBoxDialog();
+  getUserDocuments = () => {
+    return this._getUserDocuments();
   }
 
-  _openSandBoxDialog() {
-
+  _getUserDocuments() {
     return this.getApi().getUserSandBoxDocuments(localStorage.getItem('userId'))
       .then((res) => {
-
         const rowData : Array<any> = [];
         res.forEach((item : any) => {
           rowData.push({
@@ -186,65 +176,11 @@ const lodash = require('lodash');
             date: new Date(item.lastupdate).toISOString(),
           });
         });
-
-        const comparatorFunc = (sDate1 : string, sDate2 : string) => {
-          let date1Number = new Date(sDate1).getTime();
-          let date2Number = new Date(sDate2).getTime();
-
-          if (date1Number === null && date2Number === null) {
-            return 0;
-          }
-          if (date1Number === null) {
-            return -1;
-          }
-          if (date2Number === null) {
-            return 1;
-          }
-          if (date1Number === date2Number) {
-            return 0;
-          }
-          return date1Number - date2Number;
-        }
-
-        const columnDefs = [
-
-          { headerName: `${Properties.lang.dict.notebook.name}`, field: 'shortdesc', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter', /*tooltipValueGetter: this.getServiceBuilder().toolTipValueGetter*/ },
-          { headerName: `${Properties.lang.dict.notebook.id}`, field: 'id', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter', /*tooltipValueGetter: this.getServiceBuilder().toolTipValueGetter*/ },
-          { headerName: `${Properties.lang.dict.notebook.refresh}`, field: 'date', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter', comparator: comparatorFunc},
-          { headerName: `${Properties.lang.dict.notebook.share}`, field: 'share', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter',},
-
-        ];
-
-        const gridOptions = {
-          columnDefs: columnDefs,
-          rowData: rowData,
-          rowSelection: 'single',
-        };
-
-        const options = {
-          className: 'grid',
-          height: '50vh',
-          maxWidth: '100%',
-        }
-
-        const gridFactory = new GridFactory();
-        const gridElement = gridFactory.createGridElement(options);
-        const gridObj = gridFactory.createGridObject(gridElement, gridOptions);
-        gridObj.sizeColumnsToFit();
-        const form = new FormsFactory().createSingleGridForm('selectForm', gridElement);
-        const popup = new SelectFromGridPopUp({
-          title: `${Properties.lang.dict.popups.selectNotebookTitle}`,
-          form: form,
-          submitFunction: this.openSandBox,
-          gridObj: gridObj,
-          popupWidth: "85vw",
-        });
-        popup.open();
+        return rowData;
       })
       .catch((err) => {
         return Promise.reject(err);
       });
-
   }
 
   /**
@@ -260,7 +196,6 @@ const lodash = require('lodash');
     else {
       return Promise.reject(new Error(`${Properties.lang.dict.errors.notebookNotSelected}!`));
     }
-
   }
 
   _openSandBox(docId : string) {
@@ -285,8 +220,8 @@ const lodash = require('lodash');
         this.loadCurrentDocument();
       }
       else {
-        Dialog.ErrorDialog(`${Properties.lang.dict.errors.notebookNotFound}!`);
         this.newSandBox();
+        return Promise.reject(`${Properties.lang.dict.errors.notebookNotFound}!`);
       }
       return res;
     })
@@ -307,39 +242,6 @@ const lodash = require('lodash');
     let doc = new SandBoxDocument();
     this.setCurrentDocument(doc.getDocumentAsJSON());
     this.loadCurrentDocument();
-  }
-
-  /**
-   * Функция открытия диалога обновления описания тетради
-   */
-  openUpdateFileContentDialog = () => {
-    this._openUpdateFileContentDialog();
-  }
-
-  _openUpdateFileContentDialog() {
-
-    const shortdesc = 'shortdesc';
-    const desc = 'desc';
-    const tags = 'tags';
-
-    const inputForm = new FormsFactory().createPropertiesForm('input-form', shortdesc, desc, tags);
-
-    const shortDescEl = inputForm.querySelector(`.${shortdesc}`) as HTMLInputElement;
-    const descEl = inputForm.querySelector(`.${desc}`) as HTMLInputElement;
-    const tagsEl = inputForm.querySelector(`.${tags}`) as HTMLInputElement;;
-
-    shortDescEl.value = this.getCurrentDocument().properties.shortdesc;
-    descEl.value = this.getCurrentDocument().properties.description;
-    tagsEl.value = this.getCurrentDocument().properties.tags;
-
-    const popup = new InputMultiValuesPopUp({
-      form: inputForm,
-      inputs: [shortDescEl, descEl, tagsEl],
-      submitFunction: this.updateFileContent,
-      title: `${Properties.lang.dict.popups.notebookPropTitle}`,
-    });
-    const validator = new FormInputsValidator(popup.getForm(), Properties.lang.dict.errors);
-    popup.open();
   }
 
   /**
@@ -397,7 +299,7 @@ const lodash = require('lodash');
         if (res.data.ok) {
           //показываем ссылку на документ, если расшаривали его
           if (!oldShare) {
-            this.createAndShowShareLink();
+            this.getShareLink();
           }
           //загружаем обновленный
           return this._openSandBox(sbdoc._id);
@@ -414,8 +316,8 @@ const lodash = require('lodash');
   }
 
   //создает и показывает ссылку на расшаренный документ
-  createAndShowShareLink = () => {
-    Dialog.CopyValueDialog(`${Properties.lang.dict.promts.notebookLink}`, `https://${Properties.site.host}/?id=${this.getCurrentDocument()._id}`);
+  getShareLink = () => {
+    return  `https://${Properties.site.host}/?id=${this.getCurrentDocument()._id}`;
   }
 
   //рейтинг документа
@@ -446,8 +348,14 @@ const lodash = require('lodash');
 
   _refresh() {
     const docId = this.getCurrentDocument()._id;
+    const share = this.getCurrentDocument().share;
     if (docId) {
-      return this._openShareSandBox(docId, true);
+      if (share) {
+        return this._openShareSandBox(docId, true);
+      }
+      else {
+        return this._openSandBox(docId);
+      }
     }
     else {
       return Promise.resolve();
@@ -581,6 +489,11 @@ const lodash = require('lodash');
     })
 
     return flowsSet;
+  }
+
+  //возвращает текущий документ (обертка для getCurerentDocument)
+  getLoadedDocument = () => {
+    return this.getCurrentDocument();
   }
 
   /**
