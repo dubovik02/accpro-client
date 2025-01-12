@@ -2,6 +2,7 @@
 @import url('./__item/context-menu__item.css');
 @import url('./__link/context-menu__link.css');
 @import url('./__icon/context-menu__icon.css');
+@import url('./__line/context-menu__line.css');
 
 .context-menu {
   position: absolute;

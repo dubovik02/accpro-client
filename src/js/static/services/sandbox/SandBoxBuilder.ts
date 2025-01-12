@@ -7,6 +7,11 @@ import SandBoxGrid from "./SandBoxGrid";
 import SandBoxDocument from "../../../common/documents/SandBoxDocument";
 import { CalcTypes } from "./SandBoxEnum";
 import { NotebookGridObject } from "./SandBoxGridObjects";
+import SelectFromGridPopUp from "../../popups/SelectFromGridPopUp";
+import FormsFactory from "../../../common/factories/FormsFactory";
+import GridFactory from "../../../common/factories/GridFactory";
+import InputMultiValuesPopUp from "../../popups/InputMultiValuesPopUp";
+import FormInputsValidator from "../../../validators/FormInputsValidator";
 
 /**
  * Сервис Песочницы
@@ -135,6 +140,11 @@ export default class SandBoxBuilder extends ServiceBuilder {
   _saveFunction : Function;
 
   /**
+   * Функция открытия документа
+   */
+  _openSandBoxFunction : Function;
+
+  /**
    * Функция сохранения копии
    */
   _saveCopyFunction : Function;
@@ -152,7 +162,12 @@ export default class SandBoxBuilder extends ServiceBuilder {
   /**
    * Функция визуализации ссылки на тетрадь
    */
-  _createAndShowShareLink : Function;
+  _createShareLink : Function;
+
+  /**
+   * Функция обновления свойств тетради
+   */
+  _updateFileContentFunction : Function;
 
   /**
    * Функция загрузки документа
@@ -189,6 +204,11 @@ export default class SandBoxBuilder extends ServiceBuilder {
     */
    _setPagePropsFunction : Function;
 
+   /**
+    * Функция получения перечня документов пользоваителя
+    */
+   _getUserDocumentsFunction : Function;
+
    //коллбэк обновления документа
    _refreshFunction : Function;
 
@@ -209,14 +229,17 @@ export default class SandBoxBuilder extends ServiceBuilder {
     super(props);
     this._calcFunction = this._props.calcFunction;
     this._saveFunction = this._props.saveFunction;
+    this._getUserDocumentsFunction = this._props.getUserDocuments;
+    this._openSandBoxFunction = this._props.openSBFunction,///
     this._saveCopyFunction = this._props.saveCopyFunction;
     this._printFunction = this._props.printFunction;
     this._shareFunction = this._props.shareFunction;
     this._loadFunction = this._props.loadFunction;
     this._fileContentFunction = this._props.fileContentFunction;
-    this._currentDocument = this._props.currentDocument;
+    this._updateFileContentFunction = this._props.updateFileContentFunction;
+    // this._currentDocument = this._props.currentDocument;
     this._shareFunction = this._props.shareFunction;
-    this._createAndShowShareLink = this._props.createAndShowShareLink;
+    this._createShareLink = this._props.createShareLink;
     this._likeFunction = this._props.likeFunction;
     this._refreshFunction = this._props.refreshFunction;
     this._cellEditingFunction = this._props.cellEditingFunction;
@@ -362,7 +385,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
     });
 
     this._menuCalcOutcome.addEventListener('click', () => {
-      this._menuCalcIncome.parentElement.parentElement.classList.remove('service-section__submenu-list_is-visible');
+      this._menuCalcOutcome.parentElement.parentElement.classList.remove('service-section__submenu-list_is-visible');
       const result = this._calcStock(2);
       this._gridBuilder.setStockGridData(this._outcomeGridObject, result, false);
       this.getDataCheckModelAndRender();
@@ -450,9 +473,62 @@ export default class SandBoxBuilder extends ServiceBuilder {
     let preloader = this.getProps().preloader;
     this._componentDOM.appendChild(preloader);
 
-    this.getProps().openSBFunction.call(this)
-    .then((res : any) => {
+    this._getUserDocumentsFunction.call(this)
+    .then((rowData : any) => {
       preloader.remove();
+      const comparatorFunc = (sDate1 : string, sDate2 : string) => {
+        let date1Number = new Date(sDate1).getTime();
+        let date2Number = new Date(sDate2).getTime();
+
+        if (date1Number === null && date2Number === null) {
+          return 0;
+        }
+        if (date1Number === null) {
+          return -1;
+        }
+        if (date2Number === null) {
+          return 1;
+        }
+        if (date1Number === date2Number) {
+          return 0;
+        }
+        return date1Number - date2Number;
+      }
+
+      const columnDefs = [
+
+        { headerName: `${Properties.lang.dict.notebook.name}`, field: 'shortdesc', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter', /*tooltipValueGetter: this.getServiceBuilder().toolTipValueGetter*/ },
+        { headerName: `${Properties.lang.dict.notebook.id}`, field: 'id', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter', /*tooltipValueGetter: this.getServiceBuilder().toolTipValueGetter*/ },
+        { headerName: `${Properties.lang.dict.notebook.refresh}`, field: 'date', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter', comparator: comparatorFunc},
+        { headerName: `${Properties.lang.dict.notebook.share}`, field: 'share', resizable: true, editable: false, sortable: true, filter: 'agTextColumnFilter',},
+
+      ];
+
+      const gridOptions = {
+        columnDefs: columnDefs,
+        rowData: rowData,
+        rowSelection: 'single',
+      };
+
+      const options = {
+        className: 'grid',
+        height: '50vh',
+        maxWidth: '100%',
+      }
+
+      const gridFactory = new GridFactory();
+      const gridElement = gridFactory.createGridElement(options);
+      const gridObj = gridFactory.createGridObject(gridElement, gridOptions);
+      gridObj.sizeColumnsToFit();
+      const form = new FormsFactory().createSingleGridForm('selectForm', gridElement);
+      const popup = new SelectFromGridPopUp({
+        title: `${Properties.lang.dict.popups.selectNotebookTitle}`,
+        form: form,
+        submitFunction: this._openSandBoxFunction,
+        gridObj: gridObj,
+        popupWidth: "85vw",
+      });
+      popup.open();
     })
     .catch((err : any) => {
       preloader.remove();
@@ -475,7 +551,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
    */
   _setUpFileContentItem() {
     this._fileContentComponent.addEventListener('click', () => {
-      this._fileContentFunction.call(this);
+      this.createNotebookPropertiesDialog();
     })
   }
 
@@ -506,7 +582,7 @@ export default class SandBoxBuilder extends ServiceBuilder {
    */
    _setUpFileShareComponent() {
     this._fileShareComponent.addEventListener('click', () => {
-      this._createAndShowShareLink.call(this);
+      Dialog.CopyValueDialog(`${Properties.lang.dict.promts.notebookLink}`, this._createShareLink.call(this));
     })
   }
 
@@ -516,8 +592,35 @@ export default class SandBoxBuilder extends ServiceBuilder {
   _setUpMenuItemProperties() {
     this._menuProperties = this._serviceMenu.querySelector('.menu-item-properties');
     this._menuProperties.addEventListener('click', () => {
-      this._fileContentFunction.call(this);
+      this.createNotebookPropertiesDialog();
     });
+  }
+
+  // диалог редактирования свойств тетради
+  createNotebookPropertiesDialog() {
+    let docProps = this._fileContentFunction.call(this);
+    const shortdesc = 'shortdesc';
+    const desc = 'desc';
+    const tags = 'tags';
+
+    const inputForm = new FormsFactory().createPropertiesForm('input-form', shortdesc, desc, tags);
+
+    const shortDescEl = inputForm.querySelector(`.${shortdesc}`) as HTMLInputElement;
+    const descEl = inputForm.querySelector(`.${desc}`) as HTMLInputElement;
+    const tagsEl = inputForm.querySelector(`.${tags}`) as HTMLInputElement;;
+
+    shortDescEl.value = docProps.properties.shortdesc;
+    descEl.value = docProps.properties.description;
+    tagsEl.value = docProps.properties.tags;
+
+    const popup = new InputMultiValuesPopUp ({
+      form: inputForm,
+      inputs: [shortDescEl, descEl, tagsEl],
+      submitFunction: this._updateFileContentFunction,
+      title: `${Properties.lang.dict.popups.notebookPropTitle}`,
+    });
+    const validator = new FormInputsValidator(popup.getForm(), Properties.lang.dict.errors);
+    popup.open();
   }
 
   /**

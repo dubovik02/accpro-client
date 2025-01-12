@@ -133,6 +133,7 @@ export default {
         addRowUp: 'Add row up',
         addRowDown: 'Add row down',
         removeRow: 'Delete row',
+        markSameValues: 'Highlight similar',
       },
     }
 

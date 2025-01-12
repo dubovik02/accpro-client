@@ -216,11 +216,13 @@ function makeSandBoxServiceSection(reqId : string) {
       printFunction: sandBoxProvider.printSandBox,
       loginFunction: showSignInPopup,
       preloader: new ComponentsFactory().createPreloader(`${Properties.lang.dict.dialogs.waitPlease}`),
-      openSBFunction: sandBoxProvider.openSandBoxDialog,
+      getUserDocuments: sandBoxProvider.getUserDocuments,
+      openSBFunction: sandBoxProvider.openSandBox,
       newSBFunction: sandBoxProvider.newSandBox,
-      fileContentFunction: sandBoxProvider.openUpdateFileContentDialog,
+      fileContentFunction: sandBoxProvider.getLoadedDocument,
+      updateFileContentFunction: sandBoxProvider.updateFileContent,
       shareFunction: sandBoxProvider.createShareLink,
-      createAndShowShareLink: sandBoxProvider.createAndShowShareLink,
+      createShareLink: sandBoxProvider.getShareLink,
       likeFunction: sandBoxProvider.like,
       refreshFunction: sandBoxProvider.refresh,
       cellEditingFunction: sandBoxProvider.synchronizeModel,
@@ -239,7 +241,12 @@ function makeSandBoxServiceSection(reqId : string) {
     if (!isViewed) {
       localStorage.setItem(`${reqId}`, "true");
     }
-    sandBoxProvider._openShareSandBox(reqId, isViewed);
+    sandBoxProvider._openShareSandBox(reqId, isViewed)
+    .then((res) => {
+    })
+    .catch((err) => {
+      Dialog.InfoDialog(`${Properties.lang.dict.errors.notebookNotFound}!`);
+    });
   }
   else {// если есть активный документ - подгружаем его
     if (sandBoxProvider.getCurrentDocument()) {
