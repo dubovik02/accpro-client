@@ -520,6 +520,10 @@ export default class SandBoxBuilder extends ServiceBuilder {
       const gridElement = gridFactory.createGridElement(options);
       const gridObj = gridFactory.createGridObject(gridElement, gridOptions);
       gridObj.sizeColumnsToFit();
+      gridObj.applyColumnState({
+        state: [{ colId: 'date', sort: 'desc' }],
+        defaultState: { sort: null },
+      });
       const form = new FormsFactory().createSingleGridForm('selectForm', gridElement);
       const popup = new SelectFromGridPopUp({
         title: `${Properties.lang.dict.popups.selectNotebookTitle}`,
